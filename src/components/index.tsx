@@ -391,7 +391,7 @@ const shortMedicineName = (line: DrugDoseLine | undefined, fallback: "4FDC" | "2
 const shortDoseText = (line: DrugDoseLine | undefined) => line?.tabletsPerDay ? `${line.tabletsPerDay} tab${line.tabletsPerDay > 1 ? "s" : ""}/day` : "";
 
 export function DotGrid({ patientId, entries, monthKey, onMonthChange, onToggle, treatmentStartDate, treatmentEndDate, startSource = "missing", dosePlan }: {
-  patientId: string; entries: DotEntry[]; monthKey: string; treatmentStartDate?: string; treatmentEndDate?: string; startSource?: "drug-start" | "treatment-start" | "missing"; dosePlan?: DrugDosePlan | null;
+  patientId: string; entries: DotEntry[]; monthKey: string; treatmentStartDate?: string; treatmentEndDate?: string; startSource?: "drug-start" | "missing"; dosePlan?: DrugDosePlan | null;
   onMonthChange: (key: string) => void; onToggle: (day: number, status: DotEntry["status"]) => void;
 }) {
   const patientEntries = entries.filter((e) => e.patientId === patientId);
@@ -434,7 +434,7 @@ export function DotGrid({ patientId, entries, monthKey, onMonthChange, onToggle,
   const cpMedicine = shortMedicineName(cpLine, "2FDC");
   const ipDose = shortDoseText(ipLine);
   const cpDose = shortDoseText(cpLine);
-  const startLabel = startSource === "drug-start" ? "Drug start" : startSource === "treatment-start" ? "Treatment start fallback" : "Drug start";
+  const startLabel = "Drug start";
 
   const prevMonth = () => { const d = new Date(y, m - 2, 1); onMonthChange(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`); };
   const nextMonth = () => { const d = new Date(y, m, 1); onMonthChange(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`); };

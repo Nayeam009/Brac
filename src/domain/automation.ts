@@ -7,7 +7,7 @@ import type {
 type SputumStage = "2M" | "5M" | "6M";
 type TreatmentDates = { ipEndDate: string; treatmentEndDate: string; sputumDueDates: Record<SputumStage, string> };
 type PatientTreatmentSchedule = { ipEndDate?: string; treatmentEndDate?: string; protocolTreatmentEndDate?: string; sputumDueDates?: Partial<Record<SputumStage, string>> };
-type PatientDotPlan = { startDate?: string; endDate?: string; totalDays: number; source: "drug-start" | "treatment-start" | "missing" };
+type PatientDotPlan = { startDate?: string; endDate?: string; totalDays: number; source: "drug-start" | "missing" };
 export type PatientEntryMode = "live" | "historical";
 export type PatientEntryModeSource = "auto" | "manual";
 export type PatientEntryModeInfo = {
@@ -70,11 +70,11 @@ const resolveSputumDueDates = (startDate: string, patient: Pick<Patient, "tbType
 };
 
 export function resolvePatientTreatmentSchedule(patient: Pick<Patient, "tbType" | "confirmationMethod" | "treatmentStartDate" | "drugStartDate" | "treatmentEndDate" | "metadata">): PatientTreatmentSchedule {
-  const courseStartDate = patient.drugStartDate || patient.treatmentStartDate;
+  const courseStartDate = patient.drugStartDate;
   const isCustomEndDate = patient.metadata?.treatmentEndMode === "custom";
-  const treatmentLengthMonths = treatmentLengthFromMetadata(patient.metadata) || (patient.drugStartDate && !isCustomEndDate ? 6 : undefined);
+  const treatmentLengthMonths = !isCustomEndDate ? treatmentLengthFromMetadata(patient.metadata) || (patient.drugStartDate ? 6 : undefined) : undefined;
   const calculatedTreatmentEndDate = courseStartDate && treatmentLengthMonths ? calculateTreatmentEndDateFromMonths(courseStartDate, treatmentLengthMonths) : undefined;
-  const treatmentEndDate = calculatedTreatmentEndDate || patient.treatmentEndDate || (courseStartDate ? dateForTreatmentDay(courseStartDate, TB_TOTAL_DAYS) : undefined);
+  const treatmentEndDate = isCustomEndDate ? patient.treatmentEndDate || calculatedTreatmentEndDate : calculatedTreatmentEndDate || patient.treatmentEndDate;
   if (!courseStartDate) return { treatmentEndDate };
   const dates = calculateTreatmentDates(courseStartDate);
   if (patient.tbType === "Extra-pulmonary") {
@@ -119,12 +119,14 @@ export function treatmentDayNumberForDate(startDate: string | undefined, date: s
 }
 
 export function resolvePatientDotPlan(patient: Pick<Patient, "drugStartDate" | "treatmentStartDate" | "treatmentEndDate" | "tbType" | "metadata">): PatientDotPlan {
-  const startDate = patient.drugStartDate || patient.treatmentStartDate;
-  const source = patient.drugStartDate ? "drug-start" : patient.treatmentStartDate ? "treatment-start" : "missing";
+  const startDate = patient.drugStartDate;
+  const source = patient.drugStartDate ? "drug-start" : "missing";
   if (!startDate) return { totalDays: TB_TOTAL_DAYS, source };
   const isCustomEndDate = patient.metadata?.treatmentEndMode === "custom";
-  const treatmentLengthMonths = treatmentLengthFromMetadata(patient.metadata) || (patient.drugStartDate && !isCustomEndDate ? 6 : undefined);
-  const endDate = treatmentLengthMonths ? calculateTreatmentEndDateFromMonths(startDate, treatmentLengthMonths) : patient.treatmentEndDate || dateForTreatmentDay(startDate, TB_TOTAL_DAYS);
+  const treatmentLengthMonths = !isCustomEndDate ? treatmentLengthFromMetadata(patient.metadata) || 6 : undefined;
+  const endDate = isCustomEndDate
+    ? patient.treatmentEndDate || dateForTreatmentDay(startDate, TB_TOTAL_DAYS)
+    : treatmentLengthMonths ? calculateTreatmentEndDateFromMonths(startDate, treatmentLengthMonths) : patient.treatmentEndDate || dateForTreatmentDay(startDate, TB_TOTAL_DAYS);
   const totalDays = Math.max(TB_TOTAL_DAYS, inclusiveDays(startDate, endDate));
   return { startDate, endDate: dateForTreatmentDay(startDate, totalDays), totalDays, source };
 }
@@ -137,7 +139,7 @@ const isBeforeCutoff = (value?: string, cutoff = HISTORICAL_BACK_ENTRY_CUTOFF_DA
   return Boolean(date && date < cutoff);
 };
 
-export function resolvePatientEntryMode(patient: Pick<Patient, "registrationDate" | "treatmentStartDate" | "metadata">, today = HISTORICAL_BACK_ENTRY_CUTOFF_DATE): PatientEntryModeInfo {
+export function resolvePatientEntryMode(patient: Pick<Patient, "registrationDate" | "treatmentStartDate" | "drugStartDate" | "metadata">, today = HISTORICAL_BACK_ENTRY_CUTOFF_DATE): PatientEntryModeInfo {
   const metadata = patient.metadata || {};
   const savedMode = metadata.entryMode;
   const savedSource = metadata.entryModeSource;
@@ -170,6 +172,15 @@ export function resolvePatientEntryMode(patient: Pick<Patient, "registrationDate
     };
   }
 
+  if (isBeforeCutoff(patient.drugStartDate, cutoff)) {
+    return {
+      entryMode: "historical",
+      entryModeSource: isValidEntryModeSource(savedSource) ? savedSource : "auto",
+      historicalCutoffDate: cutoff,
+      historicalReason: `Drug start date is before ${formatDateDisplay(cutoff)}`,
+    };
+  }
+
   return {
     entryMode: "live",
     entryModeSource: isValidEntryModeSource(savedSource) ? savedSource : "auto",
@@ -191,13 +202,13 @@ export function withResolvedPatientEntryMetadata(patient: Patient, today = HISTO
   };
 }
 
-export function isHistoricalRecord(patient: Pick<Patient, "registrationDate" | "treatmentStartDate" | "metadata"> | undefined, recordDate?: string, today = HISTORICAL_BACK_ENTRY_CUTOFF_DATE): boolean {
+export function isHistoricalRecord(patient: Pick<Patient, "registrationDate" | "treatmentStartDate" | "drugStartDate" | "metadata"> | undefined, recordDate?: string, today = HISTORICAL_BACK_ENTRY_CUTOFF_DATE): boolean {
   if (!patient || !recordDate) return false;
   const entryMode = resolvePatientEntryMode(patient, today);
   return entryMode.entryMode === "historical" && isBeforeCutoff(recordDate, entryMode.historicalCutoffDate);
 }
 
-export function shouldCreateLiveDiaryEntry(patient: Pick<Patient, "registrationDate" | "treatmentStartDate" | "metadata"> | undefined, recordDate?: string, _actionType?: DiaryType, today = HISTORICAL_BACK_ENTRY_CUTOFF_DATE): boolean {
+export function shouldCreateLiveDiaryEntry(patient: Pick<Patient, "registrationDate" | "treatmentStartDate" | "drugStartDate" | "metadata"> | undefined, recordDate?: string, _actionType?: DiaryType, today = HISTORICAL_BACK_ENTRY_CUTOFF_DATE): boolean {
   return !isHistoricalRecord(patient, recordDate, today);
 }
 
@@ -287,14 +298,14 @@ export function generateWorklist(input: WorklistInput): Task[] {
       tasks.push(mkTask("OUTCOME_PENDING", patient, "Treatment outcome pending", "High", input.today, `${patient.name} এর outcome pending।`, treatmentEndDate));
 
     // Sputum due tasks
-    if (patient.tbType === "Pulmonary" && patient.treatmentStartDate) {
+    if (patient.tbType === "Pulmonary" && patient.drugStartDate) {
       const sputumDueDates = resolvePatientTreatmentSchedule(patient).sputumDueDates;
       if (!sputumDueDates) continue;
       for (const [stage, dueDate] of Object.entries(sputumDueDates)) {
         if (completedSputum.has(`${patient.id}:${stage}`)) continue;
         const due = parseISO(dueDate);
         const diff = (due.getTime() - todayDate.getTime()) / 86400000;
-        if (diff <= 7 && diff >= -30) tasks.push(mkTask("FOLLOWUP_DUE", patient, `${stage} sputum follow-up ${diff < 0 ? "overdue" : "due"}`, diff < 0 ? "High" : "Medium", input.today, `${patient.name} এর ${stage} sputum follow-up।`, dueDate));
+        if (diff <= 7) tasks.push(mkTask("FOLLOWUP_DUE", patient, `${stage} sputum follow-up ${diff < 0 ? "overdue" : "due"}`, diff < 0 ? "High" : "Medium", input.today, `${patient.name} এর ${stage} sputum follow-up।`, dueDate));
       }
     }
   }
@@ -337,16 +348,23 @@ export function detectDataQualityIssues(patients: Patient[], labResults: LabResu
     if (p.outcome && !p.outcomeDate) issues.push({ patient: p, issue: "Outcome date missing", severity: "medium" });
     if (p.outcome && !p.signOfficer) issues.push({ patient: p, issue: "Outcome sign-off officer missing", severity: "medium" });
     if (!p.age) issues.push({ patient: p, issue: "বয়স নেই", severity: "low" });
-    if (p.treatmentStartDate && !p.regimenType) issues.push({ patient: p, issue: "চিকিৎসা শুরু হয়েছে কিন্তু regimen নির্বাচন হয়নি", severity: "medium" });
+    const dotStartDate = p.drugStartDate || p.treatmentStartDate;
+    if (dotStartDate && !p.regimenType) issues.push({ patient: p, issue: "Medicine tracking started but regimen is missing", severity: "medium" });
     if (p.treatmentStartDate && !p.drugStartDate) issues.push({ patient: p, issue: "Drug start date missing for DOT tracking", severity: "medium" });
     if (p.regimenType && /FDC/i.test(p.regimenType) && !p.weightKg) issues.push({ patient: p, issue: "Patient weight missing for auto dose calculation", severity: "medium" });
-    if (p.treatmentStartDate && !p.dotProviderName) issues.push({ patient: p, issue: "DOT provider missing", severity: "medium" });
-    const dotStartDate = p.drugStartDate || p.treatmentStartDate;
-    if (p.treatmentEndDate && dotStartDate && dateOnly(p.treatmentEndDate) < dateOnly(dotStartDate))
+    if (dotStartDate && !p.dotProviderName) issues.push({ patient: p, issue: "DOT provider missing", severity: "medium" });
+    if (p.treatmentEndDate && p.drugStartDate && dateOnly(p.treatmentEndDate) < dateOnly(p.drugStartDate))
       issues.push({ patient: p, issue: "Treatment end date is before drug start date", severity: "high" });
+    const selectedLengthMonths = treatmentLengthFromMetadata(p.metadata);
+    if (p.drugStartDate && p.treatmentEndDate && selectedLengthMonths && p.metadata?.treatmentEndMode !== "custom") {
+      const expectedEndDate = calculateTreatmentEndDateFromMonths(p.drugStartDate, selectedLengthMonths);
+      if (expectedEndDate && dateOnly(p.treatmentEndDate) !== expectedEndDate) {
+        issues.push({ patient: p, issue: `Treatment end does not match selected ${selectedLengthMonths}-month course`, severity: "medium" });
+      }
+    }
     if (p.tbType === "Extra-pulmonary" && (sputumByPatient.get(p.id)?.length || 0) > 0)
       issues.push({ patient: p, issue: "EP patient has sputum follow-up record", severity: "low" });
-    if (p.tbType === "Pulmonary" && p.treatmentStartDate) {
+    if (p.tbType === "Pulmonary" && p.drugStartDate) {
       const sputumDueDates = resolvePatientTreatmentSchedule(p).sputumDueDates;
       if (sputumDueDates) {
         for (const [stage, dueDate] of Object.entries(sputumDueDates)) {

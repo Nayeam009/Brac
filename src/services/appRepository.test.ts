@@ -202,4 +202,59 @@ describe("attachment repository", () => {
     expect(calls.map((call) => call.table)).toEqual(expect.arrayContaining(["patients", "lab_results"]));
     expect(calls.find((call) => call.table === "patients")?.rows[0]).toMatchObject({ owner_id: "user-1" });
   });
+
+  it("scopes loaded patient-linked data to the current Field Officer", async () => {
+    const { scopeAppDataToProfile } = await import("./appRepository");
+    const scoped = scopeAppDataToProfile({
+      patients: [
+        { id: "patient-1", name: "Own", ownerId: "user-1", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      labResults: [
+        { id: "lab-own", patientId: "patient-1", testType: "GeneXpert", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+        { id: "lab-other", patientId: "patient-other", testType: "GeneXpert", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      dotEntries: [
+        { id: "dot-own", patientId: "patient-1", date: "2026-05-15", monthKey: "2026-05", day: 15, status: "done", updatedAt: "2026-05-15T00:00:00.000Z" },
+        { id: "dot-other", patientId: "patient-other", date: "2026-05-15", monthKey: "2026-05", day: 15, status: "done", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      contacts: [
+        { id: "contact-own", patientId: "patient-1", name: "Own contact", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+        { id: "contact-other", patientId: "patient-other", name: "Other contact", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      tptRecords: [
+        { id: "tpt-own", contactId: "contact-own", name: "Own TPT", status: "Active", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+        { id: "tpt-other", contactId: "contact-other", name: "Other TPT", status: "Active", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      sputumFollowUps: [
+        { id: "sp-own", patientId: "patient-1", stage: "2M", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+        { id: "sp-other", patientId: "patient-other", stage: "2M", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      diaryEntries: [
+        { id: "dia-own", date: "2026-05-15", time: "2026-05-15T00:00:00.000Z", type: "Record Updated", patientId: "patient-1", details: "Own", userId: "user-1" },
+        { id: "dia-other", date: "2026-05-15", time: "2026-05-15T00:00:00.000Z", type: "Record Updated", patientId: "patient-other", details: "Other", userId: "user-other" },
+        { id: "dia-report", date: "2026-05-15", time: "2026-05-15T00:00:00.000Z", type: "Report Generated", details: "Report", userId: "user-1" },
+      ],
+      tasks: [
+        { id: "task-own", patientId: "patient-1", type: "DOT_NOT_UPDATED", title: "Own", priority: "High", status: "Open", createdAt: "2026-05-15T00:00:00.000Z" },
+        { id: "task-other", patientId: "patient-other", type: "DOT_NOT_UPDATED", title: "Other", priority: "High", status: "Open", createdAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      providers: [
+        { id: "provider-shared", name: "Shared SS", type: "SS", createdAt: "2026-05-15T00:00:00.000Z", updatedAt: "2026-05-15T00:00:00.000Z" },
+      ],
+      attachments: [
+        { id: "att-own", recordType: "patient", recordId: "patient-1", fileName: "own.pdf", fileSize: 1, bucket: "record-attachments", storageKey: "user-1/patient-1/own.pdf", url: "https://example/own.pdf", uploadedBy: "user-1", createdAt: "2026-05-15T00:00:00.000Z" },
+        { id: "att-other", recordType: "patient", recordId: "patient-other", fileName: "other.pdf", fileSize: 1, bucket: "record-attachments", storageKey: "user-other/patient-other/other.pdf", url: "https://example/other.pdf", uploadedBy: "user-other", createdAt: "2026-05-15T00:00:00.000Z" },
+      ],
+    }, { profile });
+
+    expect(scoped.labResults.map((item) => item.id)).toEqual(["lab-own"]);
+    expect(scoped.dotEntries.map((item) => item.id)).toEqual(["dot-own"]);
+    expect(scoped.contacts.map((item) => item.id)).toEqual(["contact-own"]);
+    expect(scoped.tptRecords.map((item) => item.id)).toEqual(["tpt-own"]);
+    expect(scoped.sputumFollowUps.map((item) => item.id)).toEqual(["sp-own"]);
+    expect(scoped.diaryEntries.map((item) => item.id)).toEqual(["dia-own", "dia-report"]);
+    expect(scoped.tasks.map((item) => item.id)).toEqual(["task-own"]);
+    expect(scoped.attachments.map((item) => item.id)).toEqual(["att-own"]);
+    expect(scoped.providers.map((item) => item.id)).toEqual(["provider-shared"]);
+  });
 });

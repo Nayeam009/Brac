@@ -57,12 +57,27 @@ describe("TB workflow automation", () => {
         tbType: "Extra-pulmonary",
         confirmationMethod: "CD",
         treatmentStartDate: "2026-05-01",
+        drugStartDate: "2026-05-01",
         treatmentEndDate: "2026-12-31",
+        metadata: { treatmentEndMode: "custom", treatmentLengthMonths: 6 },
       }),
     ).toEqual({
       ipEndDate: "2026-06-29",
       treatmentEndDate: "2026-12-31",
       protocolTreatmentEndDate: "2026-10-27",
+    });
+
+    expect(resolvePatientDotPlan({
+      tbType: "Extra-pulmonary",
+      treatmentStartDate: "2026-05-01",
+      drugStartDate: "2026-05-01",
+      treatmentEndDate: "2026-12-31",
+      metadata: { treatmentEndMode: "custom", treatmentLengthMonths: 6 },
+    })).toEqual({
+      startDate: "2026-05-01",
+      endDate: "2026-12-31",
+      totalDays: 245,
+      source: "drug-start",
     });
   });
 
@@ -203,6 +218,18 @@ describe("TB workflow automation", () => {
     }));
   });
 
+  it("marks drug-start-only old records as previous patient data", () => {
+    expect(resolvePatientEntryMode({
+      ...basePatient,
+      registrationDate: "2026-05-15",
+      treatmentStartDate: "",
+      drugStartDate: "2026-05-01",
+    }, "2026-05-15")).toMatchObject({
+      entryMode: "historical",
+      historicalReason: "Drug start date is before 15/05/2026",
+    });
+  });
+
   it("logs historical DOT back-entry quietly only before the fixed cutoff date", () => {
     const historicalPatient = { ...basePatient, treatmentStartDate: "2026-05-01" };
 
@@ -326,6 +353,7 @@ describe("TB workflow automation", () => {
       ...basePatient,
       id: "pat_history",
       treatmentStartDate: "2026-03-03",
+      drugStartDate: "2026-03-03",
       nextFollowUpDate: "2026-05-01",
       metadata: { entryMode: "historical", entryModeSource: "manual", historicalCutoffDate: "2026-05-15" },
     };
@@ -400,7 +428,7 @@ describe("TB workflow automation", () => {
 
     const tasks = generateWorklist({
       today: "2026-05-30",
-      patients: [{ ...basePatient, treatmentStartDate: "2026-01-01" }],
+      patients: [{ ...basePatient, treatmentStartDate: "2026-01-01", drugStartDate: "2026-01-01" }],
       labResults: [],
       dotEntries: [],
       contacts: [],
@@ -409,6 +437,27 @@ describe("TB workflow automation", () => {
     });
 
     expect(tasks.some((task) => /5M sputum/i.test(task.title))).toBe(false);
+  });
+
+  it("keeps old overdue sputum follow-up visible in the worklist", () => {
+    const tasks = generateWorklist({
+      today: "2026-08-15",
+      patients: [{
+        ...basePatient,
+        id: "pat_old_sputum",
+        treatmentStartDate: "2026-01-01",
+        drugStartDate: "2026-01-01",
+      }],
+      labResults: [],
+      dotEntries: [],
+      contacts: [],
+      tptRecords: [],
+      sputumFollowUps: [],
+    });
+
+    expect(tasks.some((task) => task.type === "FOLLOWUP_DUE" && /2M sputum follow-up overdue/i.test(task.title))).toBe(true);
+    expect(tasks.some((task) => task.type === "FOLLOWUP_DUE" && /5M sputum follow-up overdue/i.test(task.title))).toBe(true);
+    expect(tasks.some((task) => task.type === "FOLLOWUP_DUE" && /6M sputum follow-up overdue/i.test(task.title))).toBe(true);
   });
 
   it("flags missing FO core fields, incomplete outcome sign-off, and sputum data issues", () => {
@@ -441,6 +490,7 @@ describe("TB workflow automation", () => {
         registrationDate: "2026-01-01",
         regimenType: "CAT-1 / 4FDC",
         treatmentStartDate: "2026-01-01",
+        drugStartDate: "2026-01-01",
       },
     ];
 
@@ -476,6 +526,24 @@ describe("TB workflow automation", () => {
     }], [], [], "2026-05-15");
 
     expect(issues.map((issue) => issue.issue)).toContain("Treatment end date is before drug start date");
+  });
+
+  it("flags drug-start-driven tracking issues even if clinical treatment start is missing", () => {
+    const issues = detectDataQualityIssues([{
+      ...basePatient,
+      treatmentStartDate: "",
+      drugStartDate: "2026-05-10",
+      treatmentEndDate: "2026-10-01",
+      regimenType: "",
+      dotProviderName: "",
+      metadata: { treatmentLengthMonths: 6 },
+    }], [], [], "2026-05-15");
+
+    expect(issues.map((issue) => issue.issue)).toEqual(expect.arrayContaining([
+      "Medicine tracking started but regimen is missing",
+      "DOT provider missing",
+      "Treatment end does not match selected 6-month course",
+    ]));
   });
 
   it("builds Bangla-readable diary entries with patient context", () => {

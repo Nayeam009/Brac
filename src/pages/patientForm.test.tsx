@@ -98,7 +98,9 @@ describe("PatientFormPage extra-pulmonary treatment rules", () => {
           tbType: "Extra-pulmonary",
           epSite: "Lymph Node",
           treatmentStartDate: "2026-01-14",
+          drugStartDate: "2026-01-14",
           treatmentEndDate: "2026-09-14",
+          metadata: { treatmentEndMode: "custom" },
         },
       ],
       attachments: [],
@@ -122,6 +124,7 @@ describe("PatientFormPage extra-pulmonary treatment rules", () => {
         {
           ...patient,
           treatmentStartDate: "2026-05-01",
+          drugStartDate: "2026-05-01",
         },
       ],
       attachments: [],
@@ -263,6 +266,7 @@ describe("PatientFormPage complete TB-01 data entry", () => {
         {
           ...patient,
           treatmentStartDate: "2026-05-01",
+          drugStartDate: "2026-05-01",
         },
       ],
       dotEntries,
@@ -488,6 +492,7 @@ describe("PatientFormPage complete TB-01 data entry", () => {
         {
           ...patient,
           treatmentStartDate: "2026-01-14",
+          drugStartDate: "2026-01-14",
         },
       ],
       attachments: [],

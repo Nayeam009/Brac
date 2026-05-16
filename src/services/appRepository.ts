@@ -105,6 +105,33 @@ const upsertOne = async <T>(table: string, row: Row, mapper: (row: Row) => T): P
   return mapper(ensureData(data as Row | null, error, `Unable to save ${table}.`));
 };
 
+export function scopeAppDataToProfile(data: AppData, context: RepositoryContext = {}): AppData {
+  const userId = context.profile?.userId;
+  if (!userId) return data;
+
+  const patientIds = new Set(data.patients.map((patient) => patient.id));
+  const contacts = data.contacts.filter((contact) => patientIds.has(contact.patientId));
+  const contactIds = new Set(contacts.map((contact) => contact.id));
+
+  return {
+    ...data,
+    labResults: data.labResults.filter((lab) => patientIds.has(lab.patientId)),
+    dotEntries: data.dotEntries.filter((dot) => patientIds.has(dot.patientId)),
+    contacts,
+    tptRecords: data.tptRecords.filter((record) =>
+      Boolean((record.patientId && patientIds.has(record.patientId)) || (record.contactId && contactIds.has(record.contactId))),
+    ),
+    sputumFollowUps: data.sputumFollowUps.filter((followUp) => patientIds.has(followUp.patientId)),
+    diaryEntries: data.diaryEntries.filter((entry) =>
+      entry.patientId ? patientIds.has(entry.patientId) : !entry.userId || entry.userId === userId,
+    ),
+    tasks: data.tasks.filter((task) => !task.patientId || patientIds.has(task.patientId)),
+    attachments: data.attachments.filter((attachment) =>
+      attachment.recordType === "patient" && patientIds.has(attachment.recordId) && (!attachment.uploadedBy || attachment.uploadedBy === userId),
+    ),
+  };
+}
+
 export async function loadAppData(context: RepositoryContext = {}): Promise<AppData> {
   const ownerId = context.profile?.userId;
   const [patients, labResults, dotEntries, contacts, tptRecords, sputumFollowUps, diaryEntries, tasks, providers, attachments] = await Promise.all([
@@ -120,7 +147,7 @@ export async function loadAppData(context: RepositoryContext = {}): Promise<AppD
     selectAll(tables.recordAttachments, recordAttachmentFromRow),
   ]);
 
-  return {
+  return scopeAppDataToProfile({
     patients,
     labResults,
     dotEntries,
@@ -131,7 +158,7 @@ export async function loadAppData(context: RepositoryContext = {}): Promise<AppD
     tasks,
     providers,
     attachments,
-  };
+  }, context);
 }
 
 export const savePatient = (patient: Patient): Promise<Patient> =>

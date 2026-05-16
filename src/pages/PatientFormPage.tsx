@@ -60,17 +60,10 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
 
   const u = (key: keyof Patient, val: string | number) => setForm((c) => {
     if (key === "treatmentStartDate" && typeof val === "string") {
-      const startDate = c.drugStartDate || val;
-      const months = selectedTreatmentLengthMonths(c, startDate, c.treatmentEndDate);
-      return {
-        ...c,
-        treatmentStartDate: val,
-        treatmentEndDate: !c.drugStartDate && startDate ? calculateTreatmentEndDateFromMonths(startDate, months) : c.treatmentEndDate,
-        metadata: { ...(c.metadata || {}), treatmentLengthMonths: months },
-      };
+      return { ...c, treatmentStartDate: val };
     }
     if (key === "treatmentEndDate" && typeof val === "string") {
-      const startDate = c.drugStartDate || c.treatmentStartDate;
+      const startDate = c.drugStartDate;
       const inferredMonths = inferTreatmentLengthMonths(startDate, val);
       const metadata = { ...(c.metadata || {}) };
       if (inferredMonths) {
@@ -88,12 +81,11 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     treatmentLengthFromMetadata(current.metadata) || inferTreatmentLengthMonths(startDate, endDate) || 6;
   const updateDrugStartDate = (val: string) => {
     setForm((c) => {
-      const startDate = val || c.treatmentStartDate;
+      const startDate = val;
       const months = selectedTreatmentLengthMonths(c, startDate, c.treatmentEndDate);
       return {
         ...c,
         drugStartDate: val,
-        treatmentStartDate: c.treatmentStartDate || val,
         treatmentEndDate: startDate ? calculateTreatmentEndDateFromMonths(startDate, months) : c.treatmentEndDate,
         metadata: { ...(c.metadata || {}), treatmentLengthMonths: months, treatmentEndMode: undefined },
       };
@@ -102,7 +94,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
   };
   const updateTreatmentLengthMonths = (months: number) => setForm((c) => {
     const normalizedMonths = isTreatmentLengthOption(months) ? months : 6;
-    const startDate = c.drugStartDate || c.treatmentStartDate;
+    const startDate = c.drugStartDate;
     return {
       ...c,
       treatmentEndDate: startDate ? calculateTreatmentEndDateFromMonths(startDate, normalizedMonths) : c.treatmentEndDate,
@@ -110,7 +102,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     };
   });
   const updateTreatmentEndDate = (val: string) => setForm((c) => {
-    const startDate = c.drugStartDate || c.treatmentStartDate;
+    const startDate = c.drugStartDate;
     const inferredMonths = inferTreatmentLengthMonths(startDate, val);
     const metadata = { ...(c.metadata || {}) };
     if (inferredMonths) {
@@ -147,8 +139,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
   const treatmentSchedule = resolvePatientTreatmentSchedule(form);
   const sputumDueDates = treatmentSchedule.sputumDueDates;
   const activeSputumStages = sputumStages.filter((stage) => Boolean(sputumDueDates?.[stage]));
-  const hasTreatmentStart = Boolean(form.treatmentStartDate);
-  const hasScheduleStart = Boolean(form.drugStartDate || form.treatmentStartDate);
+  const hasScheduleStart = Boolean(form.drugStartDate);
   const drugs = form.regimenType ? DRUG_REGIMENS[form.regimenType] : null;
   const dosePlan = calculateDrugDosePlan(form.regimenType, form.weightKg, form.phase);
   const dotPlan = resolvePatientDotPlan(form);
@@ -162,7 +153,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
   const handleSave = () => {
     const metadata = { ...(form.metadata || {}) };
     if (metadata.treatmentEndMode === undefined) delete metadata.treatmentEndMode;
-    onSave({ ...form, treatmentEndDate: treatmentSchedule.treatmentEndDate || form.treatmentEndDate, metadata });
+    onSave({ ...form, ipEndDate: treatmentSchedule.ipEndDate || form.ipEndDate, treatmentEndDate: treatmentSchedule.treatmentEndDate || form.treatmentEndDate, metadata });
   };
 
   const handleAttachmentUpload = async (file?: File) => {
@@ -387,7 +378,8 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
               {activeSputumStages.map((stage) => <span key={stage}>Sputum {stage}: {formatDateDisplay(sputumDueDates?.[stage])}</span>)}
             </div>
           )}
-          {hasScheduleStart && <p className="code-hint">Drug start date drives IP, sputum, and DOT medicine tracking. If drug start is missing, the app temporarily uses treatment start. All programme dates use fixed day-count math: 1 month = 30 days, and the start date is day 1.</p>}
+          {!form.drugStartDate && <AlertCard level="medium" message="Drug start date is required before IP end, treatment end, sputum follow-up, and DOT dates can be calculated." />}
+          {hasScheduleStart && <p className="code-hint">Drug start date drives IP end, treatment end, sputum follow-up, and DOT medicine tracking. All programme dates use fixed day-count math: 1 month = 30 days, and the drug start date is day 1.</p>}
           {form.tbType === "Pulmonary" && form.confirmationMethod === "BC" && <p className="code-hint">Pulmonary BC follow-up: 2M, 5M, and 6M sputum checks are required.</p>}
           {form.tbType === "Pulmonary" && form.confirmationMethod === "CD" && <p className="code-hint">Pulmonary CD follow-up: only the 2M sputum check is required.</p>}
           {isExtraPulmonary && hasScheduleStart && <p className="code-hint">EP patient plan: no sputum follow-up schedule. Treatment can continue after 180 programme days by changing the treatment end / extension date.</p>}
@@ -402,7 +394,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
             <label>Treatment length<select value={treatmentLengthMonths} onChange={(e) => updateTreatmentLengthMonths(Number(e.target.value))}>{TREATMENT_LENGTH_MONTH_OPTIONS.map((months) => <option key={months} value={months}>{months} months ({months * 30} days)</option>)}</select></label>
             <label>{isExtraPulmonary ? "EP treatment extended until" : "Treatment end date"}<DateInput value={treatmentSchedule.treatmentEndDate || ""} onChange={(v) => u("treatmentEndDate", v)} /></label>
           </div>
-          <p className="code-hint">DOT starts from Drug start date ({formatDateDisplay(dotPlanStartDate) || "not set"}) and continues until Treatment end date ({formatDateDisplay(dotPlanEndDate) || "not set"}). Treatment length is {treatmentLengthMonths} months ({treatmentLengthDays} programme days), using 1 month = 30 days and the start date as day 1. {dotPlan.source === "treatment-start" ? "Drug start is missing, so DOT preview is temporarily using treatment start." : ""} {isExtraPulmonary ? `EP continuation medicine (${dosePlan?.lines.find((line) => /continuation/i.test(line.phase))?.drug || "2FDC"}) remains active until that end date.` : "Pulmonary sputum follow-up still follows treatment start date."}</p>
+          <p className="code-hint">DOT starts from Drug start date ({formatDateDisplay(dotPlanStartDate) || "not set"}) and continues until Treatment end date ({formatDateDisplay(dotPlanEndDate) || "not set"}). Treatment length is {treatmentLengthMonths} months ({treatmentLengthDays} programme days), using 1 month = 30 days and the drug start date as day 1. {!form.drugStartDate ? "Enter drug start date to calculate the official programme schedule." : ""} {isExtraPulmonary ? `EP continuation medicine (${dosePlan?.lines.find((line) => /continuation/i.test(line.phase))?.drug || "2FDC"}) remains active until that end date.` : "Pulmonary sputum follow-up uses the same drug-start programme-day schedule."}</p>
           {drugs && dosePlan && (
             <div className="drug-dose-panel">
               <div className="drug-dose-header">
@@ -457,7 +449,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
           <>
             {/* চ — DOT Grid */}
             <SectionCard title="চ — DOT Daily Tracking Grid" tone="info">
-              {dotPlan.source === "treatment-start" && <AlertCard level="medium" message="Drug start date missing. DOT tracking is previewing from treatment start until the drug start date is filled." />}
+              {!form.drugStartDate && <AlertCard level="medium" message="Drug start date missing. DOT tracking starts only after drug start date is entered." />}
               <DotGrid patientId={existing.id} entries={dotEntries} monthKey={dotMonth} treatmentStartDate={dotPlanStartDate} treatmentEndDate={dotPlanEndDate} startSource={dotPlan.source} dosePlan={dosePlan} onMonthChange={setDotMonth}
                 onToggle={(day, status) => {
                   const existingEntry = dotEntries.find((e) => e.patientId === existing.id && e.monthKey === dotMonth && e.day === day);
@@ -499,7 +491,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                     );
                   })}
                 </div>
-              ) : <p style={{ color: "var(--muted)" }}>চিকিৎসা শুরুর তারিখ দিন sputum schedule দেখতে।</p>}
+              ) : <p style={{ color: "var(--muted)" }}>Drug start date দিন sputum schedule দেখতে।</p>}
             </SectionCard>
             )}
 
