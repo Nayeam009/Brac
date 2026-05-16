@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { DotEntry, Patient, RecordAttachment } from "../domain/types";
+import type { DotEntry, LabResult, Patient, RecordAttachment } from "../domain/types";
 import { PatientFormPage } from "./PatientFormPage";
 
 const patient: Patient = {
@@ -126,6 +126,27 @@ describe("PatientFormPage attachments", () => {
 
     expect(screen.getByText("Latitude must be between -90 and 90.")).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("saves a manual house location draft from the main Save button", () => {
+    const onSave = vi.fn();
+
+    renderPatientForm({ attachments: [], onSave });
+
+    fireEvent.change(screen.getByLabelText(/latitude/i), { target: { value: "23.810331" } });
+    fireEvent.change(screen.getByLabelText(/longitude/i), { target: { value: "90.412521" } });
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+      metadata: expect.objectContaining({
+        houseLocation: expect.objectContaining({
+          latitude: 23.810331,
+          longitude: 90.412521,
+          source: "manual",
+        }),
+      }),
+    }));
+    expect(screen.getByText("House location saved.")).toBeInTheDocument();
   });
 
   it("opens, copies and clears a saved house location without losing other metadata", async () => {
@@ -521,6 +542,81 @@ describe("PatientFormPage complete TB-01 data entry", () => {
     }));
   });
 
+  it("saves a dirty lab draft from the main Save button", () => {
+    const onSave = vi.fn();
+    const onSaveLab = vi.fn();
+
+    renderPatientForm({ attachments: [], onSave, onSaveLab });
+
+    fireEvent.change(screen.getByLabelText(/Lab ID/i), { target: { value: "GX-22" } });
+    fireEvent.change(screen.getByLabelText(/Lab notes/i), { target: { value: "Report collected at field visit" } });
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onSave).toHaveBeenCalled();
+    expect(onSaveLab).toHaveBeenCalledWith(expect.objectContaining({
+      patientId: "patient-1",
+      testType: "GeneXpert",
+      labId: "GX-22",
+      notes: "Report collected at field visit",
+      result: "",
+    }));
+  });
+
+  it("saves a pending lab result when details are entered without a result", () => {
+    const onSaveLab = vi.fn();
+
+    renderPatientForm({ attachments: [], onSaveLab });
+
+    fireEvent.change(screen.getByLabelText(/Lab ID/i), { target: { value: "PENDING-1" } });
+    fireEvent.change(screen.getByLabelText(/Lab notes/i), { target: { value: "Result pending from lab" } });
+    fireEvent.click(screen.getByRole("button", { name: /Add lab result/i }));
+
+    expect(onSaveLab).toHaveBeenCalledWith(expect.objectContaining({
+      labId: "PENDING-1",
+      notes: "Result pending from lab",
+      result: "",
+    }));
+  });
+
+  it("normalizes X-ray lab entries to the canonical Xray value", () => {
+    const onSaveLab = vi.fn();
+
+    renderPatientForm({ attachments: [], onSaveLab });
+
+    fireEvent.click(screen.getByRole("button", { name: /X-ray & other/i }));
+    fireEvent.change(screen.getByLabelText(/Lab ID/i), { target: { value: "XR-1" } });
+    fireEvent.click(screen.getByRole("button", { name: /Add lab result/i }));
+
+    expect(onSaveLab).toHaveBeenCalledWith(expect.objectContaining({
+      testType: "Xray",
+      labId: "XR-1",
+    }));
+  });
+
+  it("renders saved lab result detail cards", () => {
+    const savedLab: LabResult = {
+      id: "lab-xray",
+      patientId: "patient-1",
+      testType: "Xray",
+      labId: "XR-77",
+      testDate: "2026-05-16",
+      result: "",
+      quantity: "Abnormal",
+      scantyCount: "",
+      notes: "Chest X-ray opacity",
+      createdAt: "2026-05-16T00:00:00.000Z",
+      updatedAt: "2026-05-16T00:00:00.000Z",
+    };
+
+    renderPatientForm({ attachments: [], labResults: [savedLab] });
+
+    expect(screen.getByLabelText("Saved lab results")).toBeInTheDocument();
+    expect(screen.getAllByText("X-ray").length).toBeGreaterThan(0);
+    expect(screen.getByText("XR-77")).toBeInTheDocument();
+    expect(screen.getByText("Pending result")).toBeInTheDocument();
+    expect(screen.getByText("Chest X-ray opacity")).toBeInTheDocument();
+  });
+
   it("saves detailed contact investigation fields", () => {
     const onSaveContact = vi.fn();
 
@@ -548,6 +644,34 @@ describe("PatientFormPage complete TB-01 data entry", () => {
       trOrTptNo: "TPT-1",
       followUpDate: "2026-05-30",
     }));
+  });
+
+  it("saves a named contact draft from the main Save button", () => {
+    const onSaveContact = vi.fn();
+
+    renderPatientForm({ attachments: [], onSaveContact });
+
+    fireEvent.change(screen.getAllByLabelText(/^Contact/i)[1], { target: { value: "Karim" } });
+    fireEvent.change(screen.getByLabelText(/CI result/i), { target: { value: "N" } });
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onSaveContact).toHaveBeenCalledWith(expect.objectContaining({
+      patientId: "patient-1",
+      name: "Karim",
+      result: "N",
+    }));
+  });
+
+  it("warns when a dirty contact draft has no contact name", () => {
+    const onSaveContact = vi.fn();
+
+    renderPatientForm({ attachments: [], onSaveContact });
+
+    fireEvent.change(screen.getByLabelText(/CI result/i), { target: { value: "N" } });
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onSaveContact).not.toHaveBeenCalled();
+    expect(screen.getByText("Contact draft was not saved because contact name is required.")).toBeInTheDocument();
   });
 
   it("starts TPT with a fixed 90-day expected end date", () => {
@@ -601,6 +725,33 @@ describe("PatientFormPage complete TB-01 data entry", () => {
       culture: "No growth",
       weightKg: 51,
       comment: "Good response",
+    }));
+  });
+
+  it("saves a dirty sputum draft from the main Save button", () => {
+    const onSaveSputum = vi.fn();
+
+    renderPatientForm({
+      patients: [
+        {
+          ...patient,
+          treatmentStartDate: "2026-01-14",
+          drugStartDate: "2026-01-14",
+        },
+      ],
+      attachments: [],
+      onSaveSputum,
+    });
+
+    fireEvent.change(screen.getByLabelText(/2M Lab ID/i), { target: { value: "SP-2M" } });
+    fireEvent.change(screen.getByLabelText(/2M Microscopy/i), { target: { value: "Negative" } });
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onSaveSputum).toHaveBeenCalledWith(expect.objectContaining({
+      stage: "2M",
+      dueDate: "2026-03-14",
+      labId: "SP-2M",
+      microscopyResult: "Negative",
     }));
   });
 });

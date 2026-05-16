@@ -36,6 +36,16 @@ type PatientClinicalMetadata = {
   treatmentHistoryNote?: string;
 };
 type SputumDraft = Partial<Omit<SputumFollowUp, "stage">> & { stage?: SputumFollowUp["stage"] };
+type LabDraft = {
+  id: string;
+  testType: string;
+  labId: string;
+  testDate: string;
+  result: string;
+  quantity: string;
+  scantyCount: string;
+  notes: string;
+};
 
 const getClinicalMetadata = (metadata?: Record<string, unknown>): PatientClinicalMetadata => {
   const clinical = metadata?.clinical;
@@ -46,6 +56,17 @@ const treatmentLengthFromMetadata = (metadata?: Record<string, unknown>) => {
   const value = metadata?.treatmentLengthMonths;
   return typeof value === "number" && isTreatmentLengthOption(value) ? value : undefined;
 };
+const normalizeLabTestType = (testType: string): LabResult["testType"] => {
+  if (testType === "X-ray" || testType === "Xray") return "Xray";
+  if (["GeneXpert", "Truenat", "Microscopy", "Culture", "Other"].includes(testType)) return testType as LabResult["testType"];
+  return "Other";
+};
+const labTypeLabel = (testType: string) => normalizeLabTestType(testType) === "Xray" ? "X-ray" : normalizeLabTestType(testType);
+const emptyLabDraft = (): LabDraft => ({ id: uid(), testType: "GeneXpert", labId: "", testDate: toLocalIsoDate(), result: "", quantity: "", scantyCount: "", notes: "" });
+const hasLabDraftData = (draft: LabDraft) =>
+  Boolean(draft.labId.trim() || draft.result.trim() || draft.quantity.trim() || draft.scantyCount.trim() || draft.notes.trim() || (draft.testDate && draft.testDate !== toLocalIsoDate()));
+const hasSputumDraftData = (draft: SputumDraft) =>
+  Boolean(draft.testDate || draft.labId || draft.microscopy || draft.microscopyResult || draft.geneXpertResult || draft.xpertTruenat || draft.culture || draft.weightKg || draft.comment);
 
 export function PatientFormPage({ patients, labResults = [], dotEntries = [], contacts = [], tptRecords = [], sputumFollowUps = [], attachments = [], onSave, onDelete, onSaveLab, onSaveDot, onSaveContact, onSaveTpt, onSaveSputum, onUploadAttachment, onOpenAttachment }: Props) {
   const { patientId } = useParams();
@@ -60,6 +81,11 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
   const [manualLatitude, setManualLatitude] = useState("");
   const [manualLongitude, setManualLongitude] = useState("");
   const [sputumDrafts, setSputumDrafts] = useState<Record<string, SputumDraft>>({});
+  const [labForm, setLabForm] = useState<LabDraft>(() => emptyLabDraft());
+  const [contactDraftId, setContactDraftId] = useState(() => uid());
+  const [sectionSaveWarning, setSectionSaveWarning] = useState("");
+  const [ciName, setCiName] = useState(""); const [ciAge, setCiAge] = useState(""); const [ciSex, setCiSex] = useState(""); const [ciRel, setCiRel] = useState(""); const [ciSym, setCiSym] = useState("");
+  const [ciDate, setCiDate] = useState(""); const [ciPhone, setCiPhone] = useState(""); const [ciReferred, setCiReferred] = useState(""); const [ciInvestigation, setCiInvestigation] = useState(""); const [ciResult, setCiResult] = useState(""); const [ciOutcome, setCiOutcome] = useState(""); const [ciTrOrTpt, setCiTrOrTpt] = useState(""); const [ciFollowUp, setCiFollowUp] = useState("");
 
   useEffect(() => { if (existing) setForm(existing); else if (!patientId || patientId === "new") setForm(blank); }, [existing, patientId, blank]);
   const houseLocation = getPatientHouseLocation(form.metadata);
@@ -167,8 +193,85 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     return { ...draft, ipEndDate: schedule.ipEndDate || draft.ipEndDate, treatmentEndDate: schedule.treatmentEndDate || draft.treatmentEndDate, metadata };
   };
   const savePatientDraft = (draft: Patient) => onSave(buildPatientForSave(draft));
+  const saveLabDraft = (resetAfterSave = false) => {
+    if (!existing || !hasLabDraftData(labForm)) return false;
+    onSaveLab({
+      id: labForm.id,
+      patientId: existing.id,
+      testType: normalizeLabTestType(labForm.testType),
+      labId: labForm.labId,
+      testDate: labForm.testDate,
+      result: labForm.result,
+      quantity: labForm.quantity,
+      scantyCount: labForm.scantyCount,
+      notes: labForm.notes,
+      createdAt: now(),
+      updatedAt: now(),
+    });
+    if (resetAfterSave) setLabForm(emptyLabDraft());
+    return true;
+  };
+  const saveSputumDraft = (stage: SputumStage, resetAfterSave = false) => {
+    if (!existing) return false;
+    const dueDate = sputumDueDates?.[stage] || "";
+    const draft = sputumDraftFor(stage, dueDate);
+    if (!hasSputumDraftData(draft)) return false;
+    onSaveSputum({
+      id: draft.id || uid(),
+      patientId: existing.id,
+      stage,
+      dueDate,
+      testDate: draft.testDate,
+      labId: draft.labId,
+      microscopy: draft.microscopy || draft.microscopyResult,
+      microscopyResult: draft.microscopyResult || draft.microscopy,
+      geneXpertResult: draft.geneXpertResult || draft.xpertTruenat,
+      xpertTruenat: draft.xpertTruenat || draft.geneXpertResult,
+      culture: draft.culture,
+      weightKg: draft.weightKg,
+      comment: draft.comment,
+      createdAt: draft.createdAt || now(),
+      updatedAt: now(),
+    });
+    if (resetAfterSave) setSputumDrafts((current) => {
+      const next = { ...current };
+      delete next[stage];
+      return next;
+    });
+    return true;
+  };
+  const contactDraftHasData = Boolean(ciName.trim() || ciAge || ciSex || ciRel || ciSym || ciDate || ciPhone || ciReferred || ciInvestigation || ciResult || ciOutcome || ciTrOrTpt || ciFollowUp);
+  const clearContactDraft = () => {
+    setCiName(""); setCiAge(""); setCiSex(""); setCiRel(""); setCiSym(""); setCiDate(""); setCiPhone(""); setCiReferred(""); setCiInvestigation(""); setCiResult(""); setCiOutcome(""); setCiTrOrTpt(""); setCiFollowUp("");
+    setContactDraftId(uid());
+  };
+  const saveContactDraft = (resetAfterSave = false) => {
+    if (!existing || !contactDraftHasData) return false;
+    if (!ciName.trim()) {
+      setSectionSaveWarning("Contact draft was not saved because contact name is required.");
+      return false;
+    }
+    onSaveContact({ id: contactDraftId, patientId: existing.id, ciDate, investigatorName: form.contactInvestigatorName, investigatorPhone: ciPhone, name: ciName, age: ciAge ? Number(ciAge) : undefined, sex: ciSex as ContactPerson["sex"], relationshipCode: ciRel, symptomCode: ciSym, referred: ciReferred as ContactPerson["referred"], investigationCode: ciInvestigation, result: ciResult, outcomeCode: ciOutcome, trOrTptNo: ciTrOrTpt, followUpDate: ciFollowUp, createdAt: now(), updatedAt: now() });
+    if (resetAfterSave) clearContactDraft();
+    return true;
+  };
   const handleSave = () => {
-    savePatientDraft(form);
+    setSectionSaveWarning("");
+    const manualLocationResult = applyManualLocationDraft(form);
+    const patientDraft = manualLocationResult.patient;
+    if (manualLocationResult.saved) {
+      setForm(patientDraft);
+      setLocationMessage("House location saved.");
+    } else if ("error" in manualLocationResult && manualLocationResult.error) {
+      setLocationMessage(manualLocationResult.error);
+      setSectionSaveWarning(`House location was not saved because ${manualLocationResult.error}`);
+    }
+    savePatientDraft(patientDraft);
+    saveLabDraft(false);
+    activeSputumStages.forEach((stage) => {
+      if (sputumDrafts[stage]) saveSputumDraft(stage, false);
+    });
+    saveContactDraft(false);
   };
 
   const handleAttachmentUpload = async (file?: File) => {
@@ -247,6 +350,30 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     await navigator.clipboard.writeText(buildGoogleMapsPointUrl(houseLocation));
     setLocationMessage("Google Maps link copied.");
   };
+  const manualLocationDiffersFromSaved = () => {
+    const latitude = manualLatitude.trim();
+    const longitude = manualLongitude.trim();
+    if (!latitude && !longitude) return false;
+    if (!houseLocation) return true;
+    return latitude !== String(houseLocation.latitude) || longitude !== String(houseLocation.longitude);
+  };
+  const applyManualLocationDraft = (draft: Patient) => {
+    if (!manualLocationDiffersFromSaved()) return { patient: draft, saved: false };
+    const parsed = parseHouseLocationInput(manualLatitude, manualLongitude);
+    if ("error" in parsed) return { patient: draft, saved: false, error: parsed.error };
+    return {
+      patient: {
+        ...draft,
+        metadata: withPatientHouseLocation(draft.metadata, {
+          latitude: parsed.latitude,
+          longitude: parsed.longitude,
+          capturedAt: now(),
+          source: "manual",
+        }),
+      },
+      saved: true,
+    };
+  };
 
   const startTpt = () => {
     if (!existing) return;
@@ -269,20 +396,18 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     return { stage, dueDate, ...(record || {}), ...(sputumDrafts[stage] || {}) };
   };
   const updateSputumDraft = (stage: SputumStage, patch: SputumDraft) =>
-    setSputumDrafts((current) => ({ ...current, [stage]: { ...(current[stage] || {}), stage, ...patch } }));
+    setSputumDrafts((current) => {
+      const record = pSputum.find((s) => s.stage === stage);
+      const currentDraft = current[stage] || {};
+      return { ...current, [stage]: { ...currentDraft, id: currentDraft.id || record?.id || uid(), stage, ...patch } };
+    });
 
-  // Lab form state
-  const [labForm, setLabForm] = useState({ testType: "GeneXpert" as string, labId: "", testDate: toLocalIsoDate(), result: "", quantity: "", scantyCount: "", notes: "" });
   const labTypeCards = [
     { value: "GeneXpert", title: "GeneXpert / Truenat", helper: "MTB and Rif resistance result", icon: <FlaskConical size={18} /> },
     { value: "Microscopy", title: "Microscopy (Smear)", helper: "AFB grade and scanty count", icon: <Microscope size={18} /> },
-    { value: "X-ray", title: "X-ray & other", helper: "X-ray, culture, or supporting tests", icon: <ScanLine size={18} /> },
+    { value: "Xray", title: "X-ray & other", helper: "X-ray, culture, or supporting tests", icon: <ScanLine size={18} /> },
   ];
-  const activeLabCard = labTypeCards.find((card) => card.value === labForm.testType || (card.value === "GeneXpert" && labForm.testType === "Truenat")) || labTypeCards[0];
-  // Contact form state
-  const [ciName, setCiName] = useState(""); const [ciAge, setCiAge] = useState(""); const [ciSex, setCiSex] = useState(""); const [ciRel, setCiRel] = useState(""); const [ciSym, setCiSym] = useState("");
-  const [ciDate, setCiDate] = useState(""); const [ciPhone, setCiPhone] = useState(""); const [ciReferred, setCiReferred] = useState(""); const [ciInvestigation, setCiInvestigation] = useState(""); const [ciResult, setCiResult] = useState(""); const [ciOutcome, setCiOutcome] = useState(""); const [ciTrOrTpt, setCiTrOrTpt] = useState(""); const [ciFollowUp, setCiFollowUp] = useState("");
-
+  const activeLabCard = labTypeCards.find((card) => card.value === normalizeLabTestType(labForm.testType) || (card.value === "GeneXpert" && labForm.testType === "Truenat")) || labTypeCards[0];
   return (
     <>
       <PageHeader
@@ -295,6 +420,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
       />
 
       {dupes.length > 0 && <AlertCard level="high" message={`⚠ সম্ভাব্য duplicate: ${dupes.join(", ")}। যাচাই করুন।`} />}
+      {sectionSaveWarning && <AlertCard level="medium" message={sectionSaveWarning} />}
       {existing && <PhaseTimeline phase={existing.phase || "Pre-treatment"} />}
 
       <div className="form-layout">
@@ -395,6 +521,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                     </button>
                   ))}
                 </div>
+                <p className="code-hint">Tip: the main Save button also stores this lab draft if any lab field is filled.</p>
                 <div className="diagnosis-lab-entry">
                   <div className="diagnosis-lab-entry-head">
                     <div>
@@ -404,7 +531,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                     <StatusBadge tone={labForm.result ? "success" : "info"}>{labForm.result || "Not recorded"}</StatusBadge>
                   </div>
                   <div className="field-grid lab-fields">
-              <label>Test Type<select value={labForm.testType} onChange={(e) => setLabForm((c) => ({ ...c, testType: e.target.value }))}><option>GeneXpert</option><option>Truenat</option><option>Microscopy</option><option>X-ray</option><option>Culture</option></select></label>
+              <label>Test Type<select value={normalizeLabTestType(labForm.testType)} onChange={(e) => setLabForm((c) => ({ ...c, testType: e.target.value }))}><option>GeneXpert</option><option>Truenat</option><option>Microscopy</option><option value="Xray">X-ray</option><option>Culture</option><option>Other</option></select></label>
               <label>Lab ID<input value={labForm.labId} onChange={(e) => setLabForm((c) => ({ ...c, labId: e.target.value }))} /></label>
               <label>Test Date<DateInput value={labForm.testDate} onChange={(v) => setLabForm((c) => ({ ...c, testDate: v }))} /></label>
               <label>Result<input value={labForm.result} onChange={(e) => setLabForm((c) => ({ ...c, result: e.target.value }))} placeholder="MTB Detected / RR / Not Detected" /></label>
@@ -412,9 +539,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
               <label>Scanty count<input value={labForm.scantyCount} onChange={(e) => setLabForm((c) => ({ ...c, scantyCount: e.target.value }))} placeholder="AFB count" /></label>
               <label className="wide">Lab notes<textarea value={labForm.notes} onChange={(e) => setLabForm((c) => ({ ...c, notes: e.target.value }))} placeholder="X-ray finding, repeat advice, or lab notes" /></label>
               <label className="wide" style={{ gap: 0 }}><span>&nbsp;</span><button className="primary-action" type="button" aria-label="Add lab result" onClick={() => {
-                if (!labForm.result) return;
-                onSaveLab({ id: "", patientId: existing.id, testType: labForm.testType as LabResult["testType"], labId: labForm.labId, testDate: labForm.testDate, result: labForm.result, quantity: labForm.quantity, scantyCount: labForm.scantyCount, notes: labForm.notes, createdAt: now(), updatedAt: now() });
-                setLabForm({ testType: "GeneXpert", labId: "", testDate: toLocalIsoDate(), result: "", quantity: "", scantyCount: "", notes: "" });
+                saveLabDraft(true);
               }}>+ Lab Result</button></label>
                   </div>
                 </div>
@@ -427,6 +552,27 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
               </StatusBadge>
             ))}
             </div>
+            {pLabs.length > 0 && (
+              <div className="lab-result-details" aria-label="Saved lab results">
+                {pLabs.map((l) => (
+                  <article className="lab-result-detail-card" key={l.id}>
+                    <div className="lab-result-detail-head">
+                      <div>
+                        <p className="form-subtitle">{labTypeLabel(l.testType)}</p>
+                        <h4>{l.labId || "No Lab ID"}</h4>
+                      </div>
+                      <StatusBadge tone={l.result ? "success" : "info"}>{l.result || "Pending result"}</StatusBadge>
+                    </div>
+                    <dl>
+                      <div><dt>Test date</dt><dd>{formatDateDisplay(l.testDate) || "Not recorded"}</dd></div>
+                      <div><dt>Quantity</dt><dd>{l.quantity || "Not recorded"}</dd></div>
+                      <div><dt>Scanty count</dt><dd>{l.scantyCount || "Not recorded"}</dd></div>
+                      <div><dt>Notes</dt><dd>{l.notes || "Not recorded"}</dd></div>
+                    </dl>
+                  </article>
+                ))}
+              </div>
+            )}
             <div className="diagnosis-alert-slot"></div>
           </div>
           {pLabs.some((l) => l.result?.includes("RR")) && <AlertCard level="critical" message="⚠ RR (Rif Resistant) ফলাফল! DR-TB referral প্রয়োজন।" />}
@@ -561,7 +707,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                           <label>{stage} Culture<input value={draft.culture || ""} onChange={(e) => updateSputumDraft(stage, { culture: e.target.value })} /></label>
                           <label>{stage} Weight<input type="number" value={draft.weightKg || ""} onChange={(e) => updateSputumDraft(stage, { weightKg: e.target.value ? Number(e.target.value) : undefined })} /></label>
                           <label className="wide">{stage} Comment<textarea value={draft.comment || ""} onChange={(e) => updateSputumDraft(stage, { comment: e.target.value })} /></label>
-                          <label className="wide" style={{ gap: 0 }}><span>&nbsp;</span><button className="ghost-button" type="button" aria-label={`Save ${stage} result`} onClick={() => onSaveSputum({ id: draft.id || "", patientId: existing.id, stage, dueDate, testDate: draft.testDate, labId: draft.labId, microscopy: draft.microscopy || draft.microscopyResult, microscopyResult: draft.microscopyResult || draft.microscopy, geneXpertResult: draft.geneXpertResult || draft.xpertTruenat, xpertTruenat: draft.xpertTruenat || draft.geneXpertResult, culture: draft.culture, weightKg: draft.weightKg, comment: draft.comment, createdAt: draft.createdAt || now(), updatedAt: now() })}>
+                          <label className="wide" style={{ gap: 0 }}><span>&nbsp;</span><button className="ghost-button" type="button" aria-label={`Save ${stage} result`} onClick={() => saveSputumDraft(stage, true)}>
                             <Plus size={14} /> Save {stage} result
                           </button></label>
                         </div>
@@ -578,7 +724,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
               <div className="field-grid" style={{ marginBottom: 14 }}>
                 <label>CI date<DateInput value={ciDate} onChange={setCiDate} /></label>
                 <label>CI investigator phone<input value={ciPhone} onChange={(e) => setCiPhone(e.target.value)} /></label>
-                <label>Contact নাম<input value={ciName} onChange={(e) => setCiName(e.target.value)} /></label>
+                <label>Contact নাম<input aria-label="Contact name" value={ciName} onChange={(e) => setCiName(e.target.value)} /></label>
                 <label>বয়স<input type="number" value={ciAge} onChange={(e) => setCiAge(e.target.value)} /></label>
                 <label>লিঙ্গ<select value={ciSex} onChange={(e) => setCiSex(e.target.value)}><option value="">Select</option><option>Male</option><option>Female</option></select></label>
                 <label>সম্পর্ক<select value={ciRel} onChange={(e) => setCiRel(e.target.value)}><option value="">Select</option><option value="1">1-স্বামী/স্ত্রী</option><option value="2">2-পিতা/মাতা</option><option value="3">3-সন্তান</option><option value="4">4-ভাই/বোন</option><option value="5">5-অন্যান্য</option></select></label>
@@ -590,9 +736,8 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                 <label>TR/TPT No<input value={ciTrOrTpt} onChange={(e) => setCiTrOrTpt(e.target.value)} /></label>
                 <label>CI follow-up date<DateInput value={ciFollowUp} onChange={setCiFollowUp} /></label>
                 <label className="wide" style={{ gap: 0 }}><span>&nbsp;</span><button className="primary-action" type="button" aria-label="Add contact" onClick={() => {
-                  if (!ciName) return;
-                  onSaveContact({ id: "", patientId: existing.id, ciDate, investigatorName: form.contactInvestigatorName, investigatorPhone: ciPhone, name: ciName, age: ciAge ? Number(ciAge) : undefined, sex: ciSex as ContactPerson["sex"], relationshipCode: ciRel, symptomCode: ciSym, referred: ciReferred as ContactPerson["referred"], investigationCode: ciInvestigation, result: ciResult, outcomeCode: ciOutcome, trOrTptNo: ciTrOrTpt, followUpDate: ciFollowUp, createdAt: now(), updatedAt: now() });
-                  setCiName(""); setCiAge(""); setCiSex(""); setCiRel(""); setCiSym(""); setCiDate(""); setCiPhone(""); setCiReferred(""); setCiInvestigation(""); setCiResult(""); setCiOutcome(""); setCiTrOrTpt(""); setCiFollowUp("");
+                  setSectionSaveWarning("");
+                  saveContactDraft(true);
                 }}><Plus size={14} /> Contact যোগ</button></label>
               </div>
               <div className="contact-cards">
@@ -726,7 +871,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                   <label>Outcome Date<DateInput value={form.outcomeDate || ""} onChange={(v) => u("outcomeDate", v)} /></label>
                   <label>Sign officer<input value={form.signOfficer || ""} onChange={(e) => u("signOfficer", e.target.value)} /></label>
                   {form.outcome === "Transfer Out" && <label>Transfer To<input value={form.transferTo || ""} onChange={(e) => u("transferTo", e.target.value)} placeholder="গন্তব্য কেন্দ্র/জেলা" /></label>}
-                  <label className="wide">মন্তব্য<textarea value={form.outcomeNote || ""} onChange={(e) => u("outcomeNote", e.target.value)} placeholder="Outcome সম্পর্কিত নোট..." /></label>
+                  <label className="wide">মন্তব্য<textarea aria-label="Outcome note" value={form.outcomeNote || ""} onChange={(e) => u("outcomeNote", e.target.value)} placeholder="Outcome সম্পর্কিত নোট..." /></label>
                 </div>
               )}
             </SectionCard>

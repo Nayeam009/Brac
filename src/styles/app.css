@@ -178,6 +178,13 @@ textarea { min-height: 82px; resize: vertical; }
 .diagnosis-lab-entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .diagnosis-lab-entry-head h4 { margin: 3px 0 0; color: var(--g); font-size: 18px; line-height: 1.2; }
 .lab-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.lab-result-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+.lab-result-detail-card { border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(180deg, #fff, #f9fcfb); padding: 14px; min-width: 0; }
+.lab-result-detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.lab-result-detail-head h4 { margin: 2px 0 0; color: var(--ink); font-size: 18px; line-height: 1.2; overflow-wrap: anywhere; }
+.lab-result-detail-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.lab-result-detail-card dt { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+.lab-result-detail-card dd { margin: 2px 0 0; color: var(--ink); font-weight: 700; overflow-wrap: anywhere; }
 .diagnosis-screening-panel { order: 3; border-top: 1px solid var(--border); padding-top: 14px; }
 .diagnosis-alert-slot { display: none; }
 .dot-tracker { display: grid; gap: 12px; }
@@ -362,6 +369,7 @@ textarea { min-height: 82px; resize: vertical; }
   .diagnosis-lab-card { min-height: auto; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 4px 10px; padding: 12px; }
   .diagnosis-lab-card small { grid-column: 2; }
   .diagnosis-lab-entry { padding: 12px; border-radius: 14px; }
+  .lab-result-details, .lab-result-detail-card dl { grid-template-columns: 1fr; }
   .stat-card { padding: 12px; border-radius: 12px; gap: 10px; }
   .stat-card strong { font-size: 22px; }
   .stat-icon { width: 36px; height: 36px; border-radius: 10px; }
