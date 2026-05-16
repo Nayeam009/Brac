@@ -67,6 +67,8 @@ button { cursor: pointer; }
 .topbar-actions { display: flex; gap: 10px; align-items: center; flex: 0 0 auto; min-width: 0; }
 .sync-pill, .user-chip { border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; background: white; color: var(--muted); font-weight: 700; display: inline-flex; gap: 6px; align-items: center; }
 .sync-pill.warning { border-color: rgba(181,118,10,.34); background: #fff4df; color: var(--amber); }
+.sync-pill.sync-action { cursor: pointer; color: var(--g); border-color: var(--gb); background: var(--gl); }
+.sync-pill.sync-action:hover { border-color: var(--g); }
 .user-chip { max-width: min(260px, 32vw); min-width: 0; }
 .user-chip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .page { padding: 24px 28px 96px; max-width: 1440px; margin: 0 auto; width: 100%; }
@@ -211,6 +213,21 @@ textarea { min-height: 82px; resize: vertical; }
 .status-supervised { background: #e9f3fb; color: var(--blue); border-color: #b6d0e5; }
 .danger-zone { text-align: right; padding: 8px 0; }
 .danger-zone button { color: var(--red); border-color: #efb8b8; }
+.location-card { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, #fff, #f8fcfa); margin-bottom: 14px; }
+.location-card.saved { border-color: #a9d9c8; background: var(--gl); }
+.location-head { display: flex; gap: 12px; align-items: flex-start; }
+.location-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: white; color: var(--g); border: 1px solid var(--border); flex: 0 0 auto; }
+.location-head h4 { margin: 0; color: var(--ink); font-size: 17px; }
+.location-head p { margin: 3px 0 0; color: var(--muted); }
+.location-summary { display: grid; gap: 3px; padding: 10px 12px; border-radius: 12px; background: white; border: 1px solid var(--border); }
+.location-summary strong { color: var(--g); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+.location-summary span { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.location-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.location-manual-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+.location-manual-grid label { display: grid; gap: 6px; color: var(--muted); font-weight: 800; }
+.location-manual-grid input { width: 100%; min-height: 42px; border: 1px solid var(--border); border-radius: 12px; padding: 0 12px; font: inherit; color: var(--ink); background: white; }
+.location-message { margin: 0; color: var(--g); font-weight: 750; }
+.danger-text { color: var(--red); border-color: #efb8b8; }
 .attachment-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
 .attachment-toolbar > * { min-width: 0; }
 .file-upload-control { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 12px; background: white; color: var(--g); font-weight: 800; cursor: pointer; overflow: hidden; }
@@ -321,7 +338,7 @@ textarea { min-height: 82px; resize: vertical; }
   .topbar h1 { font-size: clamp(16px, 4.5vw, 19px); margin-top: 1px; }
   .topbar-actions { gap: 6px; flex-shrink: 0; }
   .sync-pill { display: none; }
-  .sync-pill.warning { display: inline-flex; padding: 6px 8px; font-size: 11px; }
+  .sync-pill.warning, .sync-pill.sync-action { display: inline-flex; padding: 6px 8px; font-size: 11px; }
   .user-chip { min-height: 36px; max-width: 36vw; padding: 6px 10px; font-size: 12px; }
   .user-chip span { max-width: 10ch; }
   .topbar-actions .ghost-button.compact { width: 36px; min-width: 36px; min-height: 36px; padding: 0; border-radius: 999px; gap: 0; }
@@ -358,6 +375,8 @@ textarea { min-height: 82px; resize: vertical; }
   .patient-card { display: block; padding: 12px; border-radius: 12px; }
   .work-item { grid-template-columns: 1fr; gap: 8px; padding: 10px; border-radius: 12px; }
   .priority-strip { width: 100%; height: 5px; min-height: 5px; border-radius: 999px; }
+  .location-manual-grid { grid-template-columns: 1fr; }
+  .location-actions .ghost-button, .location-manual-grid .ghost-button { width: 100%; justify-content: center; }
   .attachment-item { grid-template-columns: auto 1fr; gap: 10px; padding: 10px; }
   .attachment-item button { grid-column: 1 / -1; justify-content: center; }
   .avatar { display: none; }

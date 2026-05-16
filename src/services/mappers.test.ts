@@ -15,6 +15,13 @@ describe("mappers", () => {
           hivStatus: "Negative",
           bcgScar: "Present",
         },
+        houseLocation: {
+          latitude: 23.810331,
+          longitude: 90.412521,
+          accuracyMeters: 12,
+          capturedAt: "2026-05-16T10:00:00.000Z",
+          source: "gps",
+        },
       },
       owner_id: "u1",
       created_at: "2026-05-13T10:00:00.000Z",
@@ -30,6 +37,13 @@ describe("mappers", () => {
         clinical: {
           hivStatus: "Negative",
           bcgScar: "Present",
+        },
+        houseLocation: {
+          latitude: 23.810331,
+          longitude: 90.412521,
+          accuracyMeters: 12,
+          capturedAt: "2026-05-16T10:00:00.000Z",
+          source: "gps",
         },
       },
       ownerId: "u1",

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { DotEntry, Patient, RecordAttachment } from "../domain/types";
 import { PatientFormPage } from "./PatientFormPage";
 
@@ -59,6 +59,11 @@ const renderPatientForm = (props: Partial<ComponentProps<typeof PatientFormPage>
   );
 };
 
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
+
 describe("PatientFormPage attachments", () => {
   it("shows attachments and opens an uploaded file", () => {
     const onOpenAttachment = vi.fn();
@@ -84,6 +89,84 @@ describe("PatientFormPage attachments", () => {
 
     await waitFor(() => expect(onUploadAttachment).toHaveBeenCalledWith("patient-1", file));
     expect(await screen.findByText("prescription.pdf uploaded.")).toBeInTheDocument();
+  });
+
+  it("captures current GPS location and saves it to patient metadata", async () => {
+    const onSave = vi.fn();
+    const getCurrentPosition = vi.fn((success) => success({
+      coords: { latitude: 23.810331, longitude: 90.412521, accuracy: 12 },
+    }));
+    vi.stubGlobal("navigator", { ...navigator, geolocation: { getCurrentPosition } });
+
+    renderPatientForm({ attachments: [], onSave });
+
+    fireEvent.click(screen.getByRole("button", { name: /use current gps/i }));
+
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+      metadata: expect.objectContaining({
+        houseLocation: expect.objectContaining({
+          latitude: 23.810331,
+          longitude: 90.412521,
+          accuracyMeters: 12,
+          source: "gps",
+        }),
+      }),
+    })));
+    expect(getCurrentPosition).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), expect.objectContaining({ enableHighAccuracy: true, timeout: 15000 }));
+  });
+
+  it("validates manual location input before saving", () => {
+    const onSave = vi.fn();
+
+    renderPatientForm({ attachments: [], onSave });
+
+    fireEvent.change(screen.getByLabelText(/latitude/i), { target: { value: "91" } });
+    fireEvent.change(screen.getByLabelText(/longitude/i), { target: { value: "90.412521" } });
+    fireEvent.click(screen.getByRole("button", { name: /save manual point/i }));
+
+    expect(screen.getByText("Latitude must be between -90 and 90.")).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("opens, copies and clears a saved house location without losing other metadata", async () => {
+    const onSave = vi.fn();
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
+
+    renderPatientForm({
+      onSave,
+      patients: [{
+        ...patient,
+        metadata: {
+          clinical: { hivStatus: "Negative" },
+          houseLocation: {
+            latitude: 23.810331,
+            longitude: 90.412521,
+            accuracyMeters: 8,
+            capturedAt: "2026-05-16T10:00:00.000Z",
+            source: "manual",
+          },
+        },
+      }],
+    });
+
+    expect(screen.getByText("Patient house location saved.")).toBeInTheDocument();
+    expect(screen.getByText("23.810331, 90.412521")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /open google maps/i }));
+    expect(openSpy).toHaveBeenCalledWith("https://www.google.com/maps?q=23.810331,90.412521", "_blank", "noopener,noreferrer");
+
+    fireEvent.click(screen.getByRole("button", { name: /directions/i }));
+    expect(openSpy).toHaveBeenCalledWith("https://www.google.com/maps/dir/?api=1&destination=23.810331,90.412521", "_blank", "noopener,noreferrer");
+
+    fireEvent.click(screen.getByRole("button", { name: /copy link/i }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith("https://www.google.com/maps?q=23.810331,90.412521"));
+
+    fireEvent.click(screen.getByRole("button", { name: /clear/i }));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+      metadata: expect.objectContaining({ clinical: { hivStatus: "Negative" } }),
+    }));
+    expect(onSave.mock.calls.at(-1)?.[0].metadata.houseLocation).toBeUndefined();
   });
 });
 

@@ -8,6 +8,7 @@ import {
 import type { DiaryEntry, DotEntry, Patient, Profile, Task } from "../domain/types";
 import { formatDateDisplay, formatDateTimeDisplay, parseDateInput, toLocalIsoMonth } from "../lib/dateFormat";
 import { dateForTreatmentDay, TB_IP_DAYS, TB_TOTAL_DAYS, type DrugDoseLine, type DrugDosePlan } from "../domain/automation";
+import { getPatientHouseLocation } from "../lib/houseLocation";
 
 export type Tone = "success" | "warning" | "danger" | "info" | "purple" | "neutral";
 
@@ -81,8 +82,8 @@ export function FAB({ onClick }: { onClick: () => void }) {
 }
 
 /* ── App Shell ── */
-export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessage = "InsForge ready", diaryTrackingEnabled = true }: {
-  children: ReactNode; onNewPatient: () => void; onSignOut?: () => void; profile?: Profile | null; syncMessage?: string; diaryTrackingEnabled?: boolean;
+export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessage = "InsForge ready", diaryTrackingEnabled = true, pendingSyncCount = 0, onRetrySync }: {
+  children: ReactNode; onNewPatient: () => void; onSignOut?: () => void; profile?: Profile | null; syncMessage?: string; diaryTrackingEnabled?: boolean; pendingSyncCount?: number; onRetrySync?: () => void;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -138,6 +139,7 @@ export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessa
           <div className="topbar-actions">
             {!diaryTrackingEnabled ? <span className="sync-pill warning">Diary off</span> : null}
             <span className="sync-pill">{syncMessage}</span>
+            {pendingSyncCount > 0 && onRetrySync ? <button className="sync-pill sync-action" type="button" onClick={onRetrySync}>Retry {pendingSyncCount}</button> : null}
             <span className="user-chip"><UserRound size={16} /><span>{profile?.name || profile?.email || "FO"}</span></span>
             {onSignOut ? <button aria-label="Sign out" className="ghost-button compact" type="button" onClick={onSignOut}><LogOut size={16} /><span>Sign out</span></button> : null}
           </div>
@@ -252,6 +254,7 @@ export function PatientCard({ patient, tasks = [], onOpen }: { patient: Patient;
         <p>{patient.union || patient.address || "ঠিকানা নেই"} · SS: {patient.ssName || "—"}</p>
         <div className="badge-row">
           {patient.tbType ? <StatusBadge tone="info">{patient.tbType} {patient.confirmationMethod || ""}</StatusBadge> : null}
+          {getPatientHouseLocation(patient.metadata) ? <StatusBadge tone="success">Location saved</StatusBadge> : null}
           {patient.nextFollowUpDate ? <StatusBadge tone="warning">Follow-up {formatDateDisplay(patient.nextFollowUpDate)}</StatusBadge> : null}
           {missed ? <StatusBadge tone="danger">DOT Missed</StatusBadge> : null}
           {urgent ? <StatusBadge tone="danger">Critical</StatusBadge> : null}

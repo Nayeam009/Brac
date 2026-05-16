@@ -92,7 +92,12 @@ describe("attachment repository", () => {
   it("saves the full sputum follow-up payload expected by the patient form", async () => {
     const { saveSputumFollowUp } = await import("./appRepository");
     const upsertedRows: unknown[][] = [];
+    const selectQuery = {
+      eq: vi.fn(function (this: unknown) { return this; }),
+      then: (resolve: (value: { data: unknown[]; error: null }) => void) => Promise.resolve(resolve({ data: [], error: null })),
+    };
     databaseFrom.mockReturnValue({
+      select: () => selectQuery,
       upsert: (rows: unknown[]) => {
         upsertedRows.push(rows);
         return {
@@ -121,12 +126,48 @@ describe("attachment repository", () => {
     });
 
     expect(databaseFrom).toHaveBeenCalledWith("sputum_followups");
+    expect(selectQuery.eq).toHaveBeenCalledWith("patient_id", "patient-1");
+    expect(selectQuery.eq).toHaveBeenCalledWith("stage", "2M");
     expect(upsertedRows[0][0]).toMatchObject({
       due_date: "2026-03-14",
       microscopy_result: "Negative",
       gene_xpert_result: "N - MTB Not Detected",
       created_at: "2026-03-15T00:00:00.000Z",
     });
+  });
+
+  it("upserts DOT rows by patient and date when the cloud already has that day", async () => {
+    const { saveDotEntry } = await import("./appRepository");
+    const upsertedRows: unknown[][] = [];
+    const selectQuery = {
+      eq: vi.fn(function (this: unknown) { return this; }),
+      then: (resolve: (value: { data: unknown[]; error: null }) => void) => Promise.resolve(resolve({ data: [{ id: "dot-existing" }], error: null })),
+    };
+    databaseFrom.mockReturnValue({
+      select: () => selectQuery,
+      upsert: (rows: unknown[]) => {
+        upsertedRows.push(rows);
+        return {
+          select: () => ({
+            single: () => Promise.resolve({ data: rows[0], error: null }),
+          }),
+        };
+      },
+    });
+
+    await saveDotEntry({
+      id: "dot-local-newer",
+      patientId: "patient-1",
+      date: "2026-05-15",
+      monthKey: "2026-05",
+      day: 15,
+      status: "done",
+      updatedAt: "2026-05-15T08:00:00.000Z",
+    });
+
+    expect(selectQuery.eq).toHaveBeenCalledWith("patient_id", "patient-1");
+    expect(selectQuery.eq).toHaveBeenCalledWith("date", "2026-05-15");
+    expect(upsertedRows[0][0]).toMatchObject({ id: "dot-existing", patient_id: "patient-1", date: "2026-05-15" });
   });
 
   it("removes patient attachment objects before deleting the patient row", async () => {

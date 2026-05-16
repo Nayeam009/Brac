@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ExternalLink, FileText, FlaskConical, Microscope, Plus, Printer, Save, ScanLine, Trash2, Upload } from "lucide-react";
+import { Copy, ExternalLink, FileText, FlaskConical, LocateFixed, MapPin, Microscope, Navigation, Plus, Printer, Save, ScanLine, Trash2, Upload } from "lucide-react";
 import type { ContactPerson, DotEntry, LabResult, Patient, RecordAttachment, SputumFollowUp, TptRecord } from "../domain/types";
 import { calculateDrugDosePlan, calculateTreatmentEndDateFromMonths, calculateTptEndDate, detectDuplicatePatient, DRUG_REGIMENS, HISTORICAL_BACK_ENTRY_CUTOFF_DATE, inferTreatmentLengthMonths, resolvePatientDotPlan, resolvePatientEntryMode, resolvePatientTreatmentSchedule, TREATMENT_LENGTH_MONTH_OPTIONS, type PatientEntryMode } from "../domain/automation";
 import { AlertCard, DateInput, DotGrid, PageHeader, PhaseTimeline, RadioChips, SectionCard, StatusBadge } from "../components";
 import { formatDateDisplay, formatDateTimeDisplay, toLocalIsoDate, toLocalIsoMonth } from "../lib/dateFormat";
+import { buildGoogleMapsDirectionsUrl, buildGoogleMapsPointUrl, formatHouseCoordinates, formatLocationAccuracy, getPatientHouseLocation, parseHouseLocationInput, type PatientHouseLocation, withPatientHouseLocation, withoutPatientHouseLocation } from "../lib/houseLocation";
 
 type Props = {
   patients: Patient[]; labResults?: LabResult[]; dotEntries?: DotEntry[]; contacts?: ContactPerson[];
@@ -54,9 +55,18 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
   const [dotMonth, setDotMonth] = useState(toLocalIsoMonth());
   const [attachmentBusy, setAttachmentBusy] = useState(false);
   const [attachmentMessage, setAttachmentMessage] = useState("");
+  const [locationBusy, setLocationBusy] = useState(false);
+  const [locationMessage, setLocationMessage] = useState("");
+  const [manualLatitude, setManualLatitude] = useState("");
+  const [manualLongitude, setManualLongitude] = useState("");
   const [sputumDrafts, setSputumDrafts] = useState<Record<string, SputumDraft>>({});
 
   useEffect(() => { if (existing) setForm(existing); else if (!patientId || patientId === "new") setForm(blank); }, [existing, patientId, blank]);
+  const houseLocation = getPatientHouseLocation(form.metadata);
+  useEffect(() => {
+    setManualLatitude(houseLocation ? String(houseLocation.latitude) : "");
+    setManualLongitude(houseLocation ? String(houseLocation.longitude) : "");
+  }, [houseLocation?.latitude, houseLocation?.longitude]);
 
   const u = (key: keyof Patient, val: string | number) => setForm((c) => {
     if (key === "treatmentStartDate" && typeof val === "string") {
@@ -150,10 +160,15 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
   const regimenOptions = Object.keys(DRUG_REGIMENS).filter((key) => !key.includes("—"));
   if (form.regimenType && !regimenOptions.includes(form.regimenType)) regimenOptions.push(form.regimenType);
   const clinical = getClinicalMetadata(form.metadata);
-  const handleSave = () => {
-    const metadata = { ...(form.metadata || {}) };
+  const buildPatientForSave = (draft: Patient) => {
+    const schedule = resolvePatientTreatmentSchedule(draft);
+    const metadata = { ...(draft.metadata || {}) };
     if (metadata.treatmentEndMode === undefined) delete metadata.treatmentEndMode;
-    onSave({ ...form, ipEndDate: treatmentSchedule.ipEndDate || form.ipEndDate, treatmentEndDate: treatmentSchedule.treatmentEndDate || form.treatmentEndDate, metadata });
+    return { ...draft, ipEndDate: schedule.ipEndDate || draft.ipEndDate, treatmentEndDate: schedule.treatmentEndDate || draft.treatmentEndDate, metadata };
+  };
+  const savePatientDraft = (draft: Patient) => onSave(buildPatientForSave(draft));
+  const handleSave = () => {
+    savePatientDraft(form);
   };
 
   const handleAttachmentUpload = async (file?: File) => {
@@ -168,6 +183,69 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     } finally {
       setAttachmentBusy(false);
     }
+  };
+  const commitHouseLocation = (location?: PatientHouseLocation) => {
+    if (!existing) return;
+    const next = {
+      ...form,
+      metadata: location ? withPatientHouseLocation(form.metadata, location) : withoutPatientHouseLocation(form.metadata),
+    };
+    setForm(next);
+    savePatientDraft(next);
+    setLocationMessage(location ? "House location saved." : "House location cleared.");
+  };
+  const handleUseCurrentGps = () => {
+    if (!existing) return;
+    if (!("geolocation" in navigator)) {
+      setLocationMessage("GPS is not available in this browser.");
+      return;
+    }
+    setLocationBusy(true);
+    setLocationMessage("Getting GPS location...");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        commitHouseLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracyMeters: position.coords.accuracy,
+          capturedAt: now(),
+          source: "gps",
+        });
+        setLocationBusy(false);
+      },
+      (error) => {
+        const message = error.code === 1
+          ? "GPS permission denied. Allow location access or enter the point manually."
+          : error.code === 3
+            ? "GPS timed out. Try again outside or enter the point manually."
+            : "Could not read GPS location. Try again or enter the point manually.";
+        setLocationMessage(message);
+        setLocationBusy(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+    );
+  };
+  const handleManualLocationSave = () => {
+    const parsed = parseHouseLocationInput(manualLatitude, manualLongitude);
+    if ("error" in parsed) {
+      setLocationMessage(parsed.error);
+      return;
+    }
+    commitHouseLocation({
+      latitude: parsed.latitude,
+      longitude: parsed.longitude,
+      capturedAt: now(),
+      source: "manual",
+    });
+  };
+  const copyLocationLink = async () => {
+    if (!houseLocation) return;
+    if (!navigator.clipboard?.writeText) {
+      setLocationMessage("Copy is not available in this browser.");
+      return;
+    }
+    await navigator.clipboard.writeText(buildGoogleMapsPointUrl(houseLocation));
+    setLocationMessage("Google Maps link copied.");
   };
 
   const startTpt = () => {
@@ -550,6 +628,48 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
             </SectionCard>
 
             <SectionCard title="Attachments" tone="info">
+              <div className={`location-card ${houseLocation ? "saved" : ""}`}>
+                <div className="location-head">
+                  <div className="location-icon"><MapPin size={20} /></div>
+                  <div>
+                    <h4>Location tracking</h4>
+                    <p>{houseLocation ? "Patient house location saved." : "No location saved. FO can capture GPS at the patient house."}</p>
+                  </div>
+                </div>
+                {houseLocation ? (
+                  <div className="location-summary">
+                    <strong>{formatHouseCoordinates(houseLocation)}</strong>
+                    <span>{formatLocationAccuracy(houseLocation.accuracyMeters) || "Accuracy not recorded"} · {houseLocation.source === "gps" ? "GPS" : "Manual"} · {formatDateTimeDisplay(houseLocation.capturedAt) || "time not recorded"}</span>
+                  </div>
+                ) : null}
+                <div className="location-actions">
+                  <button className="ghost-button compact" type="button" onClick={handleUseCurrentGps} disabled={locationBusy}>
+                    <LocateFixed size={14} /> {locationBusy ? "Reading GPS..." : "Use current GPS"}
+                  </button>
+                  {houseLocation ? (
+                    <>
+                      <button className="ghost-button compact" type="button" onClick={() => window.open(buildGoogleMapsPointUrl(houseLocation), "_blank", "noopener,noreferrer")}>
+                        <ExternalLink size={14} /> Open Google Maps
+                      </button>
+                      <button className="ghost-button compact" type="button" onClick={() => window.open(buildGoogleMapsDirectionsUrl(houseLocation), "_blank", "noopener,noreferrer")}>
+                        <Navigation size={14} /> Directions
+                      </button>
+                      <button className="ghost-button compact" type="button" onClick={() => void copyLocationLink()}>
+                        <Copy size={14} /> Copy link
+                      </button>
+                      <button className="ghost-button compact danger-text" type="button" onClick={() => commitHouseLocation()}>
+                        <Trash2 size={14} /> Clear
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+                <div className="location-manual-grid">
+                  <label>Latitude<input inputMode="decimal" value={manualLatitude} onChange={(e) => setManualLatitude(e.target.value)} placeholder="23.810331" /></label>
+                  <label>Longitude<input inputMode="decimal" value={manualLongitude} onChange={(e) => setManualLongitude(e.target.value)} placeholder="90.412521" /></label>
+                  <button className="ghost-button compact" type="button" onClick={handleManualLocationSave}>Save manual point</button>
+                </div>
+                {locationMessage ? <p className="location-message">{locationMessage}</p> : null}
+              </div>
               <div className="attachment-toolbar">
                 <label className={`file-upload-control ${attachmentBusy ? "busy" : ""}`}>
                   <Upload size={16} />

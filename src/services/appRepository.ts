@@ -105,6 +105,14 @@ const upsertOne = async <T>(table: string, row: Row, mapper: (row: Row) => T): P
   return mapper(ensureData(data as Row | null, error, `Unable to save ${table}.`));
 };
 
+const findOne = async (table: string, filters: Record<string, unknown>): Promise<Row | undefined> => {
+  let query = insforge.database.from(table).select("*");
+  for (const [key, filterValue] of Object.entries(filters)) query = query.eq(key, filterValue);
+  const { data, error } = await query;
+  if (error) throw toError(error, `Unable to load ${table}.`);
+  return Array.isArray(data) ? data[0] as Row | undefined : data as Row | undefined;
+};
+
 export function scopeAppDataToProfile(data: AppData, context: RepositoryContext = {}): AppData {
   const userId = context.profile?.userId;
   if (!userId) return data;
@@ -191,8 +199,11 @@ export async function deletePatientWithCleanup(patientId: string, attachments: R
 export const saveLabResult = (lab: LabResult): Promise<LabResult> =>
   upsertOne(tables.labResults, labResultToRow(lab), labResultFromRow);
 
-export const saveDotEntry = (dot: DotEntry): Promise<DotEntry> =>
-  upsertOne(tables.dotEntries, dotEntryToRow(dot), dotEntryFromRow);
+export async function saveDotEntry(dot: DotEntry): Promise<DotEntry> {
+  const existing = await findOne(tables.dotEntries, { patient_id: dot.patientId, date: dot.date });
+  const existingId = typeof existing?.id === "string" ? existing.id : "";
+  return upsertOne(tables.dotEntries, dotEntryToRow({ ...dot, id: existingId || dot.id }), dotEntryFromRow);
+}
 
 export const saveContact = (contact: ContactPerson): Promise<ContactPerson> =>
   upsertOne(tables.contacts, contactToRow(contact), contactFromRow);
@@ -208,8 +219,14 @@ export const saveTask = (task: Task): Promise<Task> => upsertOne(tables.tasks, t
 export const saveProvider = (provider: Provider): Promise<Provider> =>
   upsertOne(tables.providers, providerToRow(provider), providerFromRow);
 
-export const saveSputumFollowUp = (s: SputumFollowUp): Promise<SputumFollowUp> =>
-  upsertOne(tables.sputumFollowUps, sputumFollowUpToRow(s), sputumFollowUpFromRow);
+export async function saveSputumFollowUp(s: SputumFollowUp): Promise<SputumFollowUp> {
+  const existing = await findOne(tables.sputumFollowUps, { patient_id: s.patientId, stage: s.stage });
+  const existingId = typeof existing?.id === "string" ? existing.id : "";
+  return upsertOne(tables.sputumFollowUps, sputumFollowUpToRow({ ...s, id: existingId || s.id }), sputumFollowUpFromRow);
+}
+
+export const saveRecordAttachment = (attachment: RecordAttachment): Promise<RecordAttachment> =>
+  upsertOne(tables.recordAttachments, recordAttachmentToRow(attachment), recordAttachmentFromRow);
 
 export async function restoreAppData(data: AppData, context: RepositoryContext = {}): Promise<{ saved: Record<keyof AppData, number>; warnings: string[] }> {
   const userId = context.profile?.userId;
@@ -256,10 +273,14 @@ export async function uploadRecordAttachment({
   patientId,
   file,
   profile,
+  attachmentId,
+  createdAt,
 }: {
   patientId: string;
   file: File;
   profile: Profile;
+  attachmentId?: string;
+  createdAt?: string;
 }): Promise<RecordAttachment> {
   const key = `${profile.userId}/${patientId}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}-${safeFileName(file.name)}`;
   const { data: storedFile, error: uploadError } = await insforge.storage.from(attachmentBucket).upload(key, file);
@@ -267,7 +288,7 @@ export async function uploadRecordAttachment({
   if (!storedFile) throw new Error("Unable to upload attachment.");
 
   const attachment: RecordAttachment = {
-    id: uid("att"),
+    id: attachmentId || uid("att"),
     recordType: "patient",
     recordId: patientId,
     fileName: file.name || safeFileName(storedFile.key),
@@ -277,7 +298,7 @@ export async function uploadRecordAttachment({
     storageKey: storedFile.key,
     url: storedFile.url,
     uploadedBy: profile.userId,
-    createdAt: storedFile.uploadedAt || new Date().toISOString(),
+    createdAt: createdAt || storedFile.uploadedAt || new Date().toISOString(),
   };
 
   return upsertOne(tables.recordAttachments, recordAttachmentToRow(attachment), recordAttachmentFromRow);

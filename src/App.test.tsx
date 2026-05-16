@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   restoreAppData: vi.fn(),
   deletePatientWithCleanup: vi.fn(),
   uploadRecordAttachment: vi.fn(),
+  saveRecordAttachment: vi.fn(),
   openRecordAttachment: vi.fn(),
 }));
 
@@ -51,6 +52,7 @@ vi.mock("./services/appRepository", () => ({
   restoreAppData: mocks.restoreAppData,
   deletePatientWithCleanup: mocks.deletePatientWithCleanup,
   uploadRecordAttachment: mocks.uploadRecordAttachment,
+  saveRecordAttachment: mocks.saveRecordAttachment,
   openRecordAttachment: mocks.openRecordAttachment,
 }));
 
@@ -110,6 +112,7 @@ describe("App diary tracking toggle", () => {
       removeItem: vi.fn((key: string) => storage.delete(key)),
       clear: vi.fn(() => storage.clear()),
     });
+    vi.stubGlobal("indexedDB", undefined);
     vi.clearAllMocks();
     mocks.loadAuthGate.mockResolvedValue({ profile, accessGranted: true });
     mocks.loadAppData.mockResolvedValue(appData());
@@ -172,5 +175,25 @@ describe("App diary tracking toggle", () => {
 
     await waitFor(() => expect(mocks.savePatient).toHaveBeenCalled());
     await waitFor(() => expect(mocks.saveDiaryEntry).toHaveBeenCalled());
+  });
+
+  it("keeps patient data on this device when cloud patient sync fails", async () => {
+    mocks.savePatient.mockRejectedValue(new Error("offline"));
+
+    renderApp("/patients/patient-1");
+
+    fireEvent.click(await screen.findByRole("button", { name: /^save$/i }));
+
+    await waitFor(() => {
+      const raw = localStorage.getItem("tb-fo-local-data:user-1") || "";
+      expect(raw).toContain("QA Patient");
+      expect(raw).toContain("patient-1");
+    });
+    await waitFor(() => {
+      const rawQueue = localStorage.getItem("tb-fo-sync-queue:user-1") || "";
+      expect(rawQueue).toContain("\"entity\":\"patient\"");
+      expect(rawQueue).toContain("offline");
+    });
+    expect(screen.getByText(/cloud retry needed/i)).toBeInTheDocument();
   });
 });
