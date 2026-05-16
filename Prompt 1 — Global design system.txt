@@ -1,0 +1,1242 @@
+Prompt 1 — Global design system
+
+Copy this first.
+
+Create a complete mobile-first design system for a Bangla-first tuberculosis field workflow app called “TB-FO Assistant”.
+
+The app is for BRAC-style TB Field Organisers who manage TB patients, DOT tracking, lab results, contact investigation, TPT, treatment outcome, reports, and automatic FO daily diary.
+
+Design style:
+- Professional public-health field app
+- Clean, trustworthy, calm, medical, government/NGO-friendly
+- Inspired by BRAC green and community health systems
+- Mobile-first, responsive for 360px, 390px, 430px, tablet, and desktop
+- Pixel-polished, high contrast, easy to use outdoors
+- Bangla labels with English medical/programme terms where needed
+- Rounded cards, clear hierarchy, soft shadows, excellent spacing
+- Use icons lightly: patient, lung, calendar, lab, diary, report, warning
+- Avoid clutter, but support dense field data
+
+Color palette:
+- Primary green: #0A6E4F
+- Dark green: #074F39
+- Accent green: #1A8A64
+- Light green background: #E8F5F0
+- Blue for lab/DOT: #1A4F7A
+- Red for urgent/overdue: #B83232
+- Amber for due soon: #B5760A
+- Purple for contact investigation/TPT: #6B3FA0
+- Background: #EEF4F1
+- Card: #FFFFFF
+- Text: #1C2B26
+- Muted text: #5A7268
+- Border: #CCDDD6
+
+Typography:
+- Use Hind Siliguri for Bangla UI.
+- Use a monospace style for TR numbers and numeric badges.
+- Font sizes must be mobile-friendly.
+- Use strong labels, readable inputs, and clear button states.
+
+Components to design:
+1. Sticky mobile top app bar
+2. Bottom mobile navigation bar
+3. Desktop sidebar/navigation variant
+4. Summary metric cards
+5. Patient cards
+6. Search and filter controls
+7. Collapsible form section cards
+8. Input fields, select fields, textareas
+9. Radio button chips
+10. Status badges
+11. DOT calendar grid cells
+12. Timeline/diary items
+13. Alert cards
+14. Report cards
+15. Primary/secondary/danger/download buttons
+16. Empty states
+17. Toast notification
+18. Modal confirmation
+19. Floating action button for new patient on mobile
+
+Responsive behavior:
+- On mobile, use a bottom nav with 5 items: Dashboard, Patients, Today, Diary, Reports.
+- On desktop, use a left sidebar and wider content area.
+- Forms should be single-column on mobile, two-column on tablet, three/four-column on desktop.
+- Tables should become cards on mobile.
+- Large DOT grid should support horizontal scroll on mobile but remain visually clean.
+
+Create design tokens, component styles, and a sample preview screen showing these components together.
+Prompt 2 — App shell and navigation
+Design the main app shell for “TB-FO Assistant”, a Bangla-first TB field workflow app.
+
+Create responsive layouts for mobile and desktop.
+
+Mobile layout:
+- Sticky top app bar with app name “TB-FO Assistant”
+- Subtitle: “TB Control Field Workflow”
+- Compact BRAC green gradient header
+- Notification/alert icon
+- User chip: “FO”
+- Bottom navigation with 5 items:
+  1. Dashboard / ড্যাশবোর্ড
+  2. Patients / রোগী
+  3. Today / আজকের কাজ
+  4. Diary / FO ডায়েরি
+  5. Reports / রিপোর্ট
+- Floating action button: “+ নতুন রোগী”
+
+Desktop layout:
+- Left sidebar with same navigation
+- Top header with search, date, FO name, sync/offline indicator
+- Main content max-width optimized for 1440px
+
+Include:
+- Offline badge: “Offline Ready”
+- Last backup indicator
+- Sync pending small badge
+- Toast example
+- Confirmation modal example
+
+The UI must be polished, high-fidelity, production-ready, and consistent with the design system.
+Prompt 3 — Dashboard page
+Create the Dashboard page for “TB-FO Assistant”.
+
+Purpose:
+Give a TB Field Organiser an instant overview of patients, alerts, and daily work.
+
+Screen title:
+“ড্যাশবোর্ড”
+
+Top area:
+- Greeting: “সুপ্রভাত, Field Organiser”
+- Date in Bangla/English mixed format
+- Small offline/sync badge
+
+Summary cards:
+1. মোট রোগী
+2. চলমান চিকিৎসা
+3. Pre-treatment
+4. Follow-up বাকি
+5. DOT Missed
+6. Lab Pending
+7. CI Pending
+8. Outcome Pending
+9. FO Diary Today
+
+Use compact metric cards on mobile in 2-column grid.
+Use wider metric cards on desktop in 4-column grid.
+
+Main sections:
+1. Critical Alerts
+   - RR result urgent
+   - MTB detected but treatment not started
+   - Follow-up overdue
+2. Today’s FO Worklist preview
+   - Missed DOT yesterday
+   - 2M sputum due
+   - Contact investigation pending
+3. Phase distribution mini chart/card
+4. Recent FO diary activity timeline
+5. Quick actions:
+   - নতুন রোগী
+   - DOT Update
+   - Lab Result
+   - CI Entry
+   - Export Report
+
+Design:
+- Mobile-first
+- Health system style
+- Use green, amber, red, blue priority colors
+- Cards should be easy to tap
+- Critical alerts must stand out clearly
+- No clutter
+- Pixel-perfect spacing and alignment
+Prompt 4 — Patient registry/list page
+Design the Patient Registry page for “TB-FO Assistant”.
+
+Screen title:
+“সকল রোগী”
+
+Purpose:
+Allow FO to search, filter, and open TB patient records quickly.
+
+Top controls:
+- Search input with placeholder:
+  “TR নং, নাম, SS নাম, বা ফোন নম্বর দিয়ে খুঁজুন”
+- Filter chips/dropdowns:
+  - সব Phase
+  - সব ধরন
+  - Union
+  - Follow-up Due
+  - Lab Pending
+  - DOT Missed
+- Button: “+ নতুন রোগী”
+- Button: “Export”
+
+Patient card design:
+Each patient card should show:
+- Avatar circle with first letter
+- Patient name
+- TR number in monospace
+- Phase badge
+- Age/sex
+- TB type: Pulmonary BC / Pulmonary CD / Extra-pulmonary
+- Phone number
+- SS name
+- Treatment start date
+- Next follow-up date
+- Lab result small text
+- Risk badges:
+  - Follow-up!
+  - Overdue
+  - DOT Missed
+  - Lab Pending
+
+Card states:
+- Active treatment: green/blue left border
+- Completed: success green
+- Defaulted/LFU: red
+- Pre-treatment: amber
+- Transfer out: purple/gray
+
+Mobile behavior:
+- One card per row
+- Sticky search/filter area
+- Floating new patient button
+- Cards must be thumb-friendly
+
+Desktop behavior:
+- Patient cards in list layout
+- Optional right-side filter panel
+- Summary strip at top
+
+Also create an empty state:
+- icon
+- text: “এখনো কোনো রোগী নিবন্ধন করা হয়নি”
+- button: “প্রথম রোগী নিবন্ধন করুন”
+Prompt 5 — New patient / patient identity page
+Design the first section of the patient record form for “TB-FO Assistant”.
+
+Page title:
+“নতুন রোগীর রেকর্ড”
+
+Section:
+“ক — রোগীর পরিচয় & ঠিকানা”
+
+Fields:
+- TR / নিবন্ধন নং ★
+- DOTS Plus নং
+- e-TB Manager ID
+- নিবন্ধনের তারিখ
+- রোগীর পূর্ণ নাম ★
+- বয়স
+- লিঙ্গ
+- মোবাইল নম্বর
+- পিতার নাম
+- মাতার নাম
+- বিস্তারিত ঠিকানা
+- ওয়ার্ড নং
+- ইউনিয়ন
+- উপজেলা
+- জেলা
+
+Layout:
+- Mobile: single-column form, large inputs, sticky save button at bottom
+- Tablet: two columns
+- Desktop: 3-4 columns
+- Required fields clearly marked
+- Use collapsible section card header with icon 🪪
+- Add TR badge at top once TR is entered
+- Add validation message style:
+  “অন্তত নাম বা TR নং দিন”
+- Add duplicate warning card style:
+  “সম্ভাব্য duplicate patient পাওয়া গেছে”
+
+Top actions:
+- Back
+- Save
+- Print
+- Download
+- Delete hidden for new record
+
+Design:
+- Bangla-first labels
+- Clean field grouping
+- Strong accessibility
+- Touch-friendly mobile UI
+Prompt 6 — DOTS, SS, and referral section
+Design the “খ — DOTS কেন্দ্র ও SS তথ্য” section for the TB patient record form.
+
+Fields:
+- DOTS Corner / Centre নাম
+- SS (Shasthya Shebika) নাম
+- SS মোবাইল নম্বর
+- DOT Provider নাম
+- DOT Provider ধরন
+  Options:
+  SS, Family Member, Community Volunteer, Health Worker, Self
+- Contact Investigator নাম
+- রেফারকারীর নাম ও পদবি
+- রেফার উৎস
+  Options:
+  SS, Pharmacist, Village Doctor, CHCP, UHC, Self, ACF Screen, Contact Investigation
+
+Add useful UI:
+- SS contact card preview
+- DOT provider assignment card
+- Referral source badge
+- “Call SS” small button style
+- “Change provider” secondary button
+
+Responsive:
+- Mobile single-column
+- Cards stacked
+- Desktop 3-column grid
+
+Style:
+- Blue section header
+- Professional field-supervision feel
+- Easy to read in outdoor/mobile conditions
+Prompt 7 — Diagnosis and lab results page/section
+Design the “গ — রোগ নির্ণয় ও পরীক্ষার ফলাফল” section for TB-FO Assistant.
+
+Purpose:
+FO enters TB type and diagnostic test results.
+
+Fields and components:
+
+A. TB type
+- Radio chips:
+  - Pulmonary / ফুসফুসীয়
+  - Extra-pulmonary / বহির্ভূত
+- EP site input
+
+B. Confirmation method
+- Radio chips:
+  - BC — Bacteriologically Confirmed
+  - CD — Clinically Diagnosed
+
+C. GeneXpert / Truenat result card
+Fields:
+- Lab ID নং
+- পরীক্ষার তারিখ
+- ফলাফল
+  Options:
+  T — MTB Detected, Rif Sensitive
+  RR — MTB Detected, Rif Resistant
+  TI — Rif Indeterminate
+  N — MTB Not Detected
+  I — Invalid / Error
+- পরিমাণ: Low/Medium/High
+
+D. Microscopy card
+Fields:
+- Lab ID নং
+- পরীক্ষার তারিখ
+- ফলাফল:
+  3+ Positive, 2+ Positive, 1+ Positive, Scanty Positive, Negative
+- Scanty count
+
+E. X-ray and other tests card
+Fields:
+- X-ray ID
+- X-ray date
+- X-ray result: Normal / Abnormal
+- BCG Scar: Present / Absent
+
+F. Additional tests row
+- HIV পরীক্ষা
+- CPT শুরু তারিখ
+- ART শুরু তারিখ
+- COVID-19
+- Malaria
+
+Automation alert states:
+- If RR result selected, show red critical alert:
+  “RR result — urgent DR-TB referral review needed”
+- If MTB detected but treatment not started, show amber alert:
+  “Treatment start pending”
+- If Invalid/Error, show blue alert:
+  “Repeat test required”
+
+Design:
+- Purple diagnosis section header
+- Lab cards with clean icons
+- Results must be easy to scan
+- Mobile: stacked cards
+- Desktop: three lab cards in a row
+Prompt 8 — Treatment history and phase section
+Design the “ঘ — চিকিৎসার ইতিহাস ও পর্যায়” section.
+
+Purpose:
+Track patient category, treatment start, treatment phase, and follow-up.
+
+Components:
+
+A. Patient type radio chips:
+- New / নতুন
+- Relapse / পুনরায়
+- Treatment After Failure
+- Loss to Follow-up
+- Transfer In
+- Others / অন্যান্য
+
+B. Treatment date fields:
+- চিকিৎসা শুরু তারিখ
+- বর্তমান পর্যায়
+  Options:
+  Pre-treatment
+  Intensive Phase (2 months)
+  Continuation Phase (4 months)
+  Completed
+  Defaulted / LFU
+  Died
+  Transfer Out
+  Treatment Failure
+- IP শেষ তারিখ (auto-calculated)
+- চিকিৎসা শেষ তারিখ (auto-calculated)
+- পরবর্তী Follow-up তারিখ
+
+C. Other fields:
+- পূর্ববর্তী TR নং
+- Transfer In হলে — কোথা থেকে
+- চিকিৎসার ইতিহাস / মন্তব্য
+
+Add visual automation:
+- Small timeline: Registration → Diagnosis → Treatment Start → IP End → CP End → Outcome
+- Date calculation badges
+- Due soon and overdue follow-up alert styles
+
+Responsive:
+- Mobile: timeline vertical
+- Desktop: timeline horizontal
+- Form fields adapt from one column to four columns
+
+Style:
+- Amber/gold section header
+- Strong date readability
+- Use clear helper text for auto-calculated dates
+Prompt 9 — Drug regimen section
+Design the “ঙ — ওষুধের নির্দেশিকা” section for TB-FO Assistant.
+
+Purpose:
+Show regimen selection and drug issue table.
+
+Top fields:
+- Regimen Type
+  Options:
+  CAT-1 / 4FDC (New Case)
+  CAT-1 / 4FDC (EP)
+  2FDC (Continuation Phase)
+  3FDC (Paediatric)
+  Retreatment Regimen
+  TPT — 3HR Adult
+  TPT — 3HP Adult
+  TPT — 3HR Child Dispersible
+  DR-TB / MDR Regimen
+- রোগীর ওজন kg
+- ওষুধ শুরু তারিখ
+
+Drug table columns:
+- checkmark
+- ওষুধ / Drug
+- Dose — Adult
+- Dose — Child
+- প্রদত্ত পরিমাণ
+- তারিখ
+- মন্তব্য
+
+Mobile behavior:
+- Do NOT show a cramped table.
+- Convert each drug row into a card with checkbox, drug name, adult dose, child dose, quantity, date, note.
+- Use expandable “show details” for dose.
+
+Desktop behavior:
+- Show full table.
+
+Add warning text:
+“Dose/regimen decision support only — final clinical decision must be reviewed by responsible staff.”
+
+Style:
+- Red section header for drug safety
+- Clear checkboxes
+- Strong contrast
+- No clutter
+Prompt 10 — DOT daily tracking grid page
+Design a dedicated DOT Daily Tracking screen for TB-FO Assistant.
+
+Screen title:
+“DOT Daily Tracking”
+
+Purpose:
+FO marks daily medicine adherence for a patient.
+
+Top patient summary card:
+- Patient name
+- TR number
+- Phase
+- DOT provider
+- Treatment start
+- Current month adherence %
+
+Controls:
+- Month selector
+- Add month button
+- Quick filters: Current month, Missed only, Supervised
+- Legend:
+  ✓ Done
+  ✗ Missed
+  S Supervised
+  — Empty
+
+DOT grid:
+- Calendar-like month grid
+- Day cells 1-31
+- Cell states:
+  Done: green
+  Missed: red
+  Supervised: blue
+  Empty: light gray
+  Off-month: disabled gray
+- Tapping a cell cycles status
+- Show adherence stats:
+  Done
+  Missed
+  Supervised
+  Empty
+  Adherence %
+
+Mobile design:
+- The grid must fit mobile beautifully.
+- Use 7-column calendar format on mobile instead of wide 31-column table.
+- Each day cell should be at least 42x42 px.
+- Sticky bottom action: Save DOT
+- Missed days shown below as alert list.
+
+Desktop design:
+- Can show wider monthly grid/table.
+- Include monthly trend cards.
+
+Add automatic diary hint:
+“প্রতিটি DOT update FO Diary-তে সংরক্ষিত হবে”
+
+Pixel-perfect field app UI, extremely usable on 360px screens.
+Prompt 11 — Sputum follow-up section
+Design the “ছ — কফ পরীক্ষার ফলো-আপ ফলাফল” section.
+
+Purpose:
+Track 2M, 5M, and 6M sputum follow-up.
+
+Rows/stages:
+- 2M / ২ মাস
+- 5M / ৫ মাস
+- 6M / ৬ মাস
+
+Fields per stage:
+- পরীক্ষার তারিখ
+- Lab/ID নং
+- Microscopy
+- GeneXpert/Truenat
+- Culture
+- ওজন kg
+- মন্তব্য
+
+Mobile behavior:
+- Convert each stage into a separate card.
+- Show due/overdue badge at top of each card.
+- Highlight missing result if due date passed.
+
+Desktop behavior:
+- Show compact table.
+
+Additional fields:
+- Drug Reaction / পার্শ্বপ্রতিক্রিয়া
+- Clinical note / বিশেষ মন্তব্য
+
+Alert states:
+- Due soon
+- Overdue
+- Positive follow-up result
+- Completed negative
+
+Style:
+- Teal/blue section header
+- Lab-friendly clean design
+- Clear stage badges
+Prompt 12 — Contact investigation page
+Design the “জ — সংস্পর্শ তদন্ত (Contact Investigation)” page/section for TB-FO Assistant.
+
+Purpose:
+FO records household and close contacts of a TB patient.
+
+Top patient/index case summary:
+- Patient name
+- TR
+- TB type
+- Confirmation method
+- CI required status
+
+CI fields:
+- CI তদন্তের তারিখ
+- CI Investigator নাম
+- CI Investigator ফোন
+
+Contact list:
+Each contact should be shown as a card on mobile and a table on desktop.
+
+Contact fields:
+- #
+- নাম
+- বয়স
+- লিঙ্গ
+- সম্পর্ক code
+- উপসর্গ code
+- রেফার?
+- তদন্ত code
+- ফলাফল
+- Outcome code
+- TR/TPT নং
+- Follow-up তারিখ
+
+Mobile card design:
+- Contact name and age at top
+- Symptom badge
+- Referral status
+- Investigation/result row
+- Follow-up date
+- Buttons: Edit, Mark TPT, Refer
+
+Desktop:
+- Full table with compact inputs
+
+Add code hint card:
+Relationship:
+1=পরিবার, 2=কর্মস্থল, 3=প্রতিবেশী, 4=অন্যান্য
+Symptoms:
+1=২সপ্তাহ কাশি, 2=জ্বর, 3=ওজনহ্রাস, 4=রক্তকাশি, 5=উপসর্গ নেই
+Investigation:
+1=X-ray, 2=GeneXpert, 3=Microscopy, 4=TST, 5=অন্য
+Outcome:
+1=DS-TB, 2=সুস্থ, 3=অন্যরোগ, 4=TPT, 5=আসেনি, 6=DR-TB
+
+Add button:
+“+ নতুন সংস্পর্শ যোগ করুন”
+
+Style:
+- Purple section header
+- Make child/symptomatic contacts visually highlighted
+- Add TPT candidate badge
+- Mobile-first, thumb-friendly
+Prompt 13 — TPT tracker page
+Design a TPT Tracker page for TB-FO Assistant.
+
+Screen title:
+“TPT Tracker / প্রতিরোধমূলক চিকিৎসা”
+
+Purpose:
+Track contacts eligible for TB Preventive Treatment.
+
+Top summary cards:
+- TPT Eligible
+- TPT Started
+- Active TPT
+- Completed
+- Defaulted
+- Follow-up Due
+
+List/card fields:
+- Contact name
+- Linked index patient
+- TR/TPT number
+- Age/sex
+- Relationship
+- Regimen: 3HR, 3HP, 6H, Other
+- Start date
+- Expected end date
+- Next follow-up
+- Status: Not Started, Active, Completed, Defaulted, Stopped
+- Notes
+
+Mobile:
+- Card list with status badges
+- Quick action buttons:
+  Start TPT
+  Follow-up
+  Complete
+  Mark Defaulted
+
+Desktop:
+- Table/list hybrid
+- Filter by status and date
+
+Alerts:
+- TPT follow-up due
+- TPT overdue
+- TPT completion pending
+
+Style:
+- Purple + green health prevention theme
+- Clean and encouraging
+- Keep data dense but readable
+Prompt 14 — Treatment outcome section
+Design the “ঝ — চিকিৎসার চূড়ান্ত ফলাফল” section.
+
+Purpose:
+FO records final TB treatment outcome.
+
+Outcome selection buttons:
+- ✅ Cured / নিরাময়
+- ✔️ Treatment Completed / চিকিৎসা সম্পন্ন
+- ⚫ Died / মৃত্যু
+- ⚠️ Treatment Failure / চিকিৎসায় ব্যর্থ
+- 🔴 Lost to Follow-up / Defaulted
+- 🔀 Transfer Out / স্থানান্তর
+- ❓ Not Evaluated / মূল্যায়ন হয়নি
+
+Each outcome button should be a large tappable card with icon, English label, Bangla explanation, and selected state.
+
+Fields:
+- Outcome তারিখ
+- Transfer Out হলে — কোথায়?
+- স্বাক্ষরকারী কর্মকর্তা
+- Outcome মন্তব্য
+
+Validation states:
+- Transfer Out selected but destination missing
+- Outcome selected but date missing
+
+Design:
+- Dark slate section header
+- Outcome cards in 1-column mobile, 2-column tablet, 3-column desktop
+- Selected outcome should be visually obvious
+- Red outcomes must feel serious but not alarming unnecessarily
+Prompt 15 — FO Daily Work Diary page
+Design the FO Daily Work Diary page for TB-FO Assistant.
+
+Screen title:
+“FO দৈনিক কাজের ডায়েরি”
+
+Purpose:
+Automatically show what work the FO did every day.
+
+Top controls:
+- Date picker
+- Work type filter
+  Options:
+  সব কাজ
+  New Patient
+  Record Updated
+  DOT Updated
+  Lab Updated
+  CI Updated
+  TPT Updated
+  Outcome Updated
+  Download
+  Delete
+  Report Generated
+- Search input:
+  “TR, রোগীর নাম, কাজের বিবরণ...”
+- Export Diary button
+
+Summary cards:
+- আজকের মোট কাজ
+- New Patient
+- DOT Update
+- Lab Update
+- CI/TPT Update
+- Outcome
+- Reports
+
+Timeline item design:
+Each diary item shows:
+- Icon
+- Patient name or General Activity
+- Work type badge
+- TR number
+- User: FO
+- Date
+- Time
+- Details text
+
+Sample entries:
+1. “নতুন রোগী নিবন্ধন করা হয়েছে। TR: 131/26”
+2. “DOT 13 May 2026 তারিখে আপডেট: Done”
+3. “GeneXpert ফলাফল আপডেট: MTB Detected”
+4. “Contact Investigation টেবিলে নতুন contact যোগ করা হয়েছে”
+5. “Treatment outcome নির্বাচন করা হয়েছে: Cured”
+
+Mobile behavior:
+- Timeline cards stacked
+- Sticky filter collapsed panel
+- Export button visible
+- Very readable timestamps
+
+Desktop behavior:
+- Left filter panel, right timeline
+- Summary cards top
+
+Style:
+- Diary should feel official, clean, auditable
+- Use green/blue/purple badges based on type
+Prompt 16 — Today’s FO Worklist page
+Design the “আজকের কাজ” page for TB-FO Assistant.
+
+Purpose:
+Automatically show all tasks the FO must do today.
+
+Top:
+- Title: “আজকের কাজ”
+- Date
+- Summary: “আজ ১২টি কাজ বাকি”
+- Filter chips:
+  Critical
+  Overdue
+  DOT
+  Lab
+  CI/TPT
+  Follow-up
+  Outcome
+
+Task groups:
+1. Critical
+   - RR result urgent review
+   - MTB detected but treatment not started
+2. DOT Missed
+   - Patient missed yesterday/today
+3. Follow-up Due
+   - Next follow-up due within 3 days
+4. Lab Pending
+   - Sample/result pending
+5. CI/TPT Pending
+   - Contact investigation incomplete
+   - TPT follow-up due
+6. Outcome Pending
+   - Treatment end date passed but no final outcome
+
+Task card fields:
+- Priority color strip
+- Task title
+- Patient name
+- TR number
+- Due date
+- Short description
+- Action buttons:
+  Open Patient
+  Mark Done
+  Snooze
+  Call
+
+Mobile:
+- Single-column task cards
+- Sticky priority filter
+- Critical tasks pinned at top
+- Buttons full-width or icon + label
+
+Desktop:
+- Kanban-like columns by category or grouped list
+- Right detail drawer when task selected
+
+Style:
+- Very practical field-work design
+- Strong priority color coding
+- No unnecessary decoration
+Prompt 17 — Reports page
+Design the Reports page for TB-FO Assistant.
+
+Screen title:
+“রিপোর্ট”
+
+Purpose:
+FO generates patient, DOT, lab, CI/TPT, outcome, and diary reports.
+
+Top filter panel:
+- Report type dropdown
+  Options:
+  Patient Registry
+  Active Treatment
+  Pre-treatment Pending
+  Lab Pending
+  Treatment Start Pending
+  DOT Adherence
+  Missed DOT
+  Sputum Follow-up Due
+  Contact Investigation
+  TPT Report
+  Treatment Outcome
+  SS-wise Report
+  FO Diary
+  Monthly FO Activity
+  Data Quality Issues
+- Date range
+- Union/Ward filter
+- SS/DOT provider filter
+- Generate button
+
+Report cards:
+- Each report has icon, title, description, last generated date, export button.
+
+Preview area:
+- Mobile: compact summary cards + downloadable report rows
+- Desktop: table preview
+
+Buttons:
+- Export CSV
+- Export JSON
+- Print
+- Download PDF, future disabled state
+
+Style:
+- Clean administrative reporting UI
+- Make it feel official and reliable
+- Use document/report icons
+Prompt 18 — SS/DOT provider management page
+Design the SS and DOT Provider Management page for TB-FO Assistant.
+
+Screen title:
+“SS / DOT Provider”
+
+Purpose:
+FO supervises Shasthya Shebika and DOT providers.
+
+Top summary cards:
+- Total SS/DOT providers
+- Assigned active patients
+- DOT missed patients
+- Referrals this month
+- CI supported
+- Follow-up pending
+
+Provider card fields:
+- Provider name
+- Type: SS, Family Member, Community Volunteer, Health Worker
+- Phone
+- Area/Union/Ward
+- Assigned patient count
+- Active patients
+- Missed DOT count
+- Last update
+- Performance badge
+
+Actions:
+- View assigned patients
+- Call
+- Add provider
+- Export SS-wise report
+
+Mobile:
+- Provider cards
+- Call button prominent
+- Search by name/phone/area
+
+Desktop:
+- List/table with filters and right detail panel
+
+Style:
+- Blue/green supervision theme
+- Friendly but official
+Prompt 19 — Private provider/referral management page
+Design the Private Provider and Referral Source page for TB-FO Assistant.
+
+Screen title:
+“Referral Providers / রেফার উৎস”
+
+Purpose:
+Track pharmacies, village doctors, clinics, UHC, CHCP, and other referral sources.
+
+Top summary cards:
+- Total providers
+- Visited this month
+- Referrals this month
+- Confirmed TB from referrals
+- Visit due
+
+Provider fields:
+- Provider name
+- Provider type:
+  Pharmacist, Village Doctor, Clinic, CHCP, UHC, Self, ACF Screen, Contact Investigation, Other
+- Phone
+- Area
+- Union/Ward
+- Last visit date
+- Referral count
+- Confirmed TB count
+- Notes
+
+Mobile:
+- Card list with provider type badge
+- Quick call button
+- Visit due alert
+- Add referral source button
+
+Desktop:
+- Filterable table and provider detail drawer
+
+Style:
+- Practical PPM/public-private mix workflow
+- Use amber/blue accents
+Prompt 20 — Backup/import/export settings page
+Design the Backup, Import, Export, and Settings page for TB-FO Assistant.
+
+Screen title:
+“Backup & Settings”
+
+Purpose:
+FO can safely backup and restore records.
+
+Sections:
+
+1. Data backup
+- Export all patient records JSON
+- Export FO Diary JSON
+- Export all reports CSV
+- Last backup date
+- Backup warning: “এই ফাইলে সংবেদনশীল রোগীর তথ্য আছে”
+
+2. Import data
+- Import patient backup
+- Import diary backup
+- Validation status card
+- Conflict warning design
+
+3. App settings
+- Default district
+- Default upazila
+- Default DOTS center
+- FO name
+- Language: Bangla / English mixed
+- Theme: Light only, Dark future disabled
+
+4. Data safety
+- Local storage indicator
+- Encryption future badge
+- Sync future badge
+
+Design:
+- Make backup actions very clear and safe
+- Danger zone for clearing data
+- Confirmation modal for destructive actions
+- Mobile-first stacked cards
+Prompt 21 — Login and role selection screen, future-ready
+Design a future-ready login screen for TB-FO Assistant.
+
+Purpose:
+Prepare for production role-based access.
+
+Fields:
+- Phone/email/user ID
+- Password
+- Remember device checkbox
+- Login button
+
+Role preview cards:
+- FO
+- Supervisor
+- Lab
+- Admin
+
+Design:
+- Clean health-programme style
+- BRAC green gradient
+- App logo/icon: lungs + record card
+- Offline demo mode button:
+  “Demo Mode / Offline”
+- Security note:
+  “Patient data is sensitive. Use only authorized devices.”
+
+Mobile:
+- Centered login card
+- Full-height responsive layout
+- Easy typing on phone
+
+Desktop:
+- Split layout with illustration on one side and login form on the other
+Prompt 22 — Data quality issues page
+Design a Data Quality Issues page for TB-FO Assistant.
+
+Screen title:
+“Data Quality Check”
+
+Purpose:
+Help FO find incomplete, inconsistent, or risky records.
+
+Summary cards:
+- Missing phone
+- Missing treatment start
+- Positive lab no treatment
+- Missing outcome
+- Duplicate TR
+- Follow-up overdue
+- CI missing
+- Invalid dates
+
+Issue card fields:
+- Issue type
+- Patient name
+- TR
+- Problem description
+- Severity
+- Suggested fix
+- Button: Open Record
+- Button: Mark Reviewed
+
+Mobile:
+- Issue cards grouped by severity
+- Red/amber/blue visual hierarchy
+
+Desktop:
+- Filterable table with issue detail drawer
+
+Style:
+- Serious but helpful
+- Make problems easy to fix
+Prompt 23 — Mobile-first refinement prompt
+
+Run this after each generated screen.
+
+Refine this screen for mobile-first pixel-perfect UX.
+
+Requirements:
+- Optimize for 360px, 390px, and 430px screen widths.
+- No horizontal scrolling except DOT grid where explicitly needed.
+- Minimum tap target size 44px.
+- Inputs must be large and readable.
+- Use one-column layout on mobile.
+- Keep primary action visible near thumb zone.
+- Improve spacing, alignment, and hierarchy.
+- Reduce visual clutter.
+- Make alerts and status badges readable.
+- Make Bangla labels render cleanly.
+- Keep visual style consistent with TB-FO Assistant design system.
+- Add responsive desktop/tablet behavior without compromising mobile.
+Prompt 24 — Pixel-perfect consistency prompt
+
+Run this after generating several pages.
+
+Make all generated TB-FO Assistant screens visually consistent.
+
+Apply the same:
+- color tokens
+- spacing scale
+- border radius
+- card style
+- button style
+- section header style
+- typography
+- Bangla label style
+- status badge style
+- icon style
+- mobile bottom navigation
+- desktop sidebar
+- shadows and borders
+- input field sizing
+- alert card styling
+
+The entire app should feel like one polished production product, not separate generated screens.
+Prompt 25 — Accessibility and outdoor-use refinement
+Improve accessibility and field usability for all TB-FO Assistant screens.
+
+Requirements:
+- High contrast text
+- Readable outdoors on mobile
+- Clear focus states
+- Large touch targets
+- Avoid tiny table text on mobile
+- Use icons plus text, never icon-only for critical actions
+- Clear error messages
+- Clear disabled states
+- Critical alerts must be visually distinct from normal info
+- Do not rely only on color; use labels and icons too
+- Make forms easy for low-bandwidth, field-work environments
+Prompt 26 — Generate a clickable prototype flow
+Create a clickable prototype flow for TB-FO Assistant.
+
+Flow:
+1. Dashboard
+2. Patient Registry
+3. Open patient record
+4. Update lab result
+5. Start treatment
+6. Mark DOT missed
+7. Open Today’s Worklist
+8. Add Contact Investigation contact
+9. Mark TPT candidate
+10. Select Treatment Outcome
+11. Open FO Daily Diary and show automatically logged activities
+12. Generate report
+
+Use realistic sample data:
+- Patient: Rahim Uddin, TR 131/26
+- Patient: Fatema Begum, TR 132/26
+- Patient: Karim Ali, TR 133/26
+- SS: Ayesha Begum
+- DOTS Center: Sirajdikha UHC
+- District: Munshiganj
+- Upazila: Sirajdikha
+
+Make interactions clear with connected screens and consistent navigation.
+Prompt 27 — Final handoff prompt for frontend code
+Prepare this TB-FO Assistant design for frontend implementation.
+
+Generate a developer handoff with:
+- Screen list
+- Component list
+- Design tokens
+- Responsive breakpoints
+- Page layouts
+- Reusable components
+- Button states
+- Input states
+- Badge states
+- Alert states
+- Empty states
+- Modal states
+- Mobile behavior
+- Desktop behavior
+- Data table to mobile card transformation rules
+
+Export-ready code should be suitable for React + TypeScript + Vite.
+
+Use clean semantic naming:
+- DashboardPage
+- PatientListPage
+- PatientFormPage
+- DotGrid
+- ContactInvestigationSection
+- TptTrackerPage
+- DiaryPage
+- ReportsPage
+- WorklistPage
+- ProviderPage
+- SettingsPage
+
+Preserve Bangla labels and BRAC green public-health visual identity.
+Recommended screen generation order
+
+Use this exact order in Stitch:
+
+Step	Screen
+1	Design system
+2	App shell/navigation
+3	Dashboard
+4	Patient registry
+5	Patient identity form
+6	DOTS/SS section
+7	Diagnosis/lab section
+8	Treatment history
+9	Drug regimen
+10	DOT grid
+11	Sputum follow-up
+12	Contact investigation
+13	TPT tracker
+14	Outcome
+15	Today’s Worklist
+16	FO Diary
+17	Reports
+18	Provider management
+19	Backup/settings
+20	Data quality
+21	Login future screen
+22	Prototype flow
+23	Final consistency pass

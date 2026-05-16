@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TB-FO Assistant - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#bec9c1",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#92f6c9",
+                    "inverse-surface": "#24332e",
+                    "surface-container": "#e0f2ea",
+                    "primary-fixed-dim": "#83d7b1",
+                    "on-primary-fixed-variant": "#005139",
+                    "tertiary": "#154c77",
+                    "background": "#ecfdf5",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#002115",
+                    "on-surface": "#0f1e1a",
+                    "on-tertiary-container": "#c4dfff",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#0a6e4f",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#cfe4ff",
+                    "secondary-fixed-dim": "#75d9ae",
+                    "secondary": "#006c4c",
+                    "tertiary-fixed-dim": "#9dcbfc",
+                    "tertiary-container": "#346490",
+                    "surface-tint": "#046c4d",
+                    "outline": "#6f7a73",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#001d34",
+                    "on-surface-variant": "#3f4943",
+                    "surface-container-highest": "#d5e6df",
+                    "surface": "#ecfdf5",
+                    "secondary-container": "#8ff3c6",
+                    "surface-container-low": "#e6f8ef",
+                    "on-secondary-fixed": "#002114",
+                    "on-primary-container": "#98edc6",
+                    "surface-container-high": "#dbece4",
+                    "on-secondary-fixed-variant": "#005138",
+                    "inverse-primary": "#83d7b1",
+                    "on-tertiary-fixed-variant": "#124a74",
+                    "inverse-on-surface": "#e3f5ed",
+                    "on-secondary-container": "#007150",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#9ef4cc",
+                    "surface-bright": "#ecfdf5",
+                    "primary": "#00543b",
+                    "on-background": "#0f1e1a",
+                    "surface-variant": "#d5e6df",
+                    "surface-dim": "#cdded6",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin_mobile": "16px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "gutter": "16px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin_desktop": "48px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "mono-id": [
+                            "JetBrains Mono"
+                    ],
+                    "numeric-data": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "h2": [
+                            "Hind Siliguri"
+                    ],
+                    "body-md": [
+                            "Hind Siliguri"
+                    ],
+                    "h1": [
+                            "Hind Siliguri"
+                    ],
+                    "body-lg": [
+                            "Hind Siliguri"
+                    ]
+            },
+            "fontSize": {
+                    "mono-id": [
+                            "13px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "numeric-data": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "h2": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h1": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "26px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+<div class="hidden md:flex md:w-[45%] lg:w-1/2 relative bg-primary-fixed overflow-hidden flex-col justify-between">
+<div class="absolute inset-0 bg-cover bg-center opacity-85 mix-blend-multiply" data-alt="A professional, high-quality photograph of a modern medical facility focusing on respiratory health. The scene is bathed in soft, natural daylight with subtle green and teal tones reflecting the brand palette. It features clean, out-of-focus medical equipment in the background, conveying trust, hygiene, and technological advancement in tuberculosis care within a calm clinical environment." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAYs9_hcKQ_MdADPG_BgBa0nkrg_IImw6q64n1YcQl3bN_ouGC0PxtPHVeFA76a-EUpAY71p2g3KCvOyKzOEe9yGyQu2O69urhbW9ceRB3P781zLjCBFWIFm2hrPWkB_QrRe47lZ_3pGk3E8OWaNC_swK8yl3OOYHhmtyIuNZu1tNPoMzBOuwWAPO-QWfmGMQp16XTJwvxTeRXtrvsZidK4uW0-nYhYF6uBJjSMdgt7nrX0im_4W2zXDsCE9v-YKGdu6_Xb9YoOKWgd');"></div>
+<div class="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary-container/80 to-transparent"></div>
+<div class="relative z-10 p-margin_desktop flex flex-col h-full justify-between">
+<div class="flex items-center gap-sm">
+<div class="bg-surface-container-lowest p-sm rounded-lg flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">pulmonology</span>
+</div>
+<span class="font-h1 text-h1 text-on-primary font-bold tracking-tight">TB-FO Assistant</span>
+</div>
+<div class="mb-xl">
+<h2 class="font-h1 text-[32px] leading-[40px] font-bold text-on-primary mb-md max-w-md">Empowering frontline tuberculosis care.</h2>
+<p class="font-body-lg text-body-lg text-primary-fixed max-w-md">Secure, offline-capable field operations management for comprehensive patient support.</p>
+</div>
+</div>
+</div>
+<div class="w-full md:w-[55%] lg:w-1/2 flex flex-col justify-center px-margin_mobile md:px-margin_desktop lg:px-[80px] py-xl min-h-screen md:min-h-0 bg-surface">
+<div class="flex md:hidden items-center gap-sm mb-xl">
+<div class="bg-primary-container p-sm rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">pulmonology</span>
+</div>
+<span class="font-h1 text-h1 text-primary font-bold">TB-FO Assistant</span>
+</div>
+<div class="mb-lg">
+<h1 class="font-h1 text-[28px] text-primary mb-xs font-bold">Welcome Back</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">অনুগ্রহ করে লগইন করুন (Please log in)</p>
+</div>
+<form class="flex flex-col gap-md w-full max-w-[440px]">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">ব্যবহারকারীর আইডি / Email / Phone</label>
+<input class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:border-primary-container focus:border-[2px] focus:outline-none font-body-md text-body-md text-on-surface w-full shadow-[0_2px_4px_rgba(28,43,38,0.02)] transition-all" placeholder="Enter your ID" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">পাসওয়ার্ড (Password)</label>
+<input class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:border-primary-container focus:border-[2px] focus:outline-none font-body-md text-body-md text-on-surface w-full shadow-[0_2px_4px_rgba(28,43,38,0.02)] transition-all" placeholder="••••••••" type="password"/>
+</div>
+<div class="flex items-center gap-sm py-xs">
+<input class="w-5 h-5 rounded border-outline-variant text-primary-container focus:ring-primary-container cursor-pointer" id="remember" type="checkbox"/>
+<label class="font-body-md text-body-md text-on-surface-variant cursor-pointer" for="remember">Remember device</label>
+</div>
+<button class="w-full bg-primary-container text-on-primary rounded-lg py-md font-label-caps text-label-caps flex items-center justify-center gap-sm shadow-[0_2px_4px_rgba(28,43,38,0.05)] hover:bg-primary transition-colors mt-xs" type="button">
+                LOGIN SECURELY
+                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<button class="w-full border-[1.5px] border-secondary text-secondary rounded-lg py-[10px] font-label-caps text-label-caps hover:bg-surface-container transition-colors flex justify-center items-center gap-xs mt-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">cloud_off</span>
+                DEMO MODE / OFFLINE
+            </button>
+</form>
+<div class="mt-xl pt-lg border-t border-outline-variant w-full max-w-[440px]">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-md">System Roles Overview</p>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm flex items-center gap-sm shadow-[0_2px_4px_rgba(28,43,38,0.05)]">
+<div class="bg-surface-container-low p-xs rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">person_play</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Field Officer</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm flex items-center gap-sm shadow-[0_2px_4px_rgba(28,43,38,0.05)]">
+<div class="bg-surface-container-low p-xs rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[20px]">supervisor_account</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Supervisor</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm flex items-center gap-sm shadow-[0_2px_4px_rgba(28,43,38,0.05)]">
+<div class="bg-surface-container-low p-xs rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[20px]">science</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Lab Tech</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm flex items-center gap-sm shadow-[0_2px_4px_rgba(28,43,38,0.05)]">
+<div class="bg-surface-container-low p-xs rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[20px]">admin_panel_settings</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Admin</span>
+</div>
+</div>
+</div>
+<div class="mt-xl w-full max-w-[440px] flex items-start gap-sm p-md bg-error-container/40 border-l-[4px] border-error rounded-r-lg">
+<span class="material-symbols-outlined text-error mt-[2px] text-[20px]">shield_lock</span>
+<p class="font-body-md text-body-md text-on-surface">
+<span class="font-semibold text-error">Security Note:</span> Patient data is sensitive. Use only authorized devices.
+            </p>
+</div>
+</div>
+</body></html>

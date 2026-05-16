@@ -1,0 +1,32 @@
+{
+  "name": "TB-FO Assistant",
+  "short_name": "TB-FO",
+  "description": "Bangla-first TB field workflow app for BRAC-style Field Organisers.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#EEF4F1",
+  "theme_color": "#0A6E4F",
+  "categories": ["health", "productivity", "medical"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "নতুন রোগী",
+      "short_name": "নতুন",
+      "url": "/patients/new"
+    },
+    {
+      "name": "আজকের কাজ",
+      "short_name": "কাজ",
+      "url": "/today"
+    }
+  ]
+}

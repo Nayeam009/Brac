@@ -1,0 +1,442 @@
+import type {
+  ContactPerson,
+  DiaryEntry,
+  DotEntry,
+  LabResult,
+  Patient,
+  Profile,
+  Provider,
+  RecordAttachment,
+  SputumFollowUp,
+  Task,
+  TptRecord,
+} from "../domain/types";
+
+export type Row = Record<string, unknown>;
+
+const definedRow = (row: Row): Row =>
+  Object.fromEntries(Object.entries(row).filter(([, value]) => value !== undefined));
+
+const value = <T>(input: unknown): T | undefined => (input === null || input === undefined ? undefined : (input as T));
+const required = <T>(input: unknown, fallback: T): T => value<T>(input) ?? fallback;
+
+export const profileFromRow = (row: Row): Profile => ({
+  id: required(row.id, ""),
+  userId: required(row.user_id, ""),
+  email: value(row.email),
+  name: value(row.name),
+  role: required(row.role, "fo") as Profile["role"],
+  status: required(row.status, "pending") as Profile["status"],
+  district: value(row.district),
+  upazila: value(row.upazila),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const profileToRow = (profile: Profile): Row =>
+  definedRow({
+    id: profile.id || undefined,
+    user_id: profile.userId,
+    email: profile.email,
+    name: profile.name,
+    role: profile.role,
+    status: profile.status,
+    district: profile.district,
+    upazila: profile.upazila,
+    created_at: profile.createdAt,
+    updated_at: profile.updatedAt,
+  });
+
+export const patientFromRow = (row: Row): Patient => ({
+  id: required(row.id, ""),
+  tr: value(row.tr),
+  dotsNo: value(row.dots_no),
+  etbId: value(row.etb_id),
+  registrationDate: value(row.registration_date),
+  name: required(row.name, ""),
+  age: value(row.age),
+  sex: value(row.sex),
+  phone: value(row.phone),
+  fatherName: value(row.father_name),
+  motherName: value(row.mother_name),
+  address: value(row.address),
+  ward: value(row.ward),
+  union: value(row.union_name),
+  upazila: value(row.upazila),
+  district: value(row.district),
+  dotsCenter: value(row.dots_center),
+  ssName: value(row.ss_name),
+  ssPhone: value(row.ss_phone),
+  dotProviderName: value(row.dot_provider_name),
+  dotProviderType: value(row.dot_provider_type),
+  contactInvestigatorName: value(row.contact_investigator_name),
+  referrer: value(row.referrer),
+  referralSource: value(row.referral_source),
+  tbType: value(row.tb_type),
+  epSite: value(row.ep_site),
+  confirmationMethod: value(row.confirmation_method),
+  patientType: value(row.patient_type),
+  phase: value(row.phase),
+  previousTr: value(row.previous_tr),
+  transferFrom: value(row.transfer_from),
+  treatmentStartDate: value(row.treatment_start_date),
+  ipEndDate: value(row.ip_end_date),
+  treatmentEndDate: value(row.treatment_end_date),
+  nextFollowUpDate: value(row.next_follow_up_date),
+  regimenType: value(row.regimen_type),
+  weightKg: value(row.weight_kg),
+  drugStartDate: value(row.drug_start_date),
+  outcome: value(row.outcome),
+  outcomeDate: value(row.outcome_date),
+  transferTo: value(row.transfer_to),
+  signOfficer: value(row.sign_officer),
+  outcomeNote: value(row.outcome_note),
+  drugReaction: value(row.drug_reaction),
+  clinicalNote: value(row.clinical_note),
+  ownerId: value(row.owner_id),
+  metadata: value(row.metadata),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const patientToRow = (patient: Patient): Row =>
+  definedRow({
+    id: patient.id,
+    tr: patient.tr,
+    dots_no: patient.dotsNo,
+    etb_id: patient.etbId,
+    registration_date: patient.registrationDate,
+    name: patient.name,
+    age: patient.age,
+    sex: patient.sex,
+    phone: patient.phone,
+    father_name: patient.fatherName,
+    mother_name: patient.motherName,
+    address: patient.address,
+    ward: patient.ward,
+    union_name: patient.union,
+    upazila: patient.upazila,
+    district: patient.district,
+    dots_center: patient.dotsCenter,
+    ss_name: patient.ssName,
+    ss_phone: patient.ssPhone,
+    dot_provider_name: patient.dotProviderName,
+    dot_provider_type: patient.dotProviderType,
+    contact_investigator_name: patient.contactInvestigatorName,
+    referrer: patient.referrer,
+    referral_source: patient.referralSource,
+    tb_type: patient.tbType,
+    ep_site: patient.epSite,
+    confirmation_method: patient.confirmationMethod,
+    patient_type: patient.patientType,
+    phase: patient.phase,
+    previous_tr: patient.previousTr,
+    transfer_from: patient.transferFrom,
+    treatment_start_date: patient.treatmentStartDate,
+    ip_end_date: patient.ipEndDate,
+    treatment_end_date: patient.treatmentEndDate,
+    next_follow_up_date: patient.nextFollowUpDate,
+    regimen_type: patient.regimenType,
+    weight_kg: patient.weightKg,
+    drug_start_date: patient.drugStartDate,
+    outcome: patient.outcome,
+    outcome_date: patient.outcomeDate,
+    transfer_to: patient.transferTo,
+    sign_officer: patient.signOfficer,
+    outcome_note: patient.outcomeNote,
+    drug_reaction: patient.drugReaction,
+    clinical_note: patient.clinicalNote,
+    owner_id: patient.ownerId,
+    metadata: patient.metadata,
+    created_at: patient.createdAt,
+    updated_at: patient.updatedAt,
+  });
+
+export const recordAttachmentFromRow = (row: Row): RecordAttachment => ({
+  id: required(row.id, ""),
+  recordType: required(row.record_type, "patient") as RecordAttachment["recordType"],
+  recordId: required(row.record_id, ""),
+  fileName: required(row.file_name, ""),
+  fileType: value(row.file_type),
+  fileSize: required(row.file_size, 0),
+  bucket: required(row.bucket, "record-attachments"),
+  storageKey: required(row.storage_key, ""),
+  url: required(row.url, ""),
+  uploadedBy: required(row.uploaded_by, ""),
+  createdAt: required(row.created_at, ""),
+});
+
+export const recordAttachmentToRow = (attachment: RecordAttachment): Row =>
+  definedRow({
+    id: attachment.id,
+    record_type: attachment.recordType,
+    record_id: attachment.recordId,
+    file_name: attachment.fileName,
+    file_type: attachment.fileType,
+    file_size: attachment.fileSize,
+    bucket: attachment.bucket,
+    storage_key: attachment.storageKey,
+    url: attachment.url,
+    uploaded_by: attachment.uploadedBy,
+    created_at: attachment.createdAt,
+  });
+
+export const labResultFromRow = (row: Row): LabResult => ({
+  id: required(row.id, ""),
+  patientId: required(row.patient_id, ""),
+  testType: required(row.test_type, "Other") as LabResult["testType"],
+  labId: value(row.lab_id),
+  testDate: value(row.test_date),
+  result: value(row.result),
+  quantity: value(row.quantity),
+  scantyCount: value(row.scanty_count),
+  notes: value(row.notes),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const labResultToRow = (lab: LabResult): Row =>
+  definedRow({
+    id: lab.id,
+    patient_id: lab.patientId,
+    test_type: lab.testType,
+    lab_id: lab.labId,
+    test_date: lab.testDate,
+    result: lab.result,
+    quantity: lab.quantity,
+    scanty_count: lab.scantyCount,
+    notes: lab.notes,
+    created_at: lab.createdAt,
+    updated_at: lab.updatedAt,
+  });
+
+export const dotEntryFromRow = (row: Row): DotEntry => ({
+  id: required(row.id, ""),
+  patientId: required(row.patient_id, ""),
+  date: required(row.date, ""),
+  monthKey: required(row.month_key, ""),
+  day: required(row.day, 0),
+  status: required(row.status, "") as DotEntry["status"],
+  updatedBy: value(row.updated_by),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const dotEntryToRow = (dot: DotEntry): Row =>
+  definedRow({
+    id: dot.id,
+    patient_id: dot.patientId,
+    date: dot.date,
+    month_key: dot.monthKey,
+    day: dot.day,
+    status: dot.status,
+    updated_by: dot.updatedBy,
+    updated_at: dot.updatedAt,
+  });
+
+export const contactFromRow = (row: Row): ContactPerson => ({
+  id: required(row.id, ""),
+  patientId: required(row.patient_id, ""),
+  ciDate: value(row.ci_date),
+  investigatorName: value(row.investigator_name),
+  investigatorPhone: value(row.investigator_phone),
+  name: required(row.name, ""),
+  age: value(row.age),
+  sex: value(row.sex),
+  relationshipCode: value(row.relationship_code),
+  symptomCode: value(row.symptom_code),
+  referred: value(row.referred),
+  investigationCode: value(row.investigation_code),
+  result: value(row.result),
+  outcomeCode: value(row.outcome_code),
+  trOrTptNo: value(row.tr_or_tpt_no),
+  followUpDate: value(row.follow_up_date),
+  isChild: value(row.is_child),
+  isSymptomatic: value(row.is_symptomatic),
+  tptEligible: value(row.tpt_eligible),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const contactToRow = (contact: ContactPerson): Row =>
+  definedRow({
+    id: contact.id,
+    patient_id: contact.patientId,
+    ci_date: contact.ciDate,
+    investigator_name: contact.investigatorName,
+    investigator_phone: contact.investigatorPhone,
+    name: contact.name,
+    age: contact.age,
+    sex: contact.sex,
+    relationship_code: contact.relationshipCode,
+    symptom_code: contact.symptomCode,
+    referred: contact.referred,
+    investigation_code: contact.investigationCode,
+    result: contact.result,
+    outcome_code: contact.outcomeCode,
+    tr_or_tpt_no: contact.trOrTptNo,
+    follow_up_date: contact.followUpDate,
+    is_child: contact.isChild,
+    is_symptomatic: contact.isSymptomatic,
+    tpt_eligible: contact.tptEligible,
+    created_at: contact.createdAt,
+    updated_at: contact.updatedAt,
+  });
+
+export const tptRecordFromRow = (row: Row): TptRecord => ({
+  id: required(row.id, ""),
+  patientId: value(row.patient_id),
+  contactId: value(row.contact_id),
+  name: required(row.name, ""),
+  age: value(row.age),
+  sex: value(row.sex),
+  regimen: value(row.regimen),
+  startDate: value(row.start_date),
+  expectedEndDate: value(row.expected_end_date),
+  actualEndDate: value(row.actual_end_date),
+  status: required(row.status, "") as TptRecord["status"],
+  nextFollowUpDate: value(row.next_follow_up_date),
+  notes: value(row.notes),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const tptRecordToRow = (tpt: TptRecord): Row =>
+  definedRow({
+    id: tpt.id,
+    patient_id: tpt.patientId,
+    contact_id: tpt.contactId,
+    name: tpt.name,
+    age: tpt.age,
+    sex: tpt.sex,
+    regimen: tpt.regimen,
+    start_date: tpt.startDate,
+    expected_end_date: tpt.expectedEndDate,
+    actual_end_date: tpt.actualEndDate,
+    status: tpt.status,
+    next_follow_up_date: tpt.nextFollowUpDate,
+    notes: tpt.notes,
+    created_at: tpt.createdAt,
+    updated_at: tpt.updatedAt,
+  });
+
+export const diaryEntryFromRow = (row: Row): DiaryEntry => ({
+  id: required(row.id, ""),
+  time: required(row.time, ""),
+  date: required(row.date, ""),
+  type: required(row.type, "General") as DiaryEntry["type"],
+  patientId: value(row.patient_id),
+  tr: value(row.tr),
+  patientName: value(row.patient_name),
+  details: required(row.details, ""),
+  userId: value(row.user_id),
+  userName: value(row.user_name),
+  metadata: value(row.metadata),
+});
+
+export const diaryEntryToRow = (entry: DiaryEntry): Row =>
+  definedRow({
+    id: entry.id,
+    time: entry.time,
+    date: entry.date,
+    type: entry.type,
+    patient_id: entry.patientId,
+    tr: entry.tr,
+    patient_name: entry.patientName,
+    details: entry.details,
+    user_id: entry.userId,
+    user_name: entry.userName,
+    metadata: entry.metadata,
+  });
+
+export const taskFromRow = (row: Row): Task => ({
+  id: required(row.id, ""),
+  patientId: value(row.patient_id),
+  type: required(row.type, "REPORT_DUE") as Task["type"],
+  title: required(row.title, ""),
+  description: value(row.description),
+  dueDate: value(row.due_date),
+  priority: required(row.priority, "Normal") as Task["priority"],
+  status: required(row.status, "Open") as Task["status"],
+  createdAt: required(row.created_at, ""),
+  completedAt: value(row.completed_at),
+});
+
+export const taskToRow = (task: Task): Row =>
+  definedRow({
+    id: task.id,
+    patient_id: task.patientId,
+    type: task.type,
+    title: task.title,
+    description: task.description,
+    due_date: task.dueDate,
+    priority: task.priority,
+    status: task.status,
+    created_at: task.createdAt,
+    completed_at: task.completedAt,
+  });
+
+export const providerFromRow = (row: Row): Provider => ({
+  id: required(row.id, ""),
+  name: required(row.name, ""),
+  type: required(row.type, "Other") as Provider["type"],
+  phone: value(row.phone),
+  area: value(row.area),
+  union: value(row.union_name),
+  ward: value(row.ward),
+  lastVisitDate: value(row.last_visit_date),
+  notes: value(row.notes),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const providerToRow = (provider: Provider): Row =>
+  definedRow({
+    id: provider.id,
+    name: provider.name,
+    type: provider.type,
+    phone: provider.phone,
+    area: provider.area,
+    union_name: provider.union,
+    ward: provider.ward,
+    last_visit_date: provider.lastVisitDate,
+    notes: provider.notes,
+    created_at: provider.createdAt,
+    updated_at: provider.updatedAt,
+  });
+
+export const sputumFollowUpFromRow = (row: Row): SputumFollowUp => ({
+  id: required(row.id, ""),
+  patientId: required(row.patient_id, ""),
+  stage: required(row.stage, "Other") as SputumFollowUp["stage"],
+  dueDate: value(row.due_date),
+  testDate: value(row.test_date),
+  labId: value(row.lab_id),
+  microscopy: value(row.microscopy),
+  microscopyResult: value(row.microscopy_result),
+  geneXpertResult: value(row.gene_xpert_result),
+  xpertTruenat: value(row.xpert_truenat),
+  culture: value(row.culture),
+  weightKg: value(row.weight_kg),
+  comment: value(row.comment),
+  createdAt: required(row.created_at, ""),
+  updatedAt: required(row.updated_at, ""),
+});
+
+export const sputumFollowUpToRow = (s: SputumFollowUp): Row =>
+  definedRow({
+    id: s.id,
+    patient_id: s.patientId,
+    stage: s.stage,
+    due_date: s.dueDate,
+    test_date: s.testDate,
+    lab_id: s.labId,
+    microscopy: s.microscopy,
+    microscopy_result: s.microscopyResult,
+    gene_xpert_result: s.geneXpertResult,
+    xpert_truenat: s.xpertTruenat,
+    culture: s.culture,
+    weight_kg: s.weightKg,
+    comment: s.comment,
+    created_at: s.createdAt,
+    updated_at: s.updatedAt,
+  });

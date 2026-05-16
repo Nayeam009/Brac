@@ -1,0 +1,11 @@
+export { LoginPage } from "./LoginPage";
+export { DashboardPage } from "./DashboardPage";
+export { PatientRegistryPage } from "./PatientRegistryPage";
+export { PatientFormPage } from "./PatientFormPage";
+export { WorklistPage } from "./WorklistPage";
+export { DiaryPage } from "./DiaryPage";
+export { ReportsPage } from "./ReportsPage";
+export { ProviderPage } from "./ProviderPage";
+export { DataQualityPage } from "./DataQualityPage";
+export { SettingsPage } from "./SettingsPage";
+export { NotFoundPage } from "./NotFoundPage";

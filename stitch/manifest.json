@@ -1,0 +1,217 @@
+{
+  "projectId": "15270537560553858375",
+  "generatedAt": "2026-05-13T16:30:49.800Z",
+  "screenCount": 21,
+  "screens": [
+    {
+      "title": "TPT Tracker - TB-FO Assistant",
+      "screenId": "6a936867d2af41839f4f2bd5e5591dab",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2UzMmNmNzRjMzQ2MzQyYjNiMDQxZDMyMDg3NTNjNzA0EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujMFFUGFqXy8SJgquV_5C2AHvWFemSYDhUEEHtnQxklpMVxxT25lrlX40l4eCl9dnqBLM0FJ2B0MINSz7A89N7KsZf4iAtccHQJk3EegctPcKIGV7B0SU4F7CH9oM3_u_ty1lLUMRPWKYRIvoIvBlZLDlgw29M4rRI9R_Qia_Kq-WwSIT7AO-hb6jweymMnkDK1DcYB_1LdKvXudSadLESqfHxgJ7JQGoqbwFCw1IibElCs85O_X8ZtcsJK"
+    },
+    {
+      "title": "Backup & Settings - TB-FO Assistant",
+      "screenId": "05974504d8d440af90d472bd597da583",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2VjNTgxZDIzNDI2NzQxZDBiMjY5ZjI5YjRlMTU4OGU3EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uivKURwAqMzTdJGWJnFj6UFbCNiyuxBy0YmYT53y0UHdDV26A1GEdOA1eC73CZljJn12mjaSj_ccK-KtWWrP5If5sFidAUyUXE7kC3xGpYkPbYx0-pFVxIVy3mEbmz7uFUYCxHLESzt763D1ZEte5KY6joJWZ3JmpDkuqe5UfkAcIeIejwtNozCN1TnEt88jUkqKu0NkbMxSPDrul72sIUjMQcBSP9AbI-LVah-SOu1QLq0wIXaMqC2Ys8f"
+    },
+    {
+      "title": "Patient Registry - TB-FO Assistant",
+      "screenId": "56179360f38c4b4fa0d16e695145ea1b",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2178,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzE4NTUzNmFlZjRjMDRhYzFhZGFiYjg0N2QzMjJkOThmEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uglmuFX7Y4c5rqy6Lxnvn5qNPrH5HZSoMPiVUCaKB-3U_B2ZJ394lKQUJ8Uvm3OxVWIRiCOAR2VrL9pOxtwI17J2xLH8oe-oo0bz8JB6cflW9CA05XBRRTmxzx22ZIt1zqXIOf-WGJ0-WOp-zkklMHC57Iu0jxvByLepj1OMxSO1SVkW3FHALQvsljWCWkFc8cybNWulkwjAOxvA4zHKyzoReVVrMoAhuiD4YzZagYbeX-0kU3CCJMUlJc"
+    },
+    {
+      "title": "App Shell - Mobile",
+      "screenId": "4eb06b16d4dd445f9e5ea6e873aab013",
+      "projectId": "15270537560553858375",
+      "deviceType": "MOBILE",
+      "width": 780,
+      "height": 1768,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzc2MjgwOTBmMTY5YzQ2YzJhNjRlZTkzYThkOTZkOTA4EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ug7mXV7dh_xz2ENb1YPQJCXIpfZflCDVC_4SUo7se4tcmrTnt6jks18qO6MumHVuJHHh7ynb7WhrVBM0b2cYrRBcHrRT5qOjya6ebMmms1vqHAiZyndRPxS_IaPHy8hmZoL5gN4gihlEZfYk86rcps4dCfji_HDH9BtM71LZlouguhnk3EhzfW6YhYuolEsqXr372ck8IOPahmQdKBdRb0aoyYBrsjqtQN3OBRNys18lH-m0wDWXnAwOdD5"
+    },
+    {
+      "title": "Contact Investigation - TB-FO Assistant",
+      "screenId": "be573495ea854f958d03e9eb74646e1c",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2U5ZDUyZTEyODY4MDRiY2NhNmU2ODI4Nzc3MGE2ZWM3EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujYH5lJFMlQwMqXzzl52omwJBE6UMg8Tjytc8z0YsdaVr7Sv5RMgaOm9TAWpUgXne_mfwukqNeD_lpKL_MX7otzeQhgnsBwZcPXpHtivHVoKET4U4nzItvTijOZoE4WtSd8MPTdPiZ6_2b4Ho6xRSejHvgtUA5lS3QlmmPcvsu4bUyJznq3Z5_khEZyQVoz27tEuf0xNLhZ5vsc90uEHlaiVoedzbOc1mUIbHwgx5UzTrKLFbviTLQLVXOv"
+    },
+    {
+      "title": "App Shell - Desktop",
+      "screenId": "e981b0b362e44fe3836a5c6376402d7c",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzA3YmU1MTQxZGFkYjQ1NzU5OTliYTIyYWE3OGI5MzU3EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ugC7wqoQAAbiJokLaOCTLLwbr3kTfrJIEWVfJ69ZlUWfgsw04vDQsbEghd52Dbt5hR3j6XuJhwdLrpHOnPHT_bMnlxZOlGLcKrUQgmtRvKLoY6e4EuEWXCWczc2XLZb9WZ9rklF5hUu_cD4DKxOdr_CoPZMZR0M8YG3EpgELqTthDVmDizjCaog4HID0UA4I59STgZtiz88wKAIrBW45BIaaB-yQ_ZvUaWaLLq-yu_Gy0PerqZTFVTwCY0f"
+    },
+    {
+      "title": "Dashboard - TB-FO Assistant",
+      "screenId": "f549ef9034da4edf8fe7f02609586550",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2178,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2VjNzAzZjA3YmZjMzQwYTJiNzUxOTM3MzdiMGQxM2FiEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ugmRDArI_wX5Jyv35fvOxqyNRA0Tv5cDn3QWTfNXVC8zViMs1qlyqtfmRxPFejoHvNgeAKQFST7iHGU8NDsCI3ewodX4X9wBs4r1GAM9kHkg0JpUGo4Gs_NEf6Qt6QOda3eXuHyo5xCZOFrWQB_LI3pLniniRNbODZ6HlvI8WnXec9ScAMwfNXnQgvxxyeg2wzBnLcPGxfDVYj7l7-XD80aTyEZLylHiLxPlpjActVLRcGeR8z6HaSQS-Y"
+    },
+    {
+      "title": "Data Quality Check - TB-FO Assistant",
+      "screenId": "7df2d4831be24405b3620790d9faeb84",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2538,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2Q4OTM2NzUyYTAxYjQzZGQ4ZjUzNTJjYjJiYTg3MmY0EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uhHoRaIu9QEk-NagVw13R_r06H_QPh-At_ZLCqIQ2teviMRp45WP1fA4N3YFXQLVr0cw3e_yTBFSfX5p0yV6uaI8BpQN7kcJlR_yXToVyr0WhOrfUa4pZaf0kI4EUjoXCcyHWY2g6dIASucAKkSQVOdGlwunV8faOaMl8lrGk5bJVN7gDP7JvYWpMXJUM1isUsZWnjbWT3q_mb8r9BFq8epjrk1rPx2OWZcJX5t1jxxe17dYccHoxksBCAT"
+    },
+    {
+      "title": "Design System Preview - TB-FO Assistant",
+      "screenId": "5be69e280e8c41da95d0ba58bcf1bd01",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzJmZWM4Y2I0YWE1YzQ5YmI4YWIzMjkwYmI2YTA2OTQyEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujSuEvB-4Lh_yxFtv1xEHzPtYpugDpQrf_g93FY6h2wf99djYZWmB2Qgih9wfKiG4h4pzmWC5Z-ONiZcz9JKHWG3PgYpkQ7vPXW1_7xVEihMahPZ5UZIr5fO4L_Le7mQLGnu_eQfOceiJ7TgkHlFL4EGckfmE5cV3WWbzUksKe5f9HWjz5SAU9WH7RkiOcXch1WklixX_QK9uXGhd_3iHBL3dG0mDDECXuwtnGtFYSpAav9ktH-wcoQ6Ng"
+    },
+    {
+      "title": "Today's Worklist - TB-FO Assistant",
+      "screenId": "a7893f109ec2450da85dbe4d710ce64f",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzNiNDU0MjhlYWMzMTRkMzBhNjRmM2RkNmFkZGU5N2IwEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujxEEmonEyBJZJKgVBsFR5_VrQnl1WD4uYzGGqVfZrYGuCmeb-LxyQ_usTJiF-LaCt9fDePezQIVcVrqiF6IOdpU3wI5OdSzOyU79wWpMk09J1B2Drqpwh8SKfspMgyVwvfQ84u0jUIvzITD0sYb-RGPBrLV1IVKASa5DvgvfX9ZfsoD1W1Hnc5EROXgqataV57To9nJdfyVNyj5eiwBPdJGZW72He5cyLmZ06OnD18qtFrQBy2Lw7CGXC8"
+    },
+    {
+      "title": "Diagnosis & Lab Results - TB-FO Assistant",
+      "screenId": "67fe4869d00b478c890039867643ba7a",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2064,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzNkYjY5MWNmMTMwMzRjZGZhOTNlYzM0MjVkM2MzNTNhEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uiSJXIY503jZhl-sUD-zEDhZGv9gjSSPrwxbVzD9Uub5UIDRU4OUn0RYzryE7axPtnB2idqQtKZOqhEonK3djJUMvRW73Cfj29IxzLS5QxPy5FZPK0Pk8PG5crMustXt5bqJbvjH7CZ_JMdQhYzb9HnQZloT1i-4twU3b4K_dq91eSBIckBBpZQiNG9E1qWHcIeMv7_R45LFgErOWJuQ-I6iqEkFSmsLhwEM7ILuNj8DZNQn-oO8LoYc1O3"
+    },
+    {
+      "title": "DOT Daily Tracking - TB-FO Assistant",
+      "screenId": "3823fe5c632d4ebea0e5e45f04863910",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzNjMmM4MWRlNDVjOTRhNzFhMjE1YWFkNTEwNzA1YWY1EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uislzWBs12gETKYIKPibrUM77sCxD5CxSeyDaR3bfmfW-BY0ZsfPYIByqXVpccJ-KgOniP5ufpqt0-I5yRiVsdDYtPg1IBqKH4nGWBCJ7593yFCfOCcnBkBiExyvHyUmapR-7bmFIJr8wWKGty5WCrg3OcOqpuGCmRX3hyM2z3MrgSWcdTIQ1Gr9Omc9OsekHJu8LrEFuD5kZ5DzTz1ZXpx_8i60UJl6s95MhHzI3QetCdVTWWsXKr1ETw"
+    },
+    {
+      "title": "Treatment History - TB-FO Assistant",
+      "screenId": "7a692bd859a449a4934084bec3ef1145",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzJhNDMzMzVhMDJjODQ5YmNhOTFjZDU4ZGU2OWUwYWNjEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uh5Si_5sWLot-HgS_HI9_ong2R-wlqVn_Di0K3SCBuCqWId3sO9zFV6vzH0VesgRX8xF0rFov9sCOxd5Bi98sqrfT91Cifdp-0f3znebu4DOojuGDLLReXoOeLPtBoV3ymkz-NnlV-PRUTkNb4R7xa2lKVOGbYr9LZDH_jtO2i2ZAWass_Z0eWqppEZhhgkkYd5Q05mGJi-JeFVdNN5Y3KYDSFEpfmtXZ7ME2lBBVaas4KXsEQej0ilCTMV"
+    },
+    {
+      "title": "Reports - TB-FO Assistant",
+      "screenId": "436bb1699fe645f489ecbbd42461ed31",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2FhNTgzNGNmYzk0NTRiNWI5NWI2ZDhmMDQwOTE0YWU0EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujDyrK4dZbb-RSzPjnA-q20IuLA6Yxn7Lyy3I_8hMQhiPWNr8zmUwV1zy_PJWMDEDDyQ0O0KFcEsiqBsKqLIOBbfPCiA-4TPh1R64mTYFlvixZWURhj-THh6QFQuI51Ptuosj0J_knqi3K5yVU5G_EzcP4lNsvAl1thX-1mHjNCXTv-XX9DGA0avUcmg2HfkC17X2E1g6UwoOs-hwX2XHCOjrLy_pS0fuM7LqMFN7IfoWolzOB8nArwmPSw"
+    },
+    {
+      "title": "FO Daily Diary - TB-FO Assistant",
+      "screenId": "0ade0bfccff949489bc5d3ee7e8be752",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzZhYzQ1NDc5MmI2NDQxZDBiMzdjYzg4NThkNGRlODYyEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uj0NCfEduPaQZAXPBhvFxCNR5G98N5lJF9V0fPgkQpYTqZxOujdqiQ2GeQ6pq6wvTbR5E8yNYZ1jZ8hV3PRliIxbwtBTU5jkoD9BkZjeJxoRNXBz5obfFMunPa8Y8JW2VgCpxSgKaDu1sHY2BHuiAYqGgtuT03KQON0IHZvN16XXbaoNQUP5TBo689eAnpDtk6peGJ3_MKjcvfIPbyzuVAv8ZDm9QmbxZI_UJSjmZ-QZRqTVKLxZYn7z4g"
+    },
+    {
+      "title": "SS / DOT Provider Management - TB-FO Assistant",
+      "screenId": "85bda82b53da4831bbed47b770bfe6d5",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzZhNTM1OWVkYTU5ZTRmMGU4Mjc5N2JkNTRiYWEyMGNjEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujTsg6Z8O7qOHCIoa-px3ErZhcUHlnZM4j5z1c_7IsyzMlqmZaHZpiTwUZMqpSi04wE8OJGnez1DbJOdEeG2zUDKZYyvilaUQn7SLbcnImHDv7dEuW_Icd3icq7JsgEcnL1-dL6QvxM8MZrds6XBFzY9q9FZ55RBE3Z9R-UscH8CIavq7WcTeEaJ4p4I5CthNyt5FptA_RcKpT68V9Zl06c-bwa9M3QYRR3jTcoA5aEHR4-igXULRW__OFD"
+    },
+    {
+      "title": "Drug Regimen - TB-FO Assistant",
+      "screenId": "bcc95b1eae814e4fb67cbe206d3d39b4",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2ExNGRlOWUwMzFjNTQ1MDZiZDJmMzY1MmMzMWE5MjU2EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujNtmNVIg1YeZd2WAAoy_KpmCT_JuR64XWgJM0YtxxKRoaIb2wj3EQtMAft_8MPPvGbJwL99yYpcV2knfQX5ZrrCLJu4IoMH1FFwUN6N1nJ0bwiUxk83JDMZrIFY_V1gydPshLqoAeh97Tl9gKJ8H50_phfjH-H0eE3RBmLu1p7GNkl6CzhtET0e1O-jvm8bCZYqf9UrjnxF2QbrolY5SerJx2apk8Ei42Y0CzD7D3uoK4iNs65YFJh26iE"
+    },
+    {
+      "title": "Login - TB-FO Assistant",
+      "screenId": "ac90bc66ca224a2aa9e713b9f139df6e",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzgxMDUyODg4ZjYzNTQ2ZmRiMjlhZjlkYzU5NWRmYTdiEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujGm6iZ2bWaOenY53iGefRlk9a_q-jdGXIper9lY8gxi56FPPvvNc7DmTem1PCTLOt34uTEEGFvdS8i66yU7hpwyw7adyy8cpe7XCYaTCaf126wj1T3eP-IZe9LxlZ0N9j-vxySMmwmlzOkw2flhWN4lG8BAFDgNMGN-bf4P-IEVqlA9h_j3qbKCNhdfkLJYf4He0HhtFl2kYtCVXNJTQ-QFVxckW89-0YsLatQ024Ofscsfwgj8vB0BSQ"
+    },
+    {
+      "title": "DOTS & SS Info - TB-FO Assistant",
+      "screenId": "e712f18830384819a7502cc29e1da250",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2Y3MDM4ZjkyNzY5YjQyODU4ZTY5YTBiZGI0MjA4OGFhEgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uj9ROyFFks-hRcm1aJNfFG7GdEUxyGAgoc7mY-ofo5MBsF-GPq_Aaxa_WnVuRtZ3rSp7p8B4G-kXDcOxz1FjpQTEeiwGfROaYts613wCOhRZQk0Px7-el83yM0dszgwx-EeKvUiNijF0Af3dNh3ZEwCmCztDZc6XJFkrZTKq5XyuR7YoyOlBq-emFmXoYY2HQnq5dRmBqovO0cEF09Mnb-DRJYKIKux898IBgDdFF58dpti8aR_bX-p8d6U"
+    },
+    {
+      "title": "New Patient Identity - TB-FO Assistant",
+      "screenId": "144e829211f64b688cce5177f4f94b0e",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2048,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzI4MzY2ZTZkMDZhNDRlNzBiYjQxNTIwYTMzY2RjYWQ3EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uhkss4EXm7U1tT23pu2R7XeHQdLg-NGsGa8NV5to0guF_fBY-NZz3SNnbmRUAUQTJfKPO2ySXeOwZzE0QV_gFG1fTP__pXCkyH_MhboAUcLrUuox-D1bcojS-iAfP-rdAOXHmXjerjT-cR45wBurcj3j9bPw0y4m_2RTBchTjxBcgUb0ONkzQf835zLIbfNMFBqyj-9deD0Y9pPcsO-mmM1e9JI5DwRUGx3SYAhhYjB_3JHRhXvEnFuJT_l"
+    },
+    {
+      "title": "Sputum Follow-up - TB-FO Assistant",
+      "screenId": "d2a9a28d8e0945f9812fc68e3df73697",
+      "projectId": "15270537560553858375",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2128,
+      "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2JjNDhkMWEwZmU3NDRiNjM5Y2MxMjU4MmU5YWViYjY4EgsSBxCp_siP_B0YAZIBJAoKcHJvamVjdF9pZBIWQhQxNTI3MDUzNzU2MDU1Mzg1ODM3NQ&filename=&opi=89354086",
+      "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uhK_zk8k5S5iRJgtxVF9bOWNBGpHUpMLhUU3whDi0nKifmZuHbQnygzTZmU4haS11gEXRAEaSsOAKuRoHcHPnl_3o-6SNRYaJabU--TiWM7VoNTovPwYxwYgSMvdMYgQ-QzAvXHaqFvI27slbm_N50RZP7d2NVsXQawp-eHtbpjUPtdGxTBjjqmvusBmeuKc1FiwJwUr9doDOdcFQ8hdyE9m52SX7bm-CCQZypinzxwsc-pRkrYJFWGPk8"
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TB-FO Assistant - ড্যাশবোর্ড</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d5e6df",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#ecfdf5",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#346490",
+                        "tertiary-fixed": "#cfe4ff",
+                        "surface-bright": "#ecfdf5",
+                        "on-background": "#0f1e1a",
+                        "on-primary-container": "#98edc6",
+                        "surface-container": "#e0f2ea",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#9dcbfc",
+                        "primary-container": "#0a6e4f",
+                        "primary": "#00543b",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bec9c1",
+                        "on-secondary-container": "#007150",
+                        "outline": "#6f7a73",
+                        "inverse-surface": "#24332e",
+                        "inverse-primary": "#83d7b1",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#0f1e1a",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#83d7b1",
+                        "on-tertiary-fixed": "#001d34",
+                        "secondary-fixed-dim": "#75d9ae",
+                        "secondary-fixed": "#92f6c9",
+                        "surface-dim": "#cdded6",
+                        "on-tertiary-fixed-variant": "#124a74",
+                        "on-primary-fixed": "#002115",
+                        "on-surface-variant": "#3f4943",
+                        "surface-variant": "#d5e6df",
+                        "primary-fixed": "#9ef4cc",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#002114",
+                        "secondary": "#006c4c",
+                        "surface-container-low": "#e6f8ef",
+                        "secondary-container": "#8ff3c6",
+                        "surface-tint": "#046c4d",
+                        "on-tertiary-container": "#c4dfff",
+                        "background": "#ecfdf5",
+                        "on-secondary-fixed-variant": "#005138",
+                        "surface-container-high": "#dbece4",
+                        "on-primary-fixed-variant": "#005139",
+                        "inverse-on-surface": "#e3f5ed",
+                        "tertiary": "#154c77"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin_desktop": "48px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "margin_mobile": "16px",
+                        "sm": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hind Siliguri"],
+                        "numeric-data": ["Inter"],
+                        "mono-id": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Hind Siliguri"],
+                        "body-lg": ["Hind Siliguri"],
+                        "h1": ["Hind Siliguri"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "numeric-data": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "mono-id": ["13px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "h2": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "h1": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim docked full-width top-0 sticky border-b border-outline-variant dark:border-outline bg-surface/95 backdrop-blur-md flex justify-between items-center px-margin_mobile md:px-margin_desktop py-sm w-full z-50">
+<div class="font-h1 text-h1 font-bold text-primary dark:text-primary-fixed-dim">TB-FO Assistant</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high transition-colors rounded-full p-2">sync</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high transition-colors rounded-full p-2">account_circle</span>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen p-md fixed left-0 top-0 overflow-y-auto bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline docked left-0 h-full w-[280px] z-40 mt-[65px]">
+<div class="mb-8 px-4">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">Field Operations</p>
+<button class="w-full bg-primary-container text-on-primary font-body-md font-semibold py-2 rounded-lg mt-4 flex justify-center items-center gap-2 hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    New Patient
+                </button>
+</div>
+<ul class="flex flex-col gap-2 font-body-md text-body-md font-semibold">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-fixed-variant bg-primary-fixed rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                        Dashboard
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+                        Patients
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">event_upcoming</span>
+                        Today
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+                        Diary
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+                        Reports
+                    </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content -->
+<main class="w-full md:ml-[280px] p-margin_mobile md:p-margin_desktop pb-24 md:pb-8">
+<!-- Greeting Area -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-4">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">ড্যাশবোর্ড</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">সুপ্রভাত, Field Organiser</p>
+<p class="font-numeric-data text-numeric-data text-on-surface-variant mt-1">24 October 2023 | ২৪ অক্টোবর ২০২৩</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">SYNCED (2m ago)</span>
+</div>
+</div>
+<!-- Summary Cards Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-xl">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">মোট রোগী</h3>
+<span class="material-symbols-outlined text-primary text-[20px]">groups</span>
+</div>
+<p class="font-h1 text-h1 text-on-surface">৩৪২</p>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">চলমান চিকিৎসা</h3>
+<span class="material-symbols-outlined text-primary text-[20px]">healing</span>
+</div>
+<p class="font-h1 text-h1 text-on-surface">১২৮</p>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-[0_2px_4px_0_rgba(28,43,38,0.05)] border-l-4 border-l-error">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-caps text-label-caps text-error uppercase">DOT Missed</h3>
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+</div>
+<p class="font-h1 text-h1 text-error">১২</p>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Lab Pending</h3>
+<span class="material-symbols-outlined text-primary text-[20px]">science</span>
+</div>
+<p class="font-h1 text-h1 text-on-surface">৭</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-xl">
+<!-- Left Column (Alerts & Worklist) -->
+<div class="lg:col-span-2 flex flex-col gap-xl">
+<!-- Critical Alerts -->
+<section>
+<h2 class="font-h2 text-h2 text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-error">notification_important</span>
+                            Critical Alerts
+                        </h2>
+<div class="flex flex-col gap-3">
+<div class="bg-error-container/20 border-l-4 border-error rounded-r-xl p-4 flex justify-between items-center shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">RR Result Urgent</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Patient: Rahim Uddin (TR-10293)</p>
+</div>
+<button class="px-4 py-2 bg-surface text-primary border border-primary rounded-lg font-body-md font-semibold hover:bg-surface-container-low">View</button>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex justify-between items-center shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Overdue Follow-up</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Patient: Amina Begum (TR-9921)</p>
+</div>
+<button class="px-4 py-2 bg-surface text-primary border border-primary rounded-lg font-body-md font-semibold hover:bg-surface-container-low">View</button>
+</div>
+</div>
+</section>
+<!-- Quick Actions -->
+<section>
+<h2 class="font-h2 text-h2 text-on-surface mb-4">Quick Actions</h2>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high transition-colors shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<span class="material-symbols-outlined text-primary text-[32px]">person_add</span>
+<span class="font-body-md text-body-md font-semibold">নতুন রোগী</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high transition-colors shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<span class="material-symbols-outlined text-primary text-[32px]">update</span>
+<span class="font-body-md text-body-md font-semibold">DOT Update</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high transition-colors shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<span class="material-symbols-outlined text-primary text-[32px]">lab_profile</span>
+<span class="font-body-md text-body-md font-semibold">Lab Result</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high transition-colors shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<span class="material-symbols-outlined text-primary text-[32px]">description</span>
+<span class="font-body-md text-body-md font-semibold">CI Entry</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Right Column (Diary & Worklist preview) -->
+<div class="flex flex-col gap-xl">
+<!-- Today's Worklist -->
+<section class="bg-surface-container-low rounded-xl p-4 border border-outline-variant shadow-[0_2px_4px_0_rgba(28,43,38,0.05)]">
+<h2 class="font-h2 text-h2 text-on-surface mb-4 border-b border-outline-variant pb-2">Today's Worklist</h2>
+<ul class="flex flex-col gap-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant mt-1">check_circle</span>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Collect Sputum (2M)</p>
+<p class="font-numeric-data text-numeric-data text-on-surface-variant">TR-8832 | Jamal Hossain</p>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-error mt-1">warning</span>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Missed DOT Follow-up</p>
+<p class="font-numeric-data text-numeric-data text-on-surface-variant">TR-9120 | Salma Khatun</p>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant mt-1">assignment</span>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Contact Investigation</p>
+<p class="font-numeric-data text-numeric-data text-on-surface-variant">Index TR-1002 | 3 Pending</p>
+</div>
+</li>
+</ul>
+<button class="w-full mt-4 text-primary font-body-md font-semibold hover:underline">View Full Worklist</button>
+</section>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center pt-xs pb-sm md:hidden shadow-lg bg-surface dark:bg-surface-container-lowest shadow-[0_-4px_6px_-1px_rgba(28,43,38,0.05)] docked full-width bottom-0 rounded-t-xl">
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-lg p-1">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-caps text-label-caps">Patients</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-lg p-1">
+<span class="material-symbols-outlined">event_upcoming</span>
+<span class="font-label-caps text-label-caps">Today</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-lg p-1">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-label-caps text-label-caps">Diary</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-lg p-1">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-label-caps text-label-caps">Reports</span>
+</div>
+</nav>
+</body></html>

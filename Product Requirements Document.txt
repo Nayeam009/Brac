@@ -1,0 +1,1723 @@
+Product Requirements Document
+TB-FO Assistant: Digital TB-01 Record, FO Work Diary, DOT Tracking & TB Field Workflow System
+
+Version: 1.0
+Prepared for: Codex implementation
+Primary user: BRAC TB Field Organiser / Field Officer
+Working title: TB-FO Assistant
+Alternative title: TB-01 Digital Record System
+Language: Bangla-first, English-supported
+Context: BRAC TB Control Programme-style field workflow for patient registration, diagnosis tracking, treatment/DOT follow-up, contact investigation, TPT, outcome, reporting, and automatic FO daily diary.
+
+1. Product summary
+
+TB-FO Assistant is an offline-capable web application for TB field staff to manage the complete TB patient workflow from presumptive identification to treatment outcome.
+
+The current prototype already includes a strong single-file HTML/CSS/JavaScript implementation with:
+
+TB patient list
+TB-01 style patient form
+DOTS/SS information
+diagnosis and lab result section
+treatment history
+drug regimen table
+daily DOT grid
+sputum follow-up table
+contact investigation table
+treatment outcome section
+summary dashboard
+search/filter
+single-record HTML download
+all-record JSON export
+localStorage persistence
+Bangla UI
+
+The next product should evolve this into a complete FO field management system with automation, task generation, audit logs, reports, offline backup, and a dedicated FO Daily Work Diary.
+
+WHO’s 2024 TB Digital Adaptation Kit recommends that TB digital systems include user personas, workflows, core data elements, decision-support logic, indicators, and functional/non-functional requirements. This PRD follows that structure so the system can be built cleanly and later aligned with national TB programme forms and indicators.
+
+2. Product vision
+2.1 Vision statement
+
+Build a Bangla-first digital field assistant that helps an FO track every TB patient, every sample, every DOT dose, every contact investigation, every TPT client, every follow-up, and every daily work activity from one simple offline-capable app.
+
+2.2 Product tagline
+
+“From TB case finding to treatment outcome — one FO dashboard.”
+
+2.3 Core promise
+
+The software should help the FO answer these questions instantly:
+
+Who are my active TB patients?
+Who missed DOT?
+Whose sputum follow-up is due?
+Which lab results are pending?
+Which positive patients have not started treatment?
+Which contact investigations are incomplete?
+Which contacts need TPT follow-up?
+Which patients are near treatment completion?
+What work did I do today?
+What monthly report do I need to submit?
+3. Problem statement
+
+FOs manage many activities manually: patient records, DOT follow-up, sputum follow-up, contact investigation, TPT tracking, lab coordination, private-provider referral, SS supervision, outcome tracking, and monthly reporting.
+
+Manual systems create several risks:
+
+Problem	Consequence
+Records are paper-based or scattered	Hard to search, track, and report
+DOT missed doses are not automatically flagged	Higher loss-to-follow-up risk
+Lab results are not tracked from sample to result	Delayed diagnosis or treatment initiation
+Contact investigation is hard to monitor	Household contacts may remain unscreened
+TPT clients are easy to lose	Preventive treatment completion suffers
+Monthly reporting is repetitive	FO spends time counting instead of doing fieldwork
+Daily FO activity is not automatically recorded	Supervisor cannot easily verify field work
+No centralized worklist	FO must remember many tasks manually
+
+The product solves this by making the system task-driven, patient-centered, and diary-backed.
+
+4. Goals and non-goals
+4.1 Goals
+Primary goals
+Digitize TB-01 style patient records.
+Track patient diagnosis, treatment, DOT, sputum follow-up, contact investigation, TPT, and outcome.
+Automatically create daily FO work diary entries when work is done.
+Generate FO daily worklist based on due/overdue tasks.
+Generate summary dashboards and monthly reports.
+Work offline on a field device.
+Support Bangla UI with English clinical/programme terms.
+Export and backup data safely.
+Prepare the system for future backend sync, login, SMS, and NTP-compatible reports.
+Secondary goals
+Track SS/DOT provider performance.
+Track private provider referrals.
+Track lab sample movement.
+Track field outreach and ACF activities.
+Add risk scoring for patients likely to become LTFU.
+Add supervisor dashboard.
+Add role-based access.
+4.2 Non-goals
+
+The system should not:
+
+Replace clinical diagnosis.
+Automatically prescribe medication.
+Automatically finalize treatment outcome without staff confirmation.
+Replace official NTP/e-TB Manager systems unless formally integrated.
+Store sensitive patient data in insecure storage for production use.
+Make HIV-related clinical decisions automatically.
+Send patient data to third-party services without explicit consent and security review.
+
+Digital adherence tools such as SMS, medication event monitoring, and video-supported treatment can support TB treatment adherence, but WHO frames these as tools that require careful implementation, context review, and patient-centered planning.
+
+5. Product scope
+5.1 MVP scope
+
+The MVP should be a local-first PWA or web app that includes:
+
+Patient registry
+Full patient record form
+Diagnosis and lab results
+Treatment start and phase calculation
+DOT daily grid
+Sputum follow-up
+Contact investigation
+TPT basic tracker
+Outcome selection
+Search/filter
+Summary dashboard
+FO Daily Work Diary
+Today’s FO Worklist
+JSON export/import backup
+CSV/Excel-style report export
+Printable single patient record
+Basic data validation
+Duplicate warning
+5.2 Post-MVP scope
+Login and role-based permissions
+Backend database sync
+Encrypted local storage
+SMS/WhatsApp reminder integration
+Supervisor dashboard
+Lab user portal
+Private provider referral module
+SS/DOT provider performance module
+Map/area module
+NTP/e-TB Manager compatible export
+Device sync/conflict resolution
+Attachments: X-ray photo, lab report photo, consent document
+AI-assisted narrative monthly report
+6. Users and personas
+6.1 FO / Field Organiser / Field Officer
+
+Primary user.
+
+Responsibilities
+Register presumptive/confirmed TB patients
+Coordinate sample collection and testing
+Ensure treatment initiation
+Monitor DOT adherence
+Supervise SS/DOT providers
+Conduct/contact-investigation follow-up
+Track TPT
+Coordinate with UHC/lab/private providers
+Prepare reports
+Needs
+Fast entry
+Offline use
+Bangla UI
+Daily task list
+Due/overdue reminders
+Automatic diary
+Easy export
+6.2 SS / Shasthya Shebika / DOT provider
+
+Secondary user.
+
+Responsibilities
+Identify presumptive TB cases
+Refer patients
+Support DOT
+Help follow-up patients
+Support contact investigation
+Needs
+Assigned patient list
+DOT marking
+Missed-dose alert
+Incentive/performance summary
+6.3 Supervisor / Programme Organizer / Manager
+
+Secondary user.
+
+Responsibilities
+Monitor FO performance
+Review patient outcomes
+Review missed follow-ups
+Verify monthly reports
+Monitor area indicators
+Needs
+Dashboard
+FO-wise reports
+SS-wise reports
+Audit log
+Data quality checks
+6.4 Lab focal person
+
+Future user.
+
+Responsibilities
+Receive samples
+Enter test results
+Update GeneXpert/Truenat/microscopy result
+Needs
+Sample queue
+Pending result list
+Result entry
+Result notification to FO
+6.5 Admin
+
+Future user.
+
+Responsibilities
+Manage users
+Manage area lists
+Manage forms/settings
+Backup/restore data
+Configure reports
+7. Core workflows
+7.1 Patient registration workflow
+Trigger
+
+FO clicks “নতুন নিবন্ধন”.
+
+Steps
+FO enters TR number if available.
+FO enters patient name, age, sex, phone, address, ward, union, upazila, district.
+FO enters DOTS centre, SS, DOT provider, referral source.
+System checks duplicates.
+FO saves record.
+System creates diary entry: New Patient.
+System creates default status: Pre-treatment unless treatment start date exists.
+Patient appears in registry and dashboard.
+Acceptance criteria
+User cannot save a completely empty patient record.
+User can save with either patient name or TR number.
+Duplicate warning appears if same name + phone or same TR exists.
+New patient appears at top of list.
+Diary logs patient registration automatically.
+7.2 Diagnosis and lab workflow
+Trigger
+
+FO receives or enters lab result.
+
+Steps
+FO enters test type: GeneXpert, Truenat, microscopy, X-ray, culture.
+FO enters lab ID, test date, result.
+System flags result category:
+MTB detected
+Rifampicin resistant
+Not detected
+Invalid/error
+Pending
+If positive result and no treatment start date, system creates Treatment Start Pending task.
+If RR/Rif-resistant result, system creates Urgent DR-TB referral flag.
+Diary logs Lab Updated.
+Acceptance criteria
+Result updates are saved.
+Lab result change creates diary entry.
+Positive result without treatment start appears in Today’s Worklist.
+Invalid/error result creates retest task.
+RR result shows high-priority red flag.
+7.3 Treatment initiation workflow
+Trigger
+
+FO enters treatment start date.
+
+Steps
+FO selects patient type: new, relapse, treatment after failure, LTFU, transfer in, other.
+FO enters treatment start date.
+System calculates:
+IP end date
+treatment end date
+follow-up sputum due dates
+default DOT calendar months
+System changes phase to Intensive Phase if appropriate.
+FO assigns DOT provider.
+Diary logs Record Updated.
+Acceptance criteria
+Start date automatically calculates IP end and treatment end.
+DOT grid is generated for 6 months by default.
+Follow-up sputum due dates appear.
+Patient moves from Pre-treatment to active treatment.
+7.4 DOT tracking workflow
+Trigger
+
+FO or DOT provider marks daily DOT.
+
+Steps
+User opens DOT grid.
+User clicks a date cell.
+Cell cycles through:
+blank
+Done
+Missed
+Supervised
+System recalculates monthly adherence.
+If missed, system creates follow-up task.
+Diary logs DOT Updated.
+Acceptance criteria
+DOT status persists after save/reload.
+Monthly adherence percentage updates instantly.
+Missed DOT appears in Today’s Worklist.
+Diary logs each DOT update with date and patient.
+7.5 Sputum follow-up workflow
+Trigger
+
+Patient reaches 2M, 5M, or 6M follow-up.
+
+Steps
+System generates sputum due task.
+FO enters sample/test date, lab ID, microscopy, GeneXpert/Truenat, culture, weight, comments.
+System clears due task.
+System flags positive follow-up result.
+Diary logs Lab Updated or Sputum Updated.
+Acceptance criteria
+2M/5M/6M follow-up rows exist.
+Due/overdue follow-up appears on dashboard.
+Positive follow-up result creates alert for review.
+Final negative follow-up can support outcome suggestion.
+7.6 Contact investigation workflow
+
+Bangladesh NTP publishes contact investigation and TPT-related forms, including Contact Investigation Form, TPT Register, and TPT Card, so this module should remain compatible with those concepts.
+
+Trigger
+
+Patient is bacteriologically confirmed pulmonary TB.
+
+Steps
+System auto-creates CI task.
+FO enters CI date and investigator.
+FO adds household/close contacts.
+For each contact, FO enters:
+name
+age
+sex
+relationship
+symptoms
+referral status
+investigation type
+result
+outcome
+TR/TPT number
+follow-up date
+System flags child contacts and symptomatic contacts.
+System suggests TPT review for eligible contacts.
+Diary logs CI Updated.
+Acceptance criteria
+CI task appears for eligible index cases.
+Contact rows can be added/edited/deleted.
+Symptomatic contacts appear in referral task list.
+TPT candidates appear in TPT module.
+CI activity is logged in diary.
+7.7 TPT workflow
+Trigger
+
+Contact is eligible for TB preventive treatment.
+
+Steps
+FO marks contact as TPT eligible.
+System creates TPT record.
+FO enters TPT regimen, start date, expected end date.
+System tracks follow-up and completion.
+Missed TPT follow-up appears in Today’s Worklist.
+Diary logs TPT Updated.
+Acceptance criteria
+Contacts can become TPT records.
+TPT expected completion date auto-calculates based on regimen.
+TPT pending/completed/defaulted status is reportable.
+TPT follow-up due list is visible.
+7.8 Outcome workflow
+Trigger
+
+Patient completes treatment, dies, transfers, defaults, or fails.
+
+Steps
+FO selects treatment outcome:
+Cured
+Treatment Completed
+Died
+Treatment Failure
+Lost to Follow-up
+Transfer Out
+Not Evaluated
+FO enters outcome date, transfer location, sign-off officer, comments.
+System updates patient phase/status.
+Diary logs Outcome Updated.
+Patient appears in outcome reports.
+Acceptance criteria
+Outcome can be selected and saved.
+Outcome date is required before final closure.
+Outcome change appears in diary.
+Completed patients no longer appear in active treatment count.
+7.9 FO Daily Work Diary workflow
+Trigger
+
+Any meaningful FO action.
+
+Steps
+FO performs action: save patient, update DOT, update lab, add CI row, select outcome, download report, delete record.
+System automatically creates diary entry.
+Diary entry includes:
+timestamp
+date
+action type
+patient ID
+TR
+patient name
+details
+user
+FO opens diary page.
+FO filters by date/type/search.
+FO exports diary.
+Acceptance criteria
+Diary logs automatically without manual typing.
+Diary can filter by date and type.
+Diary shows daily summary.
+Diary can export JSON/CSV.
+Deleting a patient still keeps delete diary entry.
+7.10 Today’s FO Worklist workflow
+Trigger
+
+User opens dashboard.
+
+System automatically calculates
+missed DOT yesterday/today
+follow-up due within 3 days
+follow-up overdue
+lab result pending
+positive result but treatment not started
+CI pending
+TPT follow-up due
+outcome pending
+SS update missing
+private provider visit due
+Acceptance criteria
+Worklist updates automatically.
+Each worklist item links to patient record.
+Items are grouped by priority.
+Overdue items are visually highlighted.
+8. Current prototype capabilities to preserve
+
+The current code has strong UI/UX patterns that should be preserved:
+
+8.1 UI style
+Green BRAC-like theme
+Sticky topbar
+Bangla labels
+Section cards with icons
+Collapsible sections
+Patient cards
+Summary strip
+DOT grid
+Outcome buttons
+Toast notifications
+Print support
+8.2 Current sections
+
+The existing form sections should remain:
+
+ক — রোগীর পরিচয় & ঠিকানা
+খ — DOTS কেন্দ্র ও SS তথ্য
+গ — রোগ নির্ণয় ও পরীক্ষার ফলাফল
+ঘ — চিকিৎসার ইতিহাস ও পর্যায়
+ঙ — ওষুধের নির্দেশিকা
+চ — DOT Daily Tracking Grid
+ছ — কফ পরীক্ষার ফলো-আপ ফলাফল
+জ — সংস্পর্শ তদন্ত
+ঝ — চিকিৎসার চূড়ান্ত ফলাফল
+FO দৈনিক কাজের ডায়েরি — new module
+আজকের কাজ — new dashboard/worklist
+9. Product modules
+Module 1: Dashboard
+Purpose
+
+Give the FO an instant operational summary.
+
+Must show
+Metric	Description
+Total patients	All saved records
+Active treatment	IP + CP patients
+Pre-treatment	Registered but treatment not started
+Completed	Completed/cured
+Defaulted/LTFU	Lost to follow-up
+Follow-up due	Due within next 3 days
+Follow-up overdue	Past due
+Lab pending	Samples/results pending
+Treatment start pending	Positive result but no start date
+CI pending	Eligible index cases without CI completion
+TPT active	Active preventive treatment clients
+Outcome pending	Treatment end passed but no outcome
+Today’s diary count	Activities logged today
+Dashboard cards
+আজকের কাজ
+চলমান রোগী
+DOT Missed
+Lab Pending
+CI/TPT Pending
+Outcome Pending
+FO Diary Today
+Module 2: Patient Registry
+Features
+Search by TR, name, phone, SS name
+Filter by phase
+Filter by TB type
+Filter by union/ward
+Filter by due/overdue
+Filter by outcome
+Patient card quick summary
+New patient button
+Export all button
+Import backup button
+Patient card fields
+Patient name
+TR number
+phase badge
+age/sex
+TB type
+SS name
+phone
+treatment start
+next follow-up
+lab result
+risk badge
+Module 3: Patient Record
+Sections
+Identity
+
+Fields:
+
+TR / Registration No
+DOTS Plus No
+e-TB Manager ID
+registration date
+full name
+age
+sex
+phone
+father name
+mother name
+address
+ward
+union
+upazila
+district
+DOTS and SS
+
+Fields:
+
+DOTS Corner / Centre
+SS name
+SS phone
+DOT provider name
+DOT provider type
+Contact Investigator name
+referrer name/designation
+referral source
+Diagnosis
+
+Fields:
+
+TB type: pulmonary / extra-pulmonary
+EP site
+confirmation method: bacteriologically confirmed / clinically diagnosed
+GeneXpert/Truenat lab ID
+GeneXpert/Truenat date
+GeneXpert/Truenat result
+result quantity
+microscopy lab ID
+microscopy date
+microscopy result
+scanty count
+X-ray ID
+X-ray date
+X-ray result
+BCG scar
+HIV test status
+CPT start date
+ART start date
+COVID-19 test
+malaria test
+Treatment history
+
+Fields:
+
+patient type
+treatment start date
+phase
+IP end date
+treatment end date
+previous TR number
+transfer-in source
+next follow-up date
+treatment history note
+Drug regimen
+
+Fields:
+
+regimen type
+patient weight
+drug start date
+drug checklist
+quantity
+issue date
+note
+DOT grid
+
+Fields:
+
+month selector
+day cells
+status:
+Done
+Missed
+Supervised
+Blank
+monthly stats
+Sputum follow-up
+
+Rows:
+
+2M
+5M
+6M
+
+Fields per row:
+
+test date
+lab ID
+microscopy
+GeneXpert/Truenat
+culture
+weight
+comment
+Contact investigation
+
+Fields:
+
+CI date
+CI investigator
+CI phone
+contacts table
+
+Contact fields:
+
+name
+age
+sex
+relationship
+symptoms
+referred
+investigation
+result
+outcome
+TR/TPT no
+follow-up date
+Outcome
+
+Fields:
+
+outcome
+outcome date
+transfer-to location
+sign-officer
+outcome note
+Module 4: FO Daily Work Diary
+Purpose
+
+Automatically track FO work every day.
+
+Diary entry types
+Type	Trigger
+New Patient	New record saved
+Record Updated	Patient data changed
+DOT Updated	DOT grid clicked
+Lab Updated	Lab result changed
+Sputum Updated	Follow-up sputum updated
+CI Updated	CI row added/edited
+TPT Updated	TPT record added/changed
+Outcome Updated	Outcome changed
+Download	Export/download action
+Delete	Record deletion
+Login	Future login event
+Sync	Future sync event
+Report Generated	Report export
+Task Completed	Future worklist completion
+Diary screen
+
+Fields:
+
+date filter
+type filter
+search input
+summary cards
+timeline list
+export button
+clear diary button, admin-only in future
+Diary list item
+
+Should show:
+
+icon
+patient name or “General Activity”
+type badge
+TR
+user
+date
+time
+details
+Module 5: Today’s FO Worklist
+Purpose
+
+Automatically turn records into daily tasks.
+
+Task categories
+Category	Rule
+DOT missed	DOT marked missed yesterday/today
+DOT not updated	Active patient has no DOT mark for today
+Follow-up due	nextFollowUp within 3 days
+Follow-up overdue	nextFollowUp < today
+Sputum due	2M/5M/6M date due
+Lab pending	sample collected but no result
+Treatment start pending	MTB detected but no treatment start date
+CI pending	BC pulmonary patient without CI date/contacts
+TPT due	TPT follow-up date due
+Outcome pending	treatment end date passed but no outcome
+SS follow-up needed	SS-assigned patient has missed DOT/follow-up
+Report due	month-end report pending
+Task priority
+Priority	Color	Examples
+Critical	Red	RR result, treatment start pending, repeated missed DOT
+High	Orange	follow-up overdue, lab pending > 3 days
+Medium	Blue	follow-up due in 3 days
+Normal	Green	routine update
+Module 6: Reports
+Required reports
+Patient registry report
+Active treatment report
+Pre-treatment pending report
+Lab pending report
+Positive result but treatment not started
+DOT adherence report
+Missed DOT report
+Sputum follow-up due report
+Contact investigation report
+TPT report
+Treatment outcome report
+SS-wise patient report
+FO daily diary report
+Monthly FO activity report
+Data quality issue report
+Export formats
+JSON
+CSV
+Excel-compatible CSV
+printable HTML
+PDF later
+Module 7: SS/DOT Provider Management
+MVP fields
+name
+phone
+provider type
+assigned area
+assigned patients
+active patients
+missed DOT count
+referrals generated
+contact investigations supported
+incentive status, future
+Features
+Assign patient to SS/DOT provider
+SS-wise patient list
+SS performance summary
+Missed follow-up by SS
+Export SS report
+Module 8: Private Provider / Referral Source Module
+MVP fields
+provider name
+provider type: pharmacy, village doctor, clinic, CHCP, UHC, self, ACF, CI
+phone
+area
+last visit date
+referrals count
+confirmed TB from referrals
+Features
+Referral source dropdown
+Provider-wise referral tracking
+Monthly visit reminders
+Provider performance report
+Module 9: Backup, Import, Export
+MVP
+Export all records as JSON
+Export diary as JSON
+Import records from JSON
+Import diary from JSON
+Download single patient HTML
+Print current patient record
+Future
+encrypted backup file
+cloud sync
+versioned backups
+conflict resolution
+10. Functional requirements
+10.1 Patient registry
+ID	Requirement	Priority
+FR-001	User can create a new patient record.	P0
+FR-002	User can edit an existing patient record.	P0
+FR-003	User can delete a patient record after confirmation.	P1
+FR-004	User can search by TR, name, phone, SS name.	P0
+FR-005	User can filter by phase.	P0
+FR-006	User can filter by TB type.	P1
+FR-007	User can filter by union/ward.	P1
+FR-008	System warns if TR already exists.	P0
+FR-009	System warns of possible duplicate patient.	P0
+FR-010	Patient list displays key status badges.	P0
+10.2 Diagnosis and lab
+ID	Requirement	Priority
+FR-101	User can enter GeneXpert/Truenat result.	P0
+FR-102	User can enter microscopy result.	P0
+FR-103	User can enter X-ray result.	P1
+FR-104	User can enter HIV test status.	P1
+FR-105	System flags MTB detected result.	P0
+FR-106	System flags rifampicin-resistant result.	P0
+FR-107	System creates treatment-start pending alert when positive result has no treatment start date.	P0
+FR-108	System logs lab result changes in diary.	P0
+10.3 Treatment
+ID	Requirement	Priority
+FR-201	User can enter treatment start date.	P0
+FR-202	System calculates IP end date.	P0
+FR-203	System calculates treatment end date.	P0
+FR-204	System calculates follow-up sputum due dates.	P0
+FR-205	User can select patient type.	P0
+FR-206	User can select phase.	P0
+FR-207	System can auto-suggest phase based on dates.	P1
+FR-208	System logs treatment updates in diary.	P0
+10.4 DOT
+ID	Requirement	Priority
+FR-301	User can view monthly DOT grid.	P0
+FR-302	User can add DOT month.	P0
+FR-303	User can mark Done/Missed/Supervised/Blank.	P0
+FR-304	System calculates monthly adherence.	P0
+FR-305	System highlights missed DOT.	P0
+FR-306	System creates missed-DOT task.	P0
+FR-307	System logs DOT update in diary.	P0
+FR-308	System can show full treatment DOT summary.	P1
+10.5 Sputum follow-up
+ID	Requirement	Priority
+FR-401	User can enter 2M follow-up result.	P0
+FR-402	User can enter 5M follow-up result.	P0
+FR-403	User can enter 6M follow-up result.	P0
+FR-404	System shows due/overdue follow-up.	P0
+FR-405	System flags positive follow-up result.	P0
+FR-406	System logs sputum result changes.	P1
+10.6 Contact investigation
+ID	Requirement	Priority
+FR-501	User can enter CI date and investigator.	P0
+FR-502	User can add contact rows.	P0
+FR-503	User can edit contact rows.	P0
+FR-504	User can remove contact rows.	P1
+FR-505	System flags symptomatic contacts.	P0
+FR-506	System flags child contacts.	P1
+FR-507	System creates TPT candidate from contact.	P1
+FR-508	System logs CI updates in diary.	P0
+10.7 TPT
+ID	Requirement	Priority
+FR-601	User can create TPT record from contact.	P1
+FR-602	User can enter TPT regimen.	P1
+FR-603	System calculates expected TPT end date.	P1
+FR-604	System tracks TPT follow-up.	P1
+FR-605	System reports TPT active/completed/defaulted.	P1
+FR-606	System logs TPT updates.	P1
+10.8 Outcome
+ID	Requirement	Priority
+FR-701	User can select treatment outcome.	P0
+FR-702	User can enter outcome date.	P0
+FR-703	User can enter transfer-to location.	P1
+FR-704	User can enter sign-off officer.	P1
+FR-705	System updates patient phase/status based on outcome.	P0
+FR-706	System logs outcome updates.	P0
+FR-707	System shows outcome pending list.	P0
+10.9 FO diary
+ID	Requirement	Priority
+FR-801	System logs new patient registration.	P0
+FR-802	System logs patient record update.	P0
+FR-803	System logs DOT update.	P0
+FR-804	System logs lab update.	P0
+FR-805	System logs CI update.	P0
+FR-806	System logs outcome update.	P0
+FR-807	User can filter diary by date.	P0
+FR-808	User can filter diary by type.	P0
+FR-809	User can search diary.	P1
+FR-810	User can export diary.	P0
+FR-811	Diary shows daily summary cards.	P0
+FR-812	Diary should preserve delete events.	P0
+10.10 Reports
+ID	Requirement	Priority
+FR-901	User can export all patient records.	P0
+FR-902	User can export active patient list.	P0
+FR-903	User can export DOT adherence report.	P1
+FR-904	User can export lab pending report.	P1
+FR-905	User can export CI report.	P1
+FR-906	User can export TPT report.	P1
+FR-907	User can export FO diary report.	P0
+FR-908	User can print individual patient record.	P0
+FR-909	User can import JSON backup.	P0
+11. Non-functional requirements
+11.1 Offline-first
+ID	Requirement
+NFR-001	App must work without internet after first load.
+NFR-002	Data must persist locally.
+NFR-003	User must be able to export backup offline.
+NFR-004	Future sync should queue local changes and upload later.
+11.2 Performance
+ID	Requirement
+NFR-101	Patient list should load under 1 second for 5,000 records on a mid-range phone.
+NFR-102	Search should update within 300 ms for 5,000 records.
+NFR-103	DOT grid should render instantly for one patient.
+NFR-104	Export should complete for 10,000 records without crashing.
+11.3 Security and privacy
+ID	Requirement
+NFR-201	Production app must not rely only on plain localStorage for sensitive patient data.
+NFR-202	Data should be encrypted at rest in production.
+NFR-203	Role-based access should protect patient data.
+NFR-204	Audit log should record create/update/delete actions.
+NFR-205	Export files should warn user about sensitive data.
+NFR-206	Future backend must use HTTPS.
+NFR-207	Future login must support secure password hashing or external auth provider.
+11.4 Usability
+ID	Requirement
+NFR-301	UI must be Bangla-first.
+NFR-302	Clinical/programme terms may include English labels.
+NFR-303	Must work on mobile and desktop.
+NFR-304	Buttons must be large enough for field use.
+NFR-305	Important alerts must use colors and icons.
+NFR-306	Printing must hide navigation controls.
+11.5 Reliability
+ID	Requirement
+NFR-401	Save action should show confirmation toast.
+NFR-402	App should prevent accidental deletion with confirmation dialog.
+NFR-403	Backup import should validate data structure.
+NFR-404	App should not lose existing data during update.
+NFR-405	Diary and patient record should remain separate datasets.
+12. Data model
+
+For Codex, implement this as TypeScript interfaces even if the MVP uses IndexedDB/localStorage.
+
+12.1 Patient
+type Patient = {
+  id: string;
+  tr?: string;
+  dotsNo?: string;
+  etbId?: string;
+  registrationDate?: string;
+
+  name: string;
+  age?: number;
+  sex?: "Male" | "Female" | "Other" | "";
+  phone?: string;
+  fatherName?: string;
+  motherName?: string;
+
+  address?: string;
+  ward?: string;
+  union?: string;
+  upazila?: string;
+  district?: string;
+
+  dotsCenter?: string;
+  ssName?: string;
+  ssPhone?: string;
+  dotProviderName?: string;
+  dotProviderType?: string;
+  contactInvestigatorName?: string;
+
+  referrer?: string;
+  referralSource?: string;
+
+  tbType?: "Pulmonary" | "Extra-pulmonary" | "";
+  epSite?: string;
+  confirmationMethod?: "BC" | "CD" | "";
+
+  patientType?: string;
+  phase?: TreatmentPhase;
+  previousTr?: string;
+  transferFrom?: string;
+
+  treatmentStartDate?: string;
+  ipEndDate?: string;
+  treatmentEndDate?: string;
+  nextFollowUpDate?: string;
+
+  regimenType?: string;
+  weightKg?: number;
+  drugStartDate?: string;
+
+  outcome?: TreatmentOutcome;
+  outcomeDate?: string;
+  transferTo?: string;
+  signOfficer?: string;
+  outcomeNote?: string;
+
+  drugReaction?: string;
+  clinicalNote?: string;
+
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+};
+12.2 Lab result
+type LabResult = {
+  id: string;
+  patientId: string;
+  testType: "GeneXpert" | "Truenat" | "Microscopy" | "Xray" | "Culture" | "Other";
+  labId?: string;
+  testDate?: string;
+  result?: string;
+  quantity?: string;
+  scantyCount?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+12.3 DOT entry
+type DotEntry = {
+  id: string;
+  patientId: string;
+  date: string;
+  monthKey: string;
+  day: number;
+  status: "done" | "missed" | "supervised" | "";
+  updatedBy?: string;
+  updatedAt: string;
+};
+12.4 Sputum follow-up
+type SputumFollowUp = {
+  id: string;
+  patientId: string;
+  stage: "2M" | "5M" | "6M" | "Other";
+  testDate?: string;
+  labId?: string;
+  microscopy?: string;
+  xpertTruenat?: string;
+  culture?: string;
+  weightKg?: number;
+  comment?: string;
+  updatedAt: string;
+};
+12.5 Contact investigation contact
+type ContactPerson = {
+  id: string;
+  patientId: string;
+  ciDate?: string;
+  investigatorName?: string;
+  investigatorPhone?: string;
+
+  name: string;
+  age?: number;
+  sex?: "M" | "F" | "O" | "";
+  relationshipCode?: string;
+  symptomCode?: string;
+  referred?: "Yes" | "No" | "";
+  investigationCode?: string;
+  result?: string;
+  outcomeCode?: string;
+  trOrTptNo?: string;
+  followUpDate?: string;
+
+  isChild?: boolean;
+  isSymptomatic?: boolean;
+  tptEligible?: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+};
+12.6 TPT record
+type TptRecord = {
+  id: string;
+  patientId?: string;
+  contactId?: string;
+  name: string;
+  age?: number;
+  sex?: string;
+  regimen?: "3HR" | "3HP" | "6H" | "Other";
+  startDate?: string;
+  expectedEndDate?: string;
+  actualEndDate?: string;
+  status: "Not Started" | "Active" | "Completed" | "Defaulted" | "Stopped" | "";
+  nextFollowUpDate?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+12.7 Diary entry
+type DiaryEntry = {
+  id: string;
+  time: string;
+  date: string;
+  type:
+    | "New Patient"
+    | "Record Updated"
+    | "DOT Updated"
+    | "Lab Updated"
+    | "Sputum Updated"
+    | "CI Updated"
+    | "TPT Updated"
+    | "Outcome Updated"
+    | "Download"
+    | "Delete"
+    | "Report Generated"
+    | "Task Completed"
+    | "General";
+
+  patientId?: string;
+  tr?: string;
+  patientName?: string;
+  details: string;
+  userId?: string;
+  userName?: string;
+  metadata?: Record<string, unknown>;
+};
+12.8 Task
+type Task = {
+  id: string;
+  patientId?: string;
+  type:
+    | "DOT_MISSED"
+    | "DOT_NOT_UPDATED"
+    | "FOLLOWUP_DUE"
+    | "FOLLOWUP_OVERDUE"
+    | "LAB_PENDING"
+    | "TREATMENT_START_PENDING"
+    | "CI_PENDING"
+    | "TPT_DUE"
+    | "OUTCOME_PENDING"
+    | "REPORT_DUE";
+
+  title: string;
+  description?: string;
+  dueDate?: string;
+  priority: "Critical" | "High" | "Medium" | "Normal";
+  status: "Open" | "Done" | "Dismissed";
+  createdAt: string;
+  completedAt?: string;
+};
+12.9 Provider
+type Provider = {
+  id: string;
+  name: string;
+  type:
+    | "SS"
+    | "DOT Provider"
+    | "Pharmacist"
+    | "Village Doctor"
+    | "Clinic"
+    | "CHCP"
+    | "Health Facility"
+    | "Other";
+  phone?: string;
+  area?: string;
+  union?: string;
+  ward?: string;
+  lastVisitDate?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+13. Automation rules
+13.1 Registration rules
+ID	Trigger	Rule	Output
+AR-001	Save new patient	If no ID, generate ID	Patient ID
+AR-002	Save new patient	If no TR and no name, block save	Validation error
+AR-003	Save patient	If TR matches existing patient, warn	Duplicate warning
+AR-004	Save patient	If name + phone matches existing patient, warn	Duplicate warning
+AR-005	New patient saved	Log diary	New Patient entry
+13.2 Date rules
+ID	Trigger	Rule	Output
+AR-101	Treatment start date entered	IP end = start + 2 months	ipEndDate
+AR-102	Treatment start date entered	Treatment end = start + 6 months	treatmentEndDate
+AR-103	Treatment start date entered	Generate DOT months	dotMonths
+AR-104	Treatment start date entered	Generate 2M/5M/6M due dates	sputum tasks
+AR-105	Current date > treatment end and no outcome	Create outcome pending task	Task
+13.3 Lab rules
+ID	Trigger	Rule	Output
+AR-201	Xpert/Truenat result = MTB detected	If no treatment start, create task	Treatment start pending
+AR-202	Result contains RR/Rif Resistant	Create critical alert	DR-TB referral flag
+AR-203	Result invalid/error	Create retest task	Retest needed
+AR-204	Lab result changed	Log diary	Lab Updated
+13.4 DOT rules
+ID	Trigger	Rule	Output
+AR-301	DOT cell updated	Recalculate adherence	DOT stats
+AR-302	DOT status = missed	Create task	DOT missed
+AR-303	Active patient has no DOT today	Create task	DOT not updated
+AR-304	DOT updated	Log diary	DOT Updated
+13.5 Contact investigation rules
+ID	Trigger	Rule	Output
+AR-401	Patient is BC pulmonary	Create CI pending task if no CI	CI pending
+AR-402	Contact age < 5	Flag child contact	Priority flag
+AR-403	Contact symptoms present	Create referral task	Contact referral
+AR-404	Contact outcome = TPT	Create TPT record	TPT
+AR-405	CI row changed	Log diary	CI Updated
+13.6 TPT rules
+ID	Trigger	Rule	Output
+AR-501	TPT start date + regimen	Calculate expected end date	expectedEndDate
+AR-502	TPT follow-up due	Create task	TPT due
+AR-503	TPT end passed with no status	Create review task	TPT review
+AR-504	TPT updated	Log diary	TPT Updated
+13.7 Outcome rules
+ID	Trigger	Rule	Output
+AR-601	Outcome selected	Update phase/status	Patient closed/updated
+AR-602	Outcome changed	Log diary	Outcome Updated
+AR-603	Outcome = Transfer Out	Require transfer-to location	Validation
+AR-604	Outcome = Died	Require outcome date	Validation
+14. Screen requirements
+14.1 Navigation
+
+Topbar should include:
+
+রোগীর তালিকা
+আজকের কাজ
+নতুন নিবন্ধন
+FO ডায়েরি
+রিপোর্ট
+সেটিংস, future
+প্রিন্ট
+14.2 Dashboard screen
+Sections
+Summary cards
+Today’s Worklist
+Critical alerts
+Follow-up due table
+DOT missed table
+Lab pending table
+Diary today summary
+14.3 Patient list screen
+Components
+Search input
+Phase filter
+Type filter
+Area filter
+Risk filter
+Patient cards
+New patient button
+Export button
+Import button
+14.4 Patient form screen
+Components
+Back button
+Patient title
+TR badge
+Save button
+Download button
+Print button
+Delete button
+Collapsible section cards
+Sticky unsaved changes warning, future
+14.5 DOT screen section
+Components
+Month selector
+Add month button
+DOT grid
+Legend
+Stats
+Missed list
+Quick fill options, future:
+mark all previous blank days done
+clear month
+export DOT card
+14.6 Diary screen
+Components
+Date filter
+Type filter
+Search
+Summary cards
+Timeline
+Export diary
+Clear diary, admin/future
+14.7 Reports screen
+Components
+Report type dropdown
+Date range
+Area filter
+Provider filter
+Generate button
+Preview table
+Export CSV
+Export JSON
+Print
+15. Validation rules
+15.1 Required fields
+Minimum save
+
+At least one of:
+
+patient name
+TR number
+Recommended required for complete record
+name
+age
+sex
+phone or guardian phone
+address
+union
+upazila
+district
+TB type
+confirmation method
+treatment start date, if active treatment
+DOT provider
+SS/DOT center
+15.2 Field validation
+Field	Validation
+Phone	Bangladesh mobile format: starts with 01 and 11 digits
+Age	0–120
+Weight	1–200 kg
+Registration date	Cannot be far future
+Treatment start	Cannot be before registration unless user confirms
+Outcome date	Cannot be before treatment start
+TR	Warn if duplicate
+Lab result positive	Treatment start should be entered
+Transfer out	Transfer destination required
+Death outcome	Outcome date required
+16. Diary and audit behavior
+16.1 Diary vs audit trail
+
+The app should maintain two concepts:
+
+FO Diary
+
+Human-readable activity timeline.
+
+Example:
+
+“DOT 13 May 2026 তারিখে আপডেট: Done / ওষুধ খেয়েছে”
+
+Audit Trail
+
+Structured system-level change record.
+
+Example:
+
+{
+  "entity": "patient",
+  "entityId": "TB123",
+  "field": "xpertResult",
+  "oldValue": "",
+  "newValue": "T — MTB Detected",
+  "changedAt": "2026-05-13T10:40:00Z"
+}
+
+MVP can keep only diary. Production should add audit trail.
+
+16.2 Diary should log these actions
+Action	Type	Detail
+New record saved	New Patient	TR, name, phase
+Existing record saved	Record Updated	phase, follow-up
+Xpert result changed	Lab Updated	new result
+Microscopy changed	Lab Updated	new result
+DOT cell clicked	DOT Updated	date and status
+CI row added	CI Updated	contact row added
+CI row edited	CI Updated	contact name/status
+TPT status changed	TPT Updated	status/regimen
+Outcome selected	Outcome Updated	outcome
+Single record downloaded	Download	patient record
+All records exported	Download	all records
+Diary exported	Download	diary export
+Patient deleted	Delete	TR/name
+Report generated	Report Generated	report type/date range
+17. Reporting indicators
+
+Use these as app-level indicators.
+
+17.1 Patient indicators
+total registered
+new this month
+active treatment
+pre-treatment
+completed
+cured
+died
+LTFU
+transfer out
+treatment failure
+not evaluated
+17.2 Diagnosis indicators
+presumptive registered
+Xpert/Truenat done
+microscopy done
+MTB detected
+RR detected
+invalid/error
+result pending
+17.3 Treatment indicators
+treatment started
+positive but not started
+average days from diagnosis to treatment start
+IP patients
+CP patients
+treatment end reached but no outcome
+17.4 DOT indicators
+DOT done count
+DOT missed count
+supervised count
+monthly adherence %
+patients with missed DOT
+repeated missed DOT patients
+17.5 CI/TPT indicators
+index cases needing CI
+CI completed
+contacts listed
+contacts screened
+symptomatic contacts
+contacts referred
+contacts diagnosed TB
+TPT eligible
+TPT started
+TPT completed
+TPT defaulted
+17.6 FO diary indicators
+total activities today
+new patients today
+DOT updates today
+lab updates today
+CI updates today
+outcome updates today
+reports generated
+18. Suggested technical architecture for Codex
+18.1 MVP recommendation
+
+Build as:
+
+React + TypeScript
+Vite
+IndexedDB via Dexie.js
+PWA/offline support
+CSS modules or plain CSS
+date-fns for date calculation
+papaparse or custom CSV export
+file-saver for downloads
+no backend in MVP
+
+Why: the current prototype is single-file and localStorage-based. For a real app, IndexedDB is more reliable for structured offline data.
+
+18.2 Production recommendation
+
+Add:
+
+Backend: Node.js + Express/NestJS or Supabase
+Database: PostgreSQL
+Auth: Supabase Auth, Auth.js, or custom JWT
+Sync: local IndexedDB ↔ backend
+Encryption: at-rest backend encryption and optional local encrypted store
+Roles: FO, Supervisor, Lab, Admin
+Hosting: secure HTTPS deployment
+18.3 Suggested folder structure
+tb-fo-assistant/
+  src/
+    app/
+      App.tsx
+      routes.tsx
+    components/
+      Button.tsx
+      Card.tsx
+      SectionCard.tsx
+      PatientCard.tsx
+      SummaryStrip.tsx
+      Toast.tsx
+    features/
+      dashboard/
+        DashboardPage.tsx
+        worklistRules.ts
+      patients/
+        PatientListPage.tsx
+        PatientFormPage.tsx
+        patientSchema.ts
+        patientStore.ts
+      diagnosis/
+        DiagnosisSection.tsx
+        labRules.ts
+      treatment/
+        TreatmentSection.tsx
+        treatmentRules.ts
+      dot/
+        DotGrid.tsx
+        dotRules.ts
+      sputum/
+        SputumSection.tsx
+      contacts/
+        ContactInvestigationSection.tsx
+      tpt/
+        TptSection.tsx
+      diary/
+        DiaryPage.tsx
+        diaryStore.ts
+        diaryRules.ts
+      reports/
+        ReportsPage.tsx
+        reportBuilders.ts
+      providers/
+        ProviderStore.ts
+    db/
+      db.ts
+      migrations.ts
+    types/
+      domain.ts
+    utils/
+      dates.ts
+      ids.ts
+      export.ts
+      validation.ts
+      bangla.ts
+    styles/
+      globals.css
+      theme.css
+    main.tsx
+19. Codex implementation prompt
+
+Use this prompt directly in Codex:
+
+Build a React + TypeScript + Vite PWA called “TB-FO Assistant”.
+
+It should be a Bangla-first offline-capable TB field workflow app based on a current single-file HTML prototype.
+
+Core modules:
+1. Dashboard with summary cards and Today’s FO Worklist.
+2. Patient Registry with search/filter.
+3. Patient Form with sections:
+   - ক — রোগীর পরিচয় & ঠিকানা
+   - খ — DOTS কেন্দ্র ও SS তথ্য
+   - গ — রোগ নির্ণয় ও পরীক্ষার ফলাফল
+   - ঘ — চিকিৎসার ইতিহাস ও পর্যায়
+   - ঙ — ওষুধের নির্দেশিকা
+   - চ — DOT Daily Tracking Grid
+   - ছ — কফ পরীক্ষার ফলো-আপ ফলাফল
+   - জ — সংস্পর্শ তদন্ত
+   - ঝ — চিকিৎসার চূড়ান্ত ফলাফল
+4. DOT grid that supports Done, Missed, Supervised, Blank and calculates adherence.
+5. Contact Investigation table.
+6. TPT tracker.
+7. FO Daily Work Diary that automatically logs actions.
+8. Reports page with JSON and CSV export.
+9. Import/export backup.
+10. Print-friendly patient record.
+
+Use IndexedDB through Dexie.js for persistence.
+Use TypeScript interfaces for Patient, LabResult, DotEntry, SputumFollowUp, ContactPerson, TptRecord, DiaryEntry, Task, Provider.
+Preserve the visual style from the prototype: green theme, section cards, icons, Bangla labels, summary cards, toast messages, and print support.
+Implement automation rules:
+- generate patient ID
+- duplicate TR warning
+- treatment start date calculates IP end and treatment end
+- positive lab result creates treatment start pending task
+- RR result creates critical alert
+- DOT missed creates task
+- BC pulmonary without CI creates CI pending task
+- treatment end passed without outcome creates outcome pending task
+- every save/update/DOT/lab/CI/TPT/outcome/download/delete action logs a diary entry
+
+Start with frontend-only MVP. No backend yet.
+Include seed data for 3 demo patients.
+Add a README with setup, run, build, and data backup instructions.
+20. MVP acceptance checklist
+
+Codex should not be considered done until these pass:
+
+Patient registry
+ Can add patient
+ Can edit patient
+ Can delete patient with confirmation
+ Can search patient
+ Can filter by phase
+ Can export records
+ Can import backup
+Treatment
+ Treatment start calculates IP end
+ Treatment start calculates treatment end
+ Phase displays correctly
+ Follow-up due appears
+DOT
+ DOT grid renders months
+ DOT cell cycles through statuses
+ Monthly adherence calculates
+ Missed DOT creates task
+ DOT update logs diary
+Diagnosis
+ Xpert result can be saved
+ Microscopy result can be saved
+ Positive result creates treatment-start pending task
+ RR result creates critical flag
+ Lab update logs diary
+CI/TPT
+ Contact rows can be added
+ Contact rows can be saved
+ Symptomatic contact is flagged
+ TPT record can be created
+ CI/TPT update logs diary
+Outcome
+ Outcome can be selected
+ Outcome date can be saved
+ Outcome updates phase/status
+ Outcome logs diary
+Diary
+ Diary screen shows entries
+ Diary filters by date
+ Diary filters by type
+ Diary search works
+ Diary export works
+Reports
+ Active patient report works
+ DOT missed report works
+ Lab pending report works
+ CI report works
+ Diary report works
+Offline
+ App works after refresh
+ Data persists
+ Export/import backup works
+ Print works
+21. Build roadmap
+Phase 0 — Refactor prototype
+Convert single-file prototype into React components.
+Preserve current visual design.
+Move data to typed models.
+Replace localStorage with IndexedDB.
+Phase 1 — MVP
+Patient registry
+Patient form
+DOT grid
+Sputum follow-up
+CI table
+Outcome
+Diary
+Dashboard
+Export/import
+Phase 2 — Automation
+Today’s Worklist
+Lab pending rules
+Treatment start pending rules
+CI/TPT due rules
+Outcome pending rules
+Duplicate detection
+Data validation
+Phase 3 — Reporting
+CSV reports
+Monthly FO report
+SS-wise report
+DOT adherence report
+Lab pending report
+CI/TPT report
+Diary report
+Phase 4 — Production hardening
+Login
+Role-based permissions
+Backend sync
+Encryption
+Audit trail
+Supervisor dashboard
+Device backup
+Phase 5 — Advanced field features
+SMS reminders
+Private provider module
+Map/area view
+Attachments
+e-TB/NTP-compatible export
+AI-generated monthly narrative
+22. Key product decisions
+22.1 Use “Diary” as both productivity and accountability
+
+The diary should not require the FO to manually write every action. The app should generate diary entries automatically.
+
+Manual note-taking can be optional later, but automatic logging is the core feature.
+
+22.2 Keep clinical decisions human-reviewed
+
+The system can suggest:
+
+treatment start pending
+DR-TB referral needed
+outcome pending
+possible cured/completed
+TPT candidate
+
+But clinical/programme staff must confirm final decisions.
+
+22.3 Make the first version offline-first
+
+Because field conditions may have weak internet, the MVP should be local-first. Backend sync can be added later.
+
+22.4 Use Bangla-first UX
+
+The FO’s daily workflow should be Bangla-friendly. English programme terms can remain where standard:
+
+DOT
+GeneXpert
+Truenat
+TPT
+CI
+BC/CD
+LTFU
+Treatment Outcome
+23. Final product definition
+The app is successful when:
+An FO can register and manage all TB patients digitally.
+The FO can see today’s required work without manually checking every record.
+DOT missed doses are visible immediately.
+Lab pending and treatment-start pending cases are not forgotten.
+Contact investigation and TPT are trackable.
+Treatment outcomes are recorded cleanly.
+The FO’s daily work is automatically logged.
+Monthly reports can be generated from the data.
+Records can be exported, backed up, and printed.
+The system works offline on a normal laptop or mobile browser.
+24. One-sentence build instruction
+
+Build TB-FO Assistant as a Bangla-first, offline-capable TB field workflow PWA that digitizes TB-01 patient records, DOT tracking, lab follow-up, CI/TPT, treatment outcomes, reports, and automatic FO daily diary, while preserving the visual design and workflows of the provided prototype.
