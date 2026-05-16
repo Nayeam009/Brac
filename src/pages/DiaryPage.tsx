@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FileDown } from "lucide-react";
 import type { DiaryEntry } from "../domain/types";
-import { DateInput, DiaryTimeline, DownloadButton, PageHeader, SectionCard, SearchBox, StatCard, StatusBadge } from "../components";
+import { AlertCard, DateInput, DiaryTimeline, DownloadButton, PageHeader, SectionCard, SearchBox, StatCard, StatusBadge } from "../components";
 import { formatDateDisplay, formatDateTimeDisplay, toLocalIsoDate } from "../lib/dateFormat";
 
 const downloadJson = (filename: string, value: unknown) => { const b = new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = filename; a.click(); URL.revokeObjectURL(a.href); };
@@ -12,7 +12,7 @@ const formatDiaryExport = (diary: DiaryEntry[]) => diary.map((entry) => ({
   time: formatDateTimeDisplay(entry.time) || entry.time,
 }));
 
-export function DiaryPage({ diary }: { diary: DiaryEntry[] }) {
+export function DiaryPage({ diary, diaryTrackingEnabled = true, onDiaryTrackingChange }: { diary: DiaryEntry[]; diaryTrackingEnabled?: boolean; onDiaryTrackingChange?: (enabled: boolean) => void }) {
   const [type, setType] = useState("");
   const [query, setQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -31,6 +31,22 @@ export function DiaryPage({ diary }: { diary: DiaryEntry[] }) {
   return (
     <>
       <PageHeader title="FO দৈনিক কাজের ডায়েরি" subtitle="Patient update summaries with full audit export" action={<DownloadButton onClick={() => downloadJson("fo-diary.json", formatDiaryExport(diary))}>Diary Export</DownloadButton>} />
+      <section className={`diary-tracking-card ${diaryTrackingEnabled ? "" : "paused"}`} aria-label="Diary tracking control">
+        <div>
+          <strong>Diary tracking</strong>
+          <p>{diaryTrackingEnabled ? "On - updates are tracked" : "Off - data saves without diary logging"}</p>
+        </div>
+        <label className="diary-toggle">
+          <input
+            type="checkbox"
+            aria-label="Diary tracking"
+            checked={diaryTrackingEnabled}
+            onChange={(event) => onDiaryTrackingChange?.(event.target.checked)}
+          />
+          <span>{diaryTrackingEnabled ? "On" : "Off"}</span>
+        </label>
+      </section>
+      {!diaryTrackingEnabled ? <AlertCard level="medium" message="Previous data entry mode: patient updates will save, but diary tracking is paused." /> : null}
       <div className="stat-grid">
         <StatCard label="মোট আপডেট" value={diary.length} tone="info" />
         <StatCard label="আজকের আপডেট" value={todayCount} tone="success" />

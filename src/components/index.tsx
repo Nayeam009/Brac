@@ -81,8 +81,8 @@ export function FAB({ onClick }: { onClick: () => void }) {
 }
 
 /* ── App Shell ── */
-export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessage = "InsForge ready" }: {
-  children: ReactNode; onNewPatient: () => void; onSignOut?: () => void; profile?: Profile | null; syncMessage?: string;
+export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessage = "InsForge ready", diaryTrackingEnabled = true }: {
+  children: ReactNode; onNewPatient: () => void; onSignOut?: () => void; profile?: Profile | null; syncMessage?: string; diaryTrackingEnabled?: boolean;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -136,6 +136,7 @@ export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessa
         <header className="topbar">
           <div className="topbar-title"><p>InsForge connected · Offline-ready PWA</p><h1>TB-FO Assistant</h1></div>
           <div className="topbar-actions">
+            {!diaryTrackingEnabled ? <span className="sync-pill warning">Diary off</span> : null}
             <span className="sync-pill">{syncMessage}</span>
             <span className="user-chip"><UserRound size={16} /><span>{profile?.name || profile?.email || "FO"}</span></span>
             {onSignOut ? <button aria-label="Sign out" className="ghost-button compact" type="button" onClick={onSignOut}><LogOut size={16} /><span>Sign out</span></button> : null}

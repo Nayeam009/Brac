@@ -9,6 +9,7 @@ import * as authService from "./services/authService";
 import { mergeBackupData, parseBackupData } from "./services/backupService";
 import { insforgeConfigError } from "./lib/insforgeClient";
 import { formatDateDisplay, toLocalIsoDate } from "./lib/dateFormat";
+import { setSentryProfile } from "./lib/sentry";
 
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })));
 const DataQualityPage = lazy(() => import("./pages/DataQualityPage").then((module) => ({ default: module.DataQualityPage })));
@@ -25,9 +26,17 @@ const WorklistPage = lazy(() => import("./pages/WorklistPage").then((module) => 
 const nowIso = () => new Date().toISOString();
 const today = () => toLocalIsoDate();
 const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+const DIARY_TRACKING_STORAGE_KEY = "tb-fo-diary-tracking-enabled";
 const displayDateOrDash = (value?: string) => formatDateDisplay(value) || "—";
 const same = (a: unknown, b: unknown) => String(a ?? "") === String(b ?? "");
 const dotStatusLabel = (status?: DotEntry["status"]) => status === "done" ? "done" : status === "missed" ? "missed" : status === "supervised" ? "supervised" : "blank";
+const loadDiaryTrackingEnabled = () => {
+  try {
+    return localStorage.getItem(DIARY_TRACKING_STORAGE_KEY) !== "false";
+  } catch {
+    return true;
+  }
+};
 
 const summarizePatientSave = (before: Patient | undefined, after: Patient) => {
   if (!before) {
@@ -79,6 +88,7 @@ export function App() {
   const [sputumFollowUps, setSputumFollowUps] = useState<SputumFollowUp[]>([]);
   const [attachments, setAttachments] = useState<RecordAttachment[]>([]);
   const [diary, setDiary] = useState<DiaryEntry[]>([]);
+  const [diaryTrackingEnabled, setDiaryTrackingEnabled] = useState(loadDiaryTrackingEnabled);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [syncMessage, setSyncMessage] = useState("Loading data...");
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -93,6 +103,15 @@ export function App() {
   }, []);
 
   const dismissToast = useCallback((id: string) => setToasts((c) => c.filter((t) => t.id !== id)), []);
+
+  const updateDiaryTracking = useCallback((enabled: boolean) => {
+    setDiaryTrackingEnabled(enabled);
+    try {
+      localStorage.setItem(DIARY_TRACKING_STORAGE_KEY, enabled ? "true" : "false");
+    } catch {
+      // Local storage can be unavailable in private or restricted browser modes.
+    }
+  }, []);
 
   // Auth
   useEffect(() => {
@@ -123,6 +142,10 @@ export function App() {
     }).catch((e) => setSyncMessage(`Read issue · ${e instanceof Error ? e.message : "unknown"}`));
   }, [approved, currentProfile]);
 
+  useEffect(() => {
+    setSentryProfile(approved ? currentProfile : null);
+  }, [approved, currentProfile]);
+
   const tasks: Task[] = useMemo(() => generateWorklist({ today: today(), patients, labResults, dotEntries, contacts, tptRecords, sputumFollowUps }), [patients, labResults, dotEntries, contacts, tptRecords, sputumFollowUps]);
 
   const runSync = useCallback((label: string, op: () => Promise<unknown>) => { 
@@ -138,17 +161,19 @@ export function App() {
   }, [approved, toast]);
 
   const logDiary = useCallback((entry: Omit<Parameters<typeof buildDiaryEntry>[0], "now">) => {
+    if (!diaryTrackingEnabled) return;
     const d = buildDiaryEntry({ ...entry, now: new Date() });
     d.userId = currentProfile?.userId;
     d.userName = currentProfile?.name;
     setDiary((c) => [d, ...c]);
     runSync("Diary", () => repository.saveDiaryEntry(d));
-  }, [currentProfile, runSync]);
+  }, [currentProfile, diaryTrackingEnabled, runSync]);
 
   const flushHistoricalDotDiary = useCallback(() => {
     const batches = historicalDotBatchRef.current;
     historicalDotBatchRef.current = {};
     historicalDotTimerRef.current = null;
+    if (!diaryTrackingEnabled) return;
 
     for (const batch of Object.values(batches)) {
       const dates = Array.from(batch.entries.keys()).sort();
@@ -175,9 +200,10 @@ export function App() {
         metadata: { historicalBackEntry: true, dates, entryMode: "historical", statusCounts, treatmentDayRange: dayRange, medicines },
       });
     }
-  }, [logDiary]);
+  }, [diaryTrackingEnabled, logDiary]);
 
   const queueHistoricalDotDiary = useCallback((patient: Patient | undefined, date: string, status: DotEntry["status"]) => {
+    if (!diaryTrackingEnabled) return;
     const key = patient?.id || "unknown";
     const batch = historicalDotBatchRef.current[key] || { patient, entries: new Map<string, DotEntry["status"]>() };
     batch.patient = patient || batch.patient;
@@ -186,11 +212,20 @@ export function App() {
 
     if (historicalDotTimerRef.current) clearTimeout(historicalDotTimerRef.current);
     historicalDotTimerRef.current = setTimeout(flushHistoricalDotDiary, 900);
-  }, [flushHistoricalDotDiary]);
+  }, [diaryTrackingEnabled, flushHistoricalDotDiary]);
 
   useEffect(() => () => {
     if (historicalDotTimerRef.current) clearTimeout(historicalDotTimerRef.current);
   }, []);
+
+  useEffect(() => {
+    if (diaryTrackingEnabled) return;
+    historicalDotBatchRef.current = {};
+    if (historicalDotTimerRef.current) {
+      clearTimeout(historicalDotTimerRef.current);
+      historicalDotTimerRef.current = null;
+    }
+  }, [diaryTrackingEnabled]);
 
   const savePatient = useCallback((draft: Patient) => {
     const dupes = detectDuplicatePatient(draft, patients, draft.id);
@@ -475,7 +510,7 @@ export function App() {
           )}
         />
         <Route path="/*" element={
-          <AppShell onNewPatient={() => navigate("/patients/new")} onSignOut={signOut} profile={currentProfile} syncMessage={syncMessage}>
+          <AppShell onNewPatient={() => navigate("/patients/new")} onSignOut={signOut} profile={currentProfile} syncMessage={syncMessage} diaryTrackingEnabled={diaryTrackingEnabled}>
             <Suspense fallback={<div className="route-loading">Loading...</div>}>
             <Routes>
               <Route index element={<DashboardPage data={data} onNavigate={(p) => navigate(p)} />} />
@@ -483,7 +518,7 @@ export function App() {
               <Route path="patients/new" element={<PatientFormPage patients={patients} attachments={attachments} onSave={savePatient} onDelete={deletePatient} onSaveLab={saveLabResult} onSaveDot={saveDotEntry} onSaveContact={saveContact} onSaveTpt={saveTpt} onSaveSputum={saveSputum} onUploadAttachment={uploadAttachment} onOpenAttachment={openAttachment} />} />
               <Route path="patients/:patientId" element={<PatientFormPage patients={patients} labResults={labResults} dotEntries={dotEntries} contacts={contacts} tptRecords={tptRecords} sputumFollowUps={sputumFollowUps} attachments={attachments} onSave={savePatient} onDelete={deletePatient} onSaveLab={saveLabResult} onSaveDot={saveDotEntry} onSaveContact={saveContact} onSaveTpt={saveTpt} onSaveSputum={saveSputum} onUploadAttachment={uploadAttachment} onOpenAttachment={openAttachment} />} />
               <Route path="today" element={<WorklistPage tasks={tasks} patients={patients} onOpen={(id) => navigate(`/patients/${id}`)} />} />
-              <Route path="diary" element={<DiaryPage diary={diary} />} />
+              <Route path="diary" element={<DiaryPage diary={diary} diaryTrackingEnabled={diaryTrackingEnabled} onDiaryTrackingChange={updateDiaryTracking} />} />
               <Route path="reports" element={<ReportsPage data={data} onLog={(d) => { logDiary({ type: "Report Generated", details: d }); toast("Report export হয়েছে"); }} />} />
               <Route path="providers" element={<ProviderPage providers={providers} patients={patients} onSave={(p) => { const item = { ...p, id: p.id || uid("pro"), createdAt: p.createdAt || nowIso(), updatedAt: nowIso() }; setProviders((c) => [item, ...c.filter((e) => e.id !== item.id)]); runSync("Provider", () => repository.saveProvider(item)); toast("Provider সংরক্ষিত"); }} />} />
               <Route path="quality" element={<DataQualityPage patients={patients} labResults={labResults} sputumFollowUps={sputumFollowUps} tasks={tasks} onOpen={(id) => navigate(`/patients/${id}`)} />} />

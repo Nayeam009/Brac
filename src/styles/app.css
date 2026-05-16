@@ -66,6 +66,7 @@ button { cursor: pointer; }
 .topbar-title, .page-header-copy { min-width: 0; }
 .topbar-actions { display: flex; gap: 10px; align-items: center; flex: 0 0 auto; min-width: 0; }
 .sync-pill, .user-chip { border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; background: white; color: var(--muted); font-weight: 700; display: inline-flex; gap: 6px; align-items: center; }
+.sync-pill.warning { border-color: rgba(181,118,10,.34); background: #fff4df; color: var(--amber); }
 .user-chip { max-width: min(260px, 32vw); min-width: 0; }
 .user-chip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .page { padding: 24px 28px 96px; max-width: 1440px; margin: 0 auto; width: 100%; }
@@ -90,6 +91,13 @@ button { cursor: pointer; }
 .route-loading { min-height: 220px; display: grid; place-items: center; color: var(--muted); font-weight: 700; }
 .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
 .toolbar > *, .filter-row > *, .action-row > *, .quick-actions > * { min-width: 0; }
+.diary-tracking-card { background: white; border: 1px solid var(--border); border-top: 4px solid var(--g); border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.diary-tracking-card.paused { border-top-color: var(--amber); background: #fffaf0; }
+.diary-tracking-card strong { display: block; font-size: 17px; }
+.diary-tracking-card p { margin: 3px 0 0; color: var(--muted); }
+.diary-toggle { width: auto; display: inline-flex; align-items: center; grid-auto-flow: column; gap: 8px; color: var(--g); font-weight: 850; cursor: pointer; }
+.diary-toggle input { width: 22px; height: 22px; accent-color: var(--g); }
+.diary-tracking-card.paused .diary-toggle { color: var(--amber); }
 .search-box { flex: 1; min-width: min(240px, 100%); background: white; border: 1px solid var(--border); border-radius: 14px; padding: 0 12px; min-height: 46px; display: flex; gap: 8px; align-items: center; }
 .search-box input, label input, label select, label textarea, .toolbar select { width: 100%; border: 1px solid var(--border); border-radius: 12px; min-height: 44px; padding: 10px 12px; background: white; color: var(--ink); }
 .search-box input { border: 0; padding: 0; outline: 0; }
@@ -313,10 +321,13 @@ textarea { min-height: 82px; resize: vertical; }
   .topbar h1 { font-size: clamp(16px, 4.5vw, 19px); margin-top: 1px; }
   .topbar-actions { gap: 6px; flex-shrink: 0; }
   .sync-pill { display: none; }
+  .sync-pill.warning { display: inline-flex; padding: 6px 8px; font-size: 11px; }
   .user-chip { min-height: 36px; max-width: 36vw; padding: 6px 10px; font-size: 12px; }
   .user-chip span { max-width: 10ch; }
   .topbar-actions .ghost-button.compact { width: 36px; min-width: 36px; min-height: 36px; padding: 0; border-radius: 999px; gap: 0; }
   .topbar-actions .ghost-button.compact span { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .diary-tracking-card { align-items: flex-start; flex-direction: column; }
+  .diary-toggle { width: 100%; justify-content: space-between; border: 1px solid var(--border); border-radius: 12px; min-height: 44px; padding: 8px 12px; background: white; }
   .page { padding: 14px 12px calc(80px + env(safe-area-inset-bottom)); }
   .page-header { flex-direction: column; gap: 10px; margin-bottom: 14px; }
   .page-header-copy { width: 100%; }
