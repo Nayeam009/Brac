@@ -68,7 +68,7 @@ export function SettingsPage({ data, onToast, onRestoreBackup }: { data: AppData
             <button type="button" onClick={handleImport}><Upload size={16} /> Import Backup</button>
           </div>
           <div style={{ marginTop: 14 }}>
-            <p style={{ color: "var(--muted)", fontSize: 14 }}>মোট রেকর্ড: {data.patients.length} রোগী, {data.diary.length} diary, {data.dotEntries.length} DOT, {data.labResults.length} lab, {data.contacts.length} CI, {data.tptRecords.length} TPT</p>
+            <p style={{ color: "var(--muted)", fontSize: 14 }}>মোট রেকর্ড: {data.patients.length} রোগী, {data.dotEntries.length} DOT, {data.labResults.length} lab, {data.contacts.length} CI, {data.tptRecords.length} TPT</p>
           </div>
           <p className="warning-note">⚠ এই ফাইলে সংবেদনশীল রোগীর তথ্য আছে। শুধু অনুমোদিত ডিভাইসে রাখুন।</p>
         </SectionCard>

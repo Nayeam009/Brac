@@ -177,6 +177,11 @@ export async function deletePatient(patientId: string): Promise<void> {
   if (error) throw toError(error, "Unable to delete patient.");
 }
 
+export async function deleteLabResult(labId: string): Promise<void> {
+  const { error } = await insforge.database.from(tables.labResults).delete().eq("id", labId);
+  if (error) throw toError(error, "Unable to delete lab result.");
+}
+
 export async function deletePatientWithCleanup(patientId: string, attachments: RecordAttachment[] = []): Promise<{ removedFiles: number; failedFiles: string[] }> {
   const patientAttachments = attachments.filter((attachment) => attachment.recordType === "patient" && attachment.recordId === patientId);
   const failedFiles: string[] = [];

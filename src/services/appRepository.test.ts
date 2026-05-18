@@ -200,6 +200,19 @@ describe("attachment repository", () => {
     expect(result).toEqual({ removedFiles: 1, failedFiles: [] });
   });
 
+  it("deletes a lab result row by id", async () => {
+    const { deleteLabResult } = await import("./appRepository");
+    const eq = vi.fn().mockResolvedValue({ error: null });
+    databaseFrom.mockReturnValue({
+      delete: () => ({ eq }),
+    });
+
+    await deleteLabResult("lab-1");
+
+    expect(databaseFrom).toHaveBeenCalledWith("lab_results");
+    expect(eq).toHaveBeenCalledWith("id", "lab-1");
+  });
+
   it("restores backup records through table upserts", async () => {
     const { restoreAppData } = await import("./appRepository");
     const calls: { table: string; rows: unknown[] }[] = [];

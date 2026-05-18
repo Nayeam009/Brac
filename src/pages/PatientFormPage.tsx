@@ -11,7 +11,7 @@ type Props = {
   patients: Patient[]; labResults?: LabResult[]; dotEntries?: DotEntry[]; contacts?: ContactPerson[];
   tptRecords?: TptRecord[]; sputumFollowUps?: SputumFollowUp[]; attachments?: RecordAttachment[];
   onSave: (p: Patient) => void; onDelete: (id: string) => void;
-  onSaveLab: (l: LabResult) => void; onSaveDot: (d: DotEntry) => void;
+  onSaveLab: (l: LabResult) => void; onDeleteLab: (id: string) => void; onSaveDot: (d: DotEntry) => void;
   onSaveContact: (c: ContactPerson) => void; onSaveTpt: (t: TptRecord) => void; onSaveSputum: (s: SputumFollowUp) => void;
   onUploadAttachment?: (patientId: string, file: File) => Promise<void> | void;
   onOpenAttachment?: (attachment: RecordAttachment) => Promise<void> | void;
@@ -68,7 +68,7 @@ const hasLabDraftData = (draft: LabDraft) =>
 const hasSputumDraftData = (draft: SputumDraft) =>
   Boolean(draft.testDate || draft.labId || draft.microscopy || draft.microscopyResult || draft.geneXpertResult || draft.xpertTruenat || draft.culture || draft.weightKg || draft.comment);
 
-export function PatientFormPage({ patients, labResults = [], dotEntries = [], contacts = [], tptRecords = [], sputumFollowUps = [], attachments = [], onSave, onDelete, onSaveLab, onSaveDot, onSaveContact, onSaveTpt, onSaveSputum, onUploadAttachment, onOpenAttachment }: Props) {
+export function PatientFormPage({ patients, labResults = [], dotEntries = [], contacts = [], tptRecords = [], sputumFollowUps = [], attachments = [], onSave, onDelete, onSaveLab, onDeleteLab, onSaveDot, onSaveContact, onSaveTpt, onSaveSputum, onUploadAttachment, onOpenAttachment }: Props) {
   const { patientId } = useParams();
   const existing = patients.find((p) => p.id === patientId);
   const blank: Patient = useMemo(() => ({ id: "", name: "", phase: "Pre-treatment", tbType: "Pulmonary", confirmationMethod: "BC", createdAt: now(), updatedAt: now() }), []);
@@ -561,7 +561,19 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
                         <p className="form-subtitle">{labTypeLabel(l.testType)}</p>
                         <h4>{l.labId || "No Lab ID"}</h4>
                       </div>
-                      <StatusBadge tone={l.result ? "success" : "info"}>{l.result || "Pending result"}</StatusBadge>
+                      <div className="lab-result-card-actions">
+                        <StatusBadge tone={l.result ? "success" : "info"}>{l.result || "Pending result"}</StatusBadge>
+                        <button
+                          className="ghost-button compact danger-text"
+                          type="button"
+                          aria-label={`Delete ${labTypeLabel(l.testType)} report ${l.labId || formatDateDisplay(l.testDate) || l.id}`}
+                          onClick={() => {
+                            if (window.confirm("Delete this lab report? This cannot be undone.")) onDeleteLab(l.id);
+                          }}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
                     </div>
                     <dl>
                       <div><dt>Test date</dt><dd>{formatDateDisplay(l.testDate) || "Not recorded"}</dd></div>

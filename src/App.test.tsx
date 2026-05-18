@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   saveDotEntry: vi.fn(),
   saveDiaryEntry: vi.fn(),
   saveLabResult: vi.fn(),
+  deleteLabResult: vi.fn(),
   saveContact: vi.fn(),
   saveTptRecord: vi.fn(),
   saveSputumFollowUp: vi.fn(),
@@ -45,6 +46,7 @@ vi.mock("./services/appRepository", () => ({
   saveDotEntry: mocks.saveDotEntry,
   saveDiaryEntry: mocks.saveDiaryEntry,
   saveLabResult: mocks.saveLabResult,
+  deleteLabResult: mocks.deleteLabResult,
   saveContact: mocks.saveContact,
   saveTptRecord: mocks.saveTptRecord,
   saveSputumFollowUp: mocks.saveSputumFollowUp,
@@ -103,7 +105,7 @@ const renderApp = (route: string) => render(
   </MemoryRouter>,
 );
 
-describe("App diary tracking toggle", () => {
+describe("App without FO diary", () => {
   beforeEach(() => {
     const storage = new Map<string, string>();
     vi.stubGlobal("localStorage", {
@@ -126,55 +128,30 @@ describe("App diary tracking toggle", () => {
     vi.unstubAllGlobals();
   });
 
-  it("defaults diary tracking on and persists when FO turns it off", async () => {
+  it("redirects the removed diary route back to the dashboard", async () => {
     renderApp("/diary");
 
-    const checkbox = await screen.findByRole("checkbox", { name: /diary tracking/i });
-
-    expect(checkbox).toBeChecked();
-    expect(screen.getByText("On - updates are tracked")).toBeInTheDocument();
-
-    fireEvent.click(checkbox);
-
-    expect(checkbox).not.toBeChecked();
-    expect(localStorage.getItem("tb-fo-diary-tracking-enabled")).toBe("false");
-    expect(screen.getByText("Off - data saves without diary logging")).toBeInTheDocument();
-    expect(screen.getByText("Previous data entry mode: patient updates will save, but diary tracking is paused.")).toBeInTheDocument();
-    expect(screen.getByText("Diary off")).toBeInTheDocument();
+    expect(await screen.findByText(/field operation summary/i)).toBeInTheDocument();
+    expect(screen.queryByText(/FO Diary/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: /diary tracking/i })).not.toBeInTheDocument();
   });
 
-  it("saves patient records without creating diary entries when tracking is off", async () => {
-    localStorage.setItem("tb-fo-diary-tracking-enabled", "false");
-
+  it("saves patient records without creating diary entries", async () => {
     renderApp("/patients/patient-1");
 
     fireEvent.click(await screen.findByRole("button", { name: /^save$/i }));
 
     await waitFor(() => expect(mocks.savePatient).toHaveBeenCalled());
     expect(mocks.saveDiaryEntry).not.toHaveBeenCalled();
-    expect(screen.getByText("Diary off")).toBeInTheDocument();
   });
 
-  it("saves DOT entries without creating diary entries when tracking is off", async () => {
-    localStorage.setItem("tb-fo-diary-tracking-enabled", "false");
-
+  it("saves DOT entries without creating diary entries", async () => {
     renderApp("/patients/patient-1");
 
     fireEvent.click(await screen.findByLabelText(/treatment day 1, 4FDC, 3 tabs\/day: blank/i));
 
     await waitFor(() => expect(mocks.saveDotEntry).toHaveBeenCalled());
     expect(mocks.saveDiaryEntry).not.toHaveBeenCalled();
-  });
-
-  it("resumes diary creation when tracking is on", async () => {
-    localStorage.setItem("tb-fo-diary-tracking-enabled", "true");
-
-    renderApp("/patients/patient-1");
-
-    fireEvent.click(await screen.findByRole("button", { name: /^save$/i }));
-
-    await waitFor(() => expect(mocks.savePatient).toHaveBeenCalled());
-    await waitFor(() => expect(mocks.saveDiaryEntry).toHaveBeenCalled());
   });
 
   it("keeps patient data on this device when cloud patient sync fails", async () => {

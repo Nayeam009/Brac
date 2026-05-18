@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
-import { AppShell, DateInput, DiaryTimeline, DotGrid, PatientCard, StatusBadge, WorklistItem } from "./index";
-import type { DiaryEntry, Patient, Task } from "../domain/types";
+import { AppShell, DateInput, DotGrid, PatientCard, StatusBadge, WorklistItem } from "./index";
+import type { Patient, Task } from "../domain/types";
 import { calculateDrugDosePlan } from "../domain/automation";
 
 const patient: Patient = {
@@ -24,15 +24,6 @@ const task: Task = {
   status: "Open",
   dueDate: "2026-05-13",
   createdAt: "2026-05-13T00:00:00.000Z",
-};
-
-const diary: DiaryEntry = {
-  id: "d1",
-  time: "2026-05-13T09:30:00.000",
-  date: "2026-05-13",
-  type: "DOT Updated",
-  details: "সকাল ডোজ সম্পন্ন",
-  patientName: "রহিমা বেগম",
 };
 
 describe("TB-FO UI components", () => {
@@ -71,12 +62,11 @@ describe("TB-FO UI components", () => {
     expect(screen.getByRole("button", { name: "Expand sidebar" })).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("renders patient, worklist, diary and DOT status surfaces", () => {
+  it("renders patient, worklist and DOT status surfaces", () => {
     render(
       <MemoryRouter>
         <PatientCard patient={patient} tasks={[task]} onOpen={vi.fn()} />
         <WorklistItem task={task} patient={patient} />
-        <DiaryTimeline entries={[diary]} />
         <DotGrid patientId="p1" entries={[{ id: "dot1", patientId: "p1", date: "2026-05-01", monthKey: "2026-05", day: 1, status: "done", updatedAt: "2026-05-01T00:00:00.000Z" }]} monthKey="2026-05" onMonthChange={vi.fn()} onToggle={vi.fn()} />
         <StatusBadge tone="success">সম্পন্ন</StatusBadge>
       </MemoryRouter>,
@@ -85,29 +75,10 @@ describe("TB-FO UI components", () => {
     expect(screen.getAllByText("রহিমা বেগম")[0]).toBeInTheDocument();
     expect(screen.getByText("Follow-up 14/05/2026")).toBeInTheDocument();
     expect(screen.getByText(/Due 13\/05\/2026/)).toBeInTheDocument();
-    expect(screen.getByText(/13\/05\/2026 9:30am/)).toBeInTheDocument();
-    expect(screen.queryByText(/09:30/)).not.toBeInTheDocument();
     expect(screen.getByText("05/2026")).toBeInTheDocument();
     expect(screen.getByText("DOT আপডেট বাকি")).toBeInTheDocument();
-    expect(screen.getByText("সকাল ডোজ সম্পন্ন")).toBeInTheDocument();
     expect(screen.getByLabelText("দিন 1: done")).toBeInTheDocument();
     expect(screen.getByText("সম্পন্ন")).toBeInTheDocument();
-  });
-
-  it("summarizes multiple diary updates for the same patient into one card", () => {
-    render(
-      <DiaryTimeline entries={[
-        diary,
-        { ...diary, id: "d2", type: "Record Updated", details: "Phase আপডেট", time: "2026-05-13T09:35:00.000" },
-      ]} />,
-    );
-
-    expect(screen.getByText("Update Summary")).toBeInTheDocument();
-    expect(screen.getByText(/2 updates recorded/)).toBeInTheDocument();
-    expect(screen.getByText("DOT update: 1")).toBeInTheDocument();
-    expect(screen.getByText("Record update: 1")).toBeInTheDocument();
-    expect(screen.getByText("সকাল ডোজ সম্পন্ন")).toBeInTheDocument();
-    expect(screen.getByText("Phase আপডেট")).toBeInTheDocument();
   });
 
   it("shows the DOT grid as a medicine plan from drug start through treatment end", () => {

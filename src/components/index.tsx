@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  AlertTriangle, BarChart3, BookOpen, CalendarCheck, CheckCircle2,
+  AlertTriangle, BarChart3, CalendarCheck, CheckCircle2,
   ChevronDown, ClipboardList, Database, FileText, Home, LogOut, Menu, Plus,
   PanelLeftClose, PanelLeftOpen, Search, Settings, ShieldCheck, Stethoscope, UserRound, Users, X,
 } from "lucide-react";
-import type { DiaryEntry, DotEntry, Patient, Profile, Task } from "../domain/types";
-import { formatDateDisplay, formatDateTimeDisplay, parseDateInput, toLocalIsoMonth } from "../lib/dateFormat";
+import type { DotEntry, Patient, Profile, Task } from "../domain/types";
+import { formatDateDisplay, parseDateInput, toLocalIsoMonth } from "../lib/dateFormat";
 import { dateForTreatmentDay, TB_IP_DAYS, TB_TOTAL_DAYS, type DrugDoseLine, type DrugDosePlan } from "../domain/automation";
 import { getPatientHouseLocation } from "../lib/houseLocation";
 
@@ -82,8 +82,8 @@ export function FAB({ onClick }: { onClick: () => void }) {
 }
 
 /* ── App Shell ── */
-export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessage = "InsForge ready", diaryTrackingEnabled = true, pendingSyncCount = 0, onRetrySync }: {
-  children: ReactNode; onNewPatient: () => void; onSignOut?: () => void; profile?: Profile | null; syncMessage?: string; diaryTrackingEnabled?: boolean; pendingSyncCount?: number; onRetrySync?: () => void;
+export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessage = "InsForge ready", pendingSyncCount = 0, onRetrySync }: {
+  children: ReactNode; onNewPatient: () => void; onSignOut?: () => void; profile?: Profile | null; syncMessage?: string; pendingSyncCount?: number; onRetrySync?: () => void;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -96,7 +96,6 @@ export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessa
     { to: "/", label: "ড্যাশবোর্ড", icon: <Home size={20} /> },
     { to: "/patients", label: "রোগী", icon: <Users size={20} /> },
     { to: "/today", label: "আজকের কাজ", icon: <ClipboardList size={20} /> },
-    { to: "/diary", label: "FO ডায়েরি", icon: <BookOpen size={20} /> },
     { to: "/reports", label: "রিপোর্ট", icon: <BarChart3 size={20} /> },
     { to: "/providers", label: "SS/DOT", icon: <ShieldCheck size={20} /> },
     { to: "/quality", label: "Data Quality", icon: <Database size={20} /> },
@@ -137,7 +136,6 @@ export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessa
         <header className="topbar">
           <div className="topbar-title"><p>InsForge connected · Offline-ready PWA</p><h1>TB-FO Assistant</h1></div>
           <div className="topbar-actions">
-            {!diaryTrackingEnabled ? <span className="sync-pill warning">Diary off</span> : null}
             <span className="sync-pill">{syncMessage}</span>
             {pendingSyncCount > 0 && onRetrySync ? <button className="sync-pill sync-action" type="button" onClick={onRetrySync}>Retry {pendingSyncCount}</button> : null}
             <span className="user-chip"><UserRound size={16} /><span>{profile?.name || profile?.email || "FO"}</span></span>
@@ -277,86 +275,6 @@ export function WorklistItem({ task, patient, onOpen }: { task: Task; patient?: 
       </div>
       {onOpen && patient ? <button className="ghost-button" type="button" onClick={onOpen}>খুলুন</button> : null}
     </article>
-  );
-}
-
-/* ── Diary Timeline ── */
-const diaryUpdateLabel = (type: string) => {
-  if (type === "New Patient") return "New patient update";
-  if (type === "Report Generated") return "Report update";
-  if (type === "Delete") return "Delete update";
-  return type.replace(/ Updated$/, " update");
-};
-
-const diaryGroupKey = (entry: DiaryEntry) => [entry.date, entry.patientId || entry.tr || entry.patientName || entry.userName || "general"].join("|");
-
-const groupDiaryEntries = (entries: DiaryEntry[]) => {
-  const groups = new Map<string, DiaryEntry[]>();
-  for (const entry of entries) {
-    const key = diaryGroupKey(entry);
-    groups.set(key, [...(groups.get(key) || []), entry]);
-  }
-  return Array.from(groups.entries()).map(([key, groupEntries]) => {
-    const sortedEntries = [...groupEntries].sort((a, b) => (b.time || b.date).localeCompare(a.time || a.date));
-    return { key, entries: sortedEntries, latest: sortedEntries[0] };
-  }).sort((a, b) => (b.latest.time || b.latest.date).localeCompare(a.latest.time || a.latest.date));
-};
-
-export function DiaryTimeline({ entries }: { entries: DiaryEntry[] }) {
-  const groups = groupDiaryEntries(entries);
-  return (
-    <div className="timeline summary-timeline">
-      {groups.map((group) => {
-        const typeCounts = group.entries.reduce<Record<string, number>>((acc, entry) => {
-          acc[entry.type] = (acc[entry.type] || 0) + 1;
-          return acc;
-        }, {});
-        const patientName = group.latest.patientName || "General Activity";
-        const visibleDetails = group.entries.slice(0, 3);
-        const hiddenDetails = group.entries.slice(3);
-        return (
-        <article className="timeline-item timeline-summary-card" key={group.key}>
-          <div className="timeline-dot"><CheckCircle2 size={16} /></div>
-          <div className="timeline-summary-body">
-            <div className="timeline-head">
-              <div>
-                <strong>{patientName}</strong>
-                <small>{formatDateTimeDisplay(group.latest.time) || formatDateDisplay(group.latest.date)} · {group.latest.tr || group.latest.userName || "FO"}</small>
-              </div>
-              <StatusBadge tone="info">Update Summary</StatusBadge>
-            </div>
-            <p className="timeline-summary-line">
-              {group.entries.length} update{group.entries.length > 1 ? "s" : ""} recorded: {Object.entries(typeCounts).map(([type, count]) => `${diaryUpdateLabel(type)} ${count}`).join(" · ")}
-            </p>
-            <div className="timeline-chip-row">
-              {Object.entries(typeCounts).map(([type, count]) => <span key={type}>{diaryUpdateLabel(type)}: {count}</span>)}
-            </div>
-            <ul className="timeline-update-list">
-              {visibleDetails.map((entry) => (
-                <li key={entry.id}>
-                  <span>{diaryUpdateLabel(entry.type)}</span>
-                  <strong>{entry.details}</strong>
-                </li>
-              ))}
-            </ul>
-            {hiddenDetails.length > 0 && (
-              <details className="timeline-details">
-                <summary>Show all {group.entries.length} update details</summary>
-                <ul className="timeline-update-list">
-                  {hiddenDetails.map((entry) => (
-                    <li key={entry.id}>
-                      <span>{formatDateTimeDisplay(entry.time) || formatDateDisplay(entry.date)} · {diaryUpdateLabel(entry.type)}</span>
-                      <strong>{entry.details}</strong>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </div>
-        </article>
-        );
-      })}
-    </div>
   );
 }
 
@@ -520,7 +438,7 @@ export function DotGrid({ patientId, entries, monthKey, onMonthChange, onToggle,
       <div className="dot-stats">
         <span>Month Done: {doneCount}</span><span>Month Missed: {missedCount}</span><span>Supervised: {supCount}</span><span>Month Adherence: {adherence}%</span>
       </div>
-      <small style={{ color: "var(--muted)" }}>প্রতিটি DOT update FO Diary-তে সংরক্ষিত হবে</small>
+      <small style={{ color: "var(--muted)" }}>প্রতিটি DOT update রোগীর রেকর্ডে সংরক্ষিত হবে</small>
     </div>
   );
 }

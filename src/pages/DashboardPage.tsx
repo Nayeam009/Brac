@@ -1,6 +1,6 @@
 import { Activity, BarChart3, ClipboardList, FlaskConical, ListChecks, Plus, ShieldAlert, Stethoscope, UserPlus, Users } from "lucide-react";
 import type { AppData } from "./types";
-import { AlertCard, DiaryTimeline, PageHeader, SectionCard, StatCard, StatusBadge, WorklistItem } from "../components";
+import { AlertCard, PageHeader, SectionCard, StatCard, StatusBadge, WorklistItem } from "../components";
 import { formatDateDisplay, toLocalIsoDate } from "../lib/dateFormat";
 
 export function DashboardPage({ data, onNavigate }: { data: AppData; onNavigate: (path: string) => void }) {
@@ -8,7 +8,6 @@ export function DashboardPage({ data, onNavigate }: { data: AppData; onNavigate:
   const preTreatment = data.patients.filter((p) => p.phase === "Pre-treatment").length;
   const completed = data.patients.filter((p) => p.outcome).length;
   const critical = data.tasks.filter((t) => t.priority === "Critical").length;
-  const todayDiary = data.diary.filter((d) => d.date === toLocalIsoDate()).length;
   const missedDot = data.dotEntries.filter((d) => d.status === "missed").length;
   const ciPending = data.tasks.filter((t) => t.type === "CI_PENDING").length;
   const tptActive = data.tptRecords.filter((t) => t.status === "Active").length;
@@ -52,11 +51,7 @@ export function DashboardPage({ data, onNavigate }: { data: AppData; onNavigate:
           </div>
         </SectionCard>
 
-        <SectionCard title="সাম্প্রতিক FO Diary" tone="info" action={<button className="ghost-button" type="button" onClick={() => onNavigate("/diary")}>সব দেখুন</button>}>
-          <DiaryTimeline entries={data.diary.slice(0, 5)} />
-          <small style={{ color: "var(--muted)" }}>আজ {todayDiary}টি কাজ রেকর্ড হয়েছে</small>
-        </SectionCard>
-      </div>
+     </div>
 
       <SectionCard title="দ্রুত কাজ (Quick Actions)" tone="success">
         <div className="quick-actions">

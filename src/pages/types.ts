@@ -1,4 +1,4 @@
-import type { ContactPerson, DiaryEntry, DotEntry, LabResult, Patient, Provider, SputumFollowUp, Task, TptRecord } from "../domain/types";
+import type { ContactPerson, DotEntry, LabResult, Patient, Provider, SputumFollowUp, Task, TptRecord } from "../domain/types";
 
 export type AppData = {
   patients: Patient[];
@@ -7,7 +7,6 @@ export type AppData = {
   contacts: ContactPerson[];
   tptRecords: TptRecord[];
   sputumFollowUps: SputumFollowUp[];
-  diary: DiaryEntry[];
   tasks: Task[];
   providers: Provider[];
   syncMessage: string;

@@ -42,6 +42,7 @@ const renderPatientForm = (props: Partial<ComponentProps<typeof PatientFormPage>
     onSave: vi.fn(),
     onDelete: vi.fn(),
     onSaveLab: vi.fn(),
+    onDeleteLab: vi.fn(),
     onSaveDot: vi.fn(),
     onSaveContact: vi.fn(),
     onSaveTpt: vi.fn(),
@@ -615,6 +616,31 @@ describe("PatientFormPage complete TB-01 data entry", () => {
     expect(screen.getByText("XR-77")).toBeInTheDocument();
     expect(screen.getByText("Pending result")).toBeInTheDocument();
     expect(screen.getByText("Chest X-ray opacity")).toBeInTheDocument();
+  });
+
+  it("lets FO delete a saved lab report after confirmation", () => {
+    const onDeleteLab = vi.fn();
+    const savedLab: LabResult = {
+      id: "lab-delete",
+      patientId: "patient-1",
+      testType: "GeneXpert",
+      labId: "GX-19",
+      testDate: "2026-05-16",
+      result: "Pending result",
+      quantity: "",
+      scantyCount: "",
+      notes: "",
+      createdAt: "2026-05-16T00:00:00.000Z",
+      updatedAt: "2026-05-16T00:00:00.000Z",
+    };
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    renderPatientForm({ attachments: [], labResults: [savedLab], onDeleteLab });
+
+    fireEvent.click(screen.getByRole("button", { name: /delete genexpert report gx-19/i }));
+
+    expect(window.confirm).toHaveBeenCalledWith("Delete this lab report? This cannot be undone.");
+    expect(onDeleteLab).toHaveBeenCalledWith("lab-delete");
   });
 
   it("saves detailed contact investigation fields", () => {
