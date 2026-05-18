@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Copy, ExternalLink, FileText, FlaskConical, LocateFixed, MapPin, Microscope, Navigation, Plus, Printer, Save, ScanLine, Trash2, Upload } from "lucide-react";
 import type { ContactPerson, DotEntry, LabResult, Patient, RecordAttachment, SputumFollowUp, TptRecord } from "../domain/types";
 import { calculateDrugDosePlan, calculateTreatmentEndDateFromMonths, calculateTptEndDate, detectDuplicatePatient, DRUG_REGIMENS, HISTORICAL_BACK_ENTRY_CUTOFF_DATE, inferTreatmentLengthMonths, resolvePatientDotPlan, resolvePatientEntryMode, resolvePatientTreatmentSchedule, TREATMENT_LENGTH_MONTH_OPTIONS, type PatientEntryMode } from "../domain/automation";
@@ -19,6 +19,7 @@ type Props = {
 
 const now = () => new Date().toISOString();
 const uid = () => `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+const optionalNumber = (value: string) => value === "" ? undefined : Number(value);
 const formatFileSize = (size: number) => {
   if (size < 1024) return `${size} B`;
   if (size < 1024 * 1024) return `${Math.round(size / 102.4) / 10} KB`;
@@ -94,7 +95,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     setManualLongitude(houseLocation ? String(houseLocation.longitude) : "");
   }, [houseLocation?.latitude, houseLocation?.longitude]);
 
-  const u = (key: keyof Patient, val: string | number) => setForm((c) => {
+  const u = (key: keyof Patient, val: string | number | undefined) => setForm((c) => {
     if (key === "treatmentStartDate" && typeof val === "string") {
       return { ...c, treatmentStartDate: val };
     }
@@ -408,6 +409,19 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
     { value: "Xray", title: "X-ray & other", helper: "X-ray, culture, or supporting tests", icon: <ScanLine size={18} /> },
   ];
   const activeLabCard = labTypeCards.find((card) => card.value === normalizeLabTestType(labForm.testType) || (card.value === "GeneXpert" && labForm.testType === "Truenat")) || labTypeCards[0];
+  if (patientId && patientId !== "new" && !existing && patients.length > 0) {
+    return (
+      <>
+        <PageHeader
+          title="Patient record not found"
+          subtitle="This link does not match any loaded patient record."
+          action={<Link className="ghost-button" to="/patients">Back to registry</Link>}
+        />
+        <AlertCard level="high" message="No patient was found for this link. Use the registry or create a new patient intentionally." />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader
@@ -448,7 +462,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
             <label>e-TB Manager ID<input value={form.etbId || ""} onChange={(e) => u("etbId", e.target.value)} /></label>
             <label>Registration date<DateInput value={form.registrationDate || ""} onChange={(v) => u("registrationDate", v)} /></label>
             <label>রোগীর পূর্ণ নাম<input value={form.name} onChange={(e) => u("name", e.target.value)} /></label>
-            <label>বয়স<input type="number" value={form.age || ""} onChange={(e) => u("age", Number(e.target.value))} /></label>
+            <label>বয়স<input type="number" value={form.age || ""} onChange={(e) => u("age", optionalNumber(e.target.value))} /></label>
             <label>লিঙ্গ<select value={form.sex || ""} onChange={(e) => u("sex", e.target.value)}><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
             <label>মোবাইল নম্বর<input value={form.phone || ""} onChange={(e) => u("phone", e.target.value)} /></label>
             <label>পিতার নাম<input value={form.fatherName || ""} onChange={(e) => u("fatherName", e.target.value)} /></label>
@@ -625,7 +639,7 @@ export function PatientFormPage({ patients, labResults = [], dotEntries = [], co
         <SectionCard title="ঙ — ওষুধের ব্যবস্থাপত্র (Drug Regimen)" tone="info" defaultOpen={false}>
           <div className="field-grid">
             <label>Regimen Type<select value={form.regimenType || ""} onChange={(e) => u("regimenType", e.target.value)}><option value="">Select Regimen</option>{regimenOptions.map((k) => <option key={k}>{k}</option>)}</select></label>
-            <label>রোগীর ওজন (kg)<input type="number" value={form.weightKg || ""} onChange={(e) => u("weightKg", Number(e.target.value))} /></label>
+            <label>রোগীর ওজন (kg)<input type="number" value={form.weightKg || ""} onChange={(e) => u("weightKg", optionalNumber(e.target.value))} /></label>
             <label>Drug start date<DateInput value={form.drugStartDate || ""} onChange={updateDrugStartDate} /></label>
             <label>Treatment length<select value={treatmentLengthMonths} onChange={(e) => updateTreatmentLengthMonths(Number(e.target.value))}>{TREATMENT_LENGTH_MONTH_OPTIONS.map((months) => <option key={months} value={months}>{months} months ({months * 30} days)</option>)}</select></label>
             <label>{isExtraPulmonary ? "EP treatment extended until" : "Treatment end date"}<DateInput value={treatmentSchedule.treatmentEndDate || ""} onChange={(v) => u("treatmentEndDate", v)} /></label>

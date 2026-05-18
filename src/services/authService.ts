@@ -60,6 +60,11 @@ const errorMessage = (error: unknown): string =>
 const isSignedOutSessionError = (error: unknown): boolean =>
   /no refresh token|refresh token.*provided|not authenticated|session.*missing/i.test(errorMessage(error));
 
+const hasBrowserSessionHint = (): boolean => {
+  if (typeof document === "undefined") return true;
+  return document.cookie.split(";").some((cookie) => cookie.trim().startsWith("insforge_csrf_token="));
+};
+
 const getResponseUser = (data: unknown): AuthUser | null => {
   const user = (data as { user?: AuthUser | null } | null)?.user;
   return user?.id ? user : null;
@@ -149,6 +154,7 @@ export async function signOut(): Promise<void> {
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
+  if (typeof window !== "undefined" && !hasBrowserSessionHint()) return null;
   try {
     const { data, error } = await insforge.auth.getCurrentUser();
     if (error && !isSignedOutSessionError(error)) console.warn("Current user retrieval failed:", error);

@@ -13,6 +13,7 @@ import {
   resolvePatientEntryMode,
   resolvePatientTreatmentSchedule,
   shouldCreateLiveDiaryEntry,
+  toCsv,
   withResolvedPatientEntryMetadata,
 } from "./automation";
 import type { DotEntry, LabResult, Patient, SputumFollowUp } from "./types";
@@ -602,5 +603,11 @@ describe("TB workflow automation", () => {
       summary: "DR-TB/MDR regimens are individualized and must not be auto-calculated here.",
       lines: [expect.objectContaining({ doseText: "Verify manually" })],
     });
+  });
+
+  it("escapes spreadsheet formula-like CSV values", () => {
+    expect(toCsv([{ Name: "=HYPERLINK(\"http://bad\")", TR: "+123", Note: "safe, quoted" }])).toBe(
+      "Name,TR,Note\n\"'=HYPERLINK(\"\"http://bad\"\")\",'+123,\"safe, quoted\"",
+    );
   });
 });

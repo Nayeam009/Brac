@@ -187,6 +187,8 @@ export async function deletePatientWithCleanup(patientId: string, attachments: R
   const failedFiles: string[] = [];
   let removedFiles = 0;
 
+  await deletePatient(patientId);
+
   for (const attachment of patientAttachments) {
     try {
       const { error } = await insforge.storage.from(attachment.bucket).remove(attachment.storageKey);
@@ -197,7 +199,6 @@ export async function deletePatientWithCleanup(patientId: string, attachments: R
     }
   }
 
-  await deletePatient(patientId);
   return { removedFiles, failedFiles };
 }
 

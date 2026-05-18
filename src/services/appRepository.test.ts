@@ -170,7 +170,7 @@ describe("attachment repository", () => {
     expect(upsertedRows[0][0]).toMatchObject({ id: "dot-existing", patient_id: "patient-1", date: "2026-05-15" });
   });
 
-  it("removes patient attachment objects before deleting the patient row", async () => {
+  it("deletes the patient row before removing attachment objects", async () => {
     const { deletePatientWithCleanup } = await import("./appRepository");
     const eq = vi.fn().mockResolvedValue({ error: null });
     remove.mockResolvedValue({ data: { path: "user-1/patient-1/xray-report.pdf" }, error: null });
@@ -197,6 +197,7 @@ describe("attachment repository", () => {
     expect(remove).toHaveBeenCalledWith("user-1/patient-1/xray-report.pdf");
     expect(databaseFrom).toHaveBeenCalledWith("patients");
     expect(eq).toHaveBeenCalledWith("id", "patient-1");
+    expect(eq.mock.invocationCallOrder[0]).toBeLessThan(remove.mock.invocationCallOrder[0]);
     expect(result).toEqual({ removedFiles: 1, failedFiles: [] });
   });
 

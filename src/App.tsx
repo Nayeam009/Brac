@@ -40,6 +40,41 @@ const nowIso = () => new Date().toISOString();
 const today = () => toLocalIsoDate();
 const uid = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 
+const deletePatientPayload = (payload: unknown, fallbackPatientId: string): { patientId: string; attachments: RecordAttachment[] } => {
+  if (payload && typeof payload === "object") {
+    const record = payload as { patientId?: unknown; attachments?: unknown };
+    return {
+      patientId: typeof record.patientId === "string" && record.patientId ? record.patientId : fallbackPatientId,
+      attachments: Array.isArray(record.attachments) ? record.attachments as RecordAttachment[] : [],
+    };
+  }
+  return { patientId: String(payload || fallbackPatientId), attachments: [] };
+};
+
+const withoutPatientData = (data: RepositoryAppData, patientId: string): RepositoryAppData => ({
+  ...data,
+  patients: data.patients.filter((x) => x.id !== patientId),
+  labResults: data.labResults.filter((x) => x.patientId !== patientId),
+  dotEntries: data.dotEntries.filter((x) => x.patientId !== patientId),
+  contacts: data.contacts.filter((x) => x.patientId !== patientId),
+  tptRecords: data.tptRecords.filter((x) => x.patientId !== patientId),
+  sputumFollowUps: data.sputumFollowUps.filter((x) => x.patientId !== patientId),
+  attachments: data.attachments.filter((x) => !(x.recordType === "patient" && x.recordId === patientId)),
+  diaryEntries: data.diaryEntries.filter((x) => x.patientId !== patientId),
+  tasks: data.tasks.filter((x) => x.patientId !== patientId),
+});
+
+const applyPendingDeletes = (data: RepositoryAppData, queue: QueuedSyncItem[]): RepositoryAppData =>
+  queue.reduce((next, item) => {
+    if (item.operation === "delete" && item.entity === "patient") {
+      return withoutPatientData(next, deletePatientPayload(item.payload, item.entityKey).patientId);
+    }
+    if (item.operation === "delete" && item.entity === "lab") {
+      return { ...next, labResults: next.labResults.filter((lab) => lab.id !== String(item.payload || item.entityKey)) };
+    }
+    return next;
+  }, data);
+
 export function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -115,7 +150,8 @@ export function App() {
   const performQueuedSync = useCallback(async (item: QueuedSyncItem) => {
     if (!currentProfile) throw new Error("No active Field Officer profile.");
     if (item.operation === "delete" && item.entity === "patient") {
-      await repository.deletePatient(String(item.payload || item.entityKey));
+      const payload = deletePatientPayload(item.payload, item.entityKey);
+      await repository.deletePatientWithCleanup(payload.patientId, payload.attachments);
       return;
     }
     if (item.operation === "delete" && item.entity === "lab") {
@@ -222,20 +258,21 @@ export function App() {
 
     (async () => {
       const localData = await loadLocalAppData(profileId);
+      const localQueue = await loadSyncQueue(profileId);
       if (localData && !cancelled) {
-        applyAppData(localData);
-        const pending = await loadSyncQueue(profileId);
+        applyAppData(applyPendingDeletes(localData, localQueue));
+        const pending = localQueue;
         setPendingSyncCount(pending.length);
         setSyncMessage(pending.length ? `Saved locally · ${pending.length} pending` : "Saved locally");
       }
 
       try {
         const cloudData = await repository.loadAppData({ profile: currentProfile });
-        const merged = mergeAppDataByFreshness(localData, cloudData);
+        const pending = await loadSyncQueue(profileId);
+        const merged = applyPendingDeletes(mergeAppDataByFreshness(localData, cloudData), pending);
         await saveLocalAppData(profileId, merged);
         if (!cancelled) {
           applyAppData(merged);
-          const pending = await loadSyncQueue(profileId);
           setPendingSyncCount(pending.length);
           setSyncMessage(pending.length ? `Saved locally · ${pending.length} pending` : cloudData.patients.length ? "Data loaded" : "No records yet");
           void syncQueuedData();
@@ -270,16 +307,14 @@ export function App() {
     if (!p) return;
     setModal({ title: "রেকর্ড Delete?", message: `${p.name} (TR: ${p.tr || "—"}) এর রেকর্ড permanently delete হবে।`, danger: true, onConfirm: async () => {
       try {
-        const cleanup = await repository.deletePatientWithCleanup(patientId, attachments);
-        setPatients((c) => c.filter((x) => x.id !== patientId));
-        setLabResults((c) => c.filter((x) => x.patientId !== patientId));
-        setDotEntries((c) => c.filter((x) => x.patientId !== patientId));
-        setContacts((c) => c.filter((x) => x.patientId !== patientId));
-        setTptRecords((c) => c.filter((x) => x.patientId !== patientId));
-        setSputumFollowUps((c) => c.filter((x) => x.patientId !== patientId));
-        setAttachments((c) => c.filter((x) => !(x.recordType === "patient" && x.recordId === patientId)));
-        setDiary((c) => c.filter((x) => x.patientId !== patientId));
-        toast(cleanup.failedFiles.length ? `রেকর্ড delete হয়েছে, কিন্তু ${cleanup.failedFiles.length} file cleanup failed.` : "রেকর্ড delete হয়েছে", cleanup.failedFiles.length ? "warning" : "error");
+        const patientAttachments = currentDataRef.current.attachments.filter((x) => x.recordType === "patient" && x.recordId === patientId);
+        const next = withoutPatientData(currentDataRef.current, patientId);
+        await commitAppData(
+          next,
+          [{ entity: "patient", operation: "delete", entityKey: patientId, payload: { patientId, attachments: patientAttachments } }],
+          "Record deleted",
+          "warning",
+        );
         navigate("/patients");
       } catch (error) {
         toast(error instanceof Error ? error.message : "Delete failed.", "error");
@@ -287,7 +322,7 @@ export function App() {
         setModal(null);
       }
     }});
-  }, [patients, attachments, toast, navigate]);
+  }, [patients, commitAppData, toast, navigate]);
 
   const saveLabResult = useCallback((lab: LabResult) => {
     const item = { ...lab, id: lab.id || uid("lab"), updatedAt: nowIso(), createdAt: lab.createdAt || nowIso() };

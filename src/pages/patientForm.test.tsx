@@ -267,6 +267,30 @@ describe("PatientFormPage extra-pulmonary treatment rules", () => {
 });
 
 describe("PatientFormPage complete TB-01 data entry", () => {
+  it("shows not-found instead of a blank form for unknown patient links", () => {
+    render(
+      <MemoryRouter initialEntries={["/patients/missing-patient"]}>
+        <Routes>
+          <Route path="/patients/:patientId" element={<PatientFormPage {...{
+            patients: [patient],
+            attachments: [],
+            onSave: vi.fn(),
+            onDelete: vi.fn(),
+            onSaveLab: vi.fn(),
+            onDeleteLab: vi.fn(),
+            onSaveDot: vi.fn(),
+            onSaveContact: vi.fn(),
+            onSaveTpt: vi.fn(),
+            onSaveSputum: vi.fn(),
+          }} />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Patient record not found")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^save$/i })).not.toBeInTheDocument();
+  });
+
   it("auto-marks previous patient data before 15/05/2026 and preserves manual override", () => {
     const onSave = vi.fn();
 
@@ -342,6 +366,25 @@ describe("PatientFormPage complete TB-01 data entry", () => {
           treatmentHistoryNote: "Previous private treatment noted",
         }),
       }),
+    }));
+  });
+
+  it("clears optional age and weight instead of saving zero", () => {
+    const onSave = vi.fn();
+
+    renderPatientForm({
+      patients: [{ ...patient, age: 35, weightKg: 40, regimenType: "CAT-1 / 4FDC" }],
+      attachments: [],
+      onSave,
+    });
+
+    fireEvent.change(screen.getAllByLabelText(/বয়স/i)[0], { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText(/kg/i), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+      age: undefined,
+      weightKg: undefined,
     }));
   });
 

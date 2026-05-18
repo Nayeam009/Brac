@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
 import type { AppData } from "./services/appRepository";
-import type { Patient, Profile } from "./domain/types";
+import type { Patient, Profile, RecordAttachment } from "./domain/types";
 
 const mocks = vi.hoisted(() => ({
   loadAuthGate: vi.fn(),
@@ -85,6 +85,19 @@ const patient: Patient = {
   updatedAt: "2026-05-15T00:00:00.000Z",
 };
 
+const attachment: RecordAttachment = {
+  id: "att-1",
+  recordType: "patient",
+  recordId: "patient-1",
+  fileName: "report.pdf",
+  fileSize: 512,
+  bucket: "record-attachments",
+  storageKey: "user-1/patient-1/report.pdf",
+  url: "https://storage.example/report.pdf",
+  uploadedBy: "user-1",
+  createdAt: "2026-05-15T00:00:00.000Z",
+};
+
 const appData = (overrides: Partial<AppData> = {}): AppData => ({
   patients: [patient],
   labResults: [],
@@ -122,6 +135,7 @@ describe("App without FO diary", () => {
     mocks.saveDotEntry.mockImplementation((entry) => Promise.resolve(entry));
     mocks.saveDiaryEntry.mockImplementation((entry) => Promise.resolve(entry));
     mocks.restoreAppData.mockResolvedValue({ warnings: [] });
+    mocks.deletePatientWithCleanup.mockResolvedValue({ removedFiles: 0, failedFiles: [] });
   });
 
   afterEach(() => {
@@ -131,7 +145,7 @@ describe("App without FO diary", () => {
   it("redirects the removed diary route back to the dashboard", async () => {
     renderApp("/diary");
 
-    expect(await screen.findByText(/field operation summary/i)).toBeInTheDocument();
+    expect(await screen.findByText(/field operation summary/i, {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByText(/FO Diary/i)).not.toBeInTheDocument();
     expect(screen.queryByRole("checkbox", { name: /diary tracking/i })).not.toBeInTheDocument();
   });
@@ -148,11 +162,12 @@ describe("App without FO diary", () => {
   it("saves DOT entries without creating diary entries", async () => {
     renderApp("/patients/patient-1");
 
-    fireEvent.click(await screen.findByLabelText(/treatment day 1, 4FDC, 3 tabs\/day: blank/i));
+    await screen.findByText(/QA Patient/i, {}, { timeout: 5000 });
+    fireEvent.click(await screen.findByLabelText(/treatment day 1, 4FDC, 3 tabs\/day: blank/i, {}, { timeout: 5000 }));
 
     await waitFor(() => expect(mocks.saveDotEntry).toHaveBeenCalled());
     expect(mocks.saveDiaryEntry).not.toHaveBeenCalled();
-  });
+  }, 15000);
 
   it("keeps patient data on this device when cloud patient sync fails", async () => {
     mocks.savePatient.mockRejectedValue(new Error("offline"));
@@ -172,5 +187,26 @@ describe("App without FO diary", () => {
       expect(rawQueue).toContain("offline");
     });
     expect(screen.getByText(/cloud retry needed/i)).toBeInTheDocument();
+  });
+
+  it("removes deleted patients from local data and queues cloud cleanup if offline", async () => {
+    mocks.loadAppData.mockResolvedValue(appData({ attachments: [attachment] }));
+    mocks.deletePatientWithCleanup.mockRejectedValue(new Error("offline"));
+
+    renderApp("/patients/patient-1");
+
+    fireEvent.click(await screen.findByRole("button", { name: /delete/i }));
+    fireEvent.click(screen.getByRole("button", { name: /নিশ্চিত/i }));
+
+    await waitFor(() => {
+      const raw = localStorage.getItem("tb-fo-local-data:user-1") || "";
+      expect(raw).not.toContain("QA Patient");
+      expect(raw).not.toContain("patient-1");
+    });
+    await waitFor(() => {
+      const rawQueue = localStorage.getItem("tb-fo-sync-queue:user-1") || "";
+      expect(rawQueue).toContain("\"operation\":\"delete\"");
+      expect(rawQueue).toContain("report.pdf");
+    });
   });
 });

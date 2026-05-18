@@ -37,7 +37,17 @@ const mergeById = <T extends Identified>(current: T[], incoming: T[]): T[] => {
 
 export function mergeBackupData(current: AppData, incoming: AppData, currentUserId?: string): { data: AppData; warnings: string[] } {
   const warnings: string[] = [];
-  const patients = mergeById(current.patients, incoming.patients);
+  const importedPatients = currentUserId
+    ? incoming.patients.map((patient) => {
+      if (!patient.ownerId || patient.ownerId === currentUserId) return { ...patient, ownerId: currentUserId };
+      return { ...patient, ownerId: currentUserId };
+    })
+    : incoming.patients;
+  const reassignedPatients = currentUserId
+    ? incoming.patients.filter((patient) => patient.ownerId && patient.ownerId !== currentUserId).length
+    : 0;
+  if (reassignedPatients > 0) warnings.push(`Reassigned ${reassignedPatients} imported patient record to the current Field Officer for safe sync.`);
+  const patients = mergeById(current.patients, importedPatients);
   const patientIds = new Set(patients.map((patient) => patient.id));
   const incomingAttachments = incoming.attachments.filter((attachment) => {
     if (currentUserId && attachment.uploadedBy !== currentUserId) return false;

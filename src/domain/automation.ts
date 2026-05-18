@@ -386,7 +386,11 @@ export function toCsv(rows: Record<string, unknown>[]): string {
   const headers = Object.keys(rows[0]);
   const lines = [headers.join(",")];
   for (const row of rows) {
-    lines.push(headers.map((h) => { const v = String(row[h] ?? ""); return v.includes(",") || v.includes('"') ? `"${v.replace(/"/g, '""')}"` : v; }).join(","));
+    lines.push(headers.map((h) => {
+      const raw = String(row[h] ?? "");
+      const v = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+      return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    }).join(","));
   }
   return lines.join("\n");
 }

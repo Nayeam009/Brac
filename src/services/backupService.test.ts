@@ -56,4 +56,21 @@ describe("backup restore helpers", () => {
     expect(result.data.attachments.map((attachment) => attachment.id)).toEqual(["att-1"]);
     expect(result.warnings).toContain("Skipped 1 attachment metadata record from another Field Officer.");
   });
+
+  it("reassigns imported patient owner ids to the current FO before sync", () => {
+    const incoming = parseBackupData({
+      patients: [
+        { id: "pat-1", name: "Imported", ownerId: "other-user", createdAt: "2026-01-01T00:00:00.000Z", updatedAt: "2026-01-01T00:00:00.000Z" },
+        { id: "pat-2", name: "No Owner", createdAt: "2026-01-01T00:00:00.000Z", updatedAt: "2026-01-01T00:00:00.000Z" },
+      ],
+    });
+
+    const result = mergeBackupData(emptyData(), incoming, "user-1");
+
+    expect(result.data.patients.map((patient) => [patient.id, patient.ownerId])).toEqual([
+      ["pat-1", "user-1"],
+      ["pat-2", "user-1"],
+    ]);
+    expect(result.warnings).toContain("Reassigned 1 imported patient record to the current Field Officer for safe sync.");
+  });
 });
