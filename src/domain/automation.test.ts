@@ -50,6 +50,7 @@ describe("TB workflow automation", () => {
     expect(calculateTreatmentEndDateFromMonths("2025-12-11", 6)).toBe("2026-06-08");
     expect(calculateTreatmentEndDateFromMonths("2025-12-11", 9)).toBe("2026-09-06");
     expect(calculateTreatmentEndDateFromMonths("2025-12-11", 12)).toBe("2026-12-05");
+    expect(calculateTreatmentEndDateFromMonths("2026-04-30", 18)).toBe("2027-10-21");
   });
 
   it("preserves an extended treatment end date for extra-pulmonary patients", () => {

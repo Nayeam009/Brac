@@ -457,6 +457,29 @@ describe("PatientFormPage complete TB-01 data entry", () => {
     expect(screen.getByText(/2FDC 210 days/)).toBeInTheDocument();
   });
 
+  it("allows EP treatment length through 18 programme months", () => {
+    renderPatientForm({
+      patients: [
+        {
+          ...patient,
+          tbType: "Extra-pulmonary",
+          regimenType: "CAT-1 / 4FDC",
+          weightKg: 40,
+          treatmentStartDate: "2026-04-30",
+          drugStartDate: "2026-04-30",
+        },
+      ],
+      attachments: [],
+    });
+
+    fireEvent.change(screen.getByLabelText(/Treatment length/i), { target: { value: "18" } });
+
+    expect(screen.getByLabelText(/EP treatment extended until/i)).toHaveValue("21/10/2027");
+    expect(screen.getByText(/Treatment length is 18 months \(540 programme days\)/)).toBeInTheDocument();
+    expect(screen.getByText("0/540 days")).toBeInTheDocument();
+    expect(screen.getByText(/2FDC 480 days/)).toBeInTheDocument();
+  });
+
   it("moves DOT tracking start to the Drug start date when it changes", () => {
     renderPatientForm({
       patients: [

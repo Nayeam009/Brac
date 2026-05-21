@@ -22,7 +22,7 @@ export const TB_IP_DAYS = PROGRAM_DAYS_PER_MONTH * 2;
 export const TB_CP_DAYS = PROGRAM_DAYS_PER_MONTH * 4;
 export const TB_TOTAL_DAYS = TB_IP_DAYS + TB_CP_DAYS;
 export const HISTORICAL_BACK_ENTRY_CUTOFF_DATE = "2026-05-15";
-export const TREATMENT_LENGTH_MONTH_OPTIONS = [6, 7, 8, 9, 10, 11, 12] as const;
+export const TREATMENT_LENGTH_MONTH_OPTIONS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] as const;
 
 const isTreatmentLengthOption = (value: number) => (TREATMENT_LENGTH_MONTH_OPTIONS as readonly number[]).includes(value);
 const treatmentLengthFromMetadata = (metadata?: Record<string, unknown>) => {
