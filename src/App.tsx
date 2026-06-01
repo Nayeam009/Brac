@@ -28,6 +28,7 @@ import { setSentryProfile } from "./lib/sentry";
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })));
 const DataQualityPage = lazy(() => import("./pages/DataQualityPage").then((module) => ({ default: module.DataQualityPage })));
 const LoginPage = lazy(() => import("./pages/LoginPage").then((module) => ({ default: module.LoginPage })));
+const MonthlyFollowUpPage = lazy(() => import("./pages/MonthlyFollowUpPage").then((module) => ({ default: module.MonthlyFollowUpPage })));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage").then((module) => ({ default: module.NotFoundPage })));
 const PatientFormPage = lazy(() => import("./pages/PatientFormPage").then((module) => ({ default: module.PatientFormPage })));
 const PatientRegistryPage = lazy(() => import("./pages/PatientRegistryPage").then((module) => ({ default: module.PatientRegistryPage })));
@@ -581,6 +582,7 @@ export function App() {
               <Route path="today" element={<WorklistPage tasks={tasks} patients={patients} onOpen={(id) => navigate(`/patients/${id}`)} />} />
               <Route path="diary" element={<Navigate to="/" replace />} />
               <Route path="reports" element={<ReportsPage data={data} onExport={() => { toast("Report export হয়েছে"); }} />} />
+              <Route path="follow-up" element={<MonthlyFollowUpPage patients={patients} sputumFollowUps={sputumFollowUps} />} />
               <Route path="providers" element={<ProviderPage providers={providers} patients={patients} onSave={(p) => { const item = { ...p, id: p.id || uid("pro"), createdAt: p.createdAt || nowIso(), updatedAt: nowIso() }; const next = { ...currentDataRef.current, providers: [item, ...currentDataRef.current.providers.filter((e) => e.id !== item.id)] }; void commitAppData(next, [{ entity: "provider", operation: "upsert", entityKey: item.id, payload: item }], "Provider সংরক্ষিত"); }} />} />
               <Route path="quality" element={<DataQualityPage patients={patients} labResults={labResults} sputumFollowUps={sputumFollowUps} tasks={tasks} onOpen={(id) => navigate(`/patients/${id}`)} />} />
               <Route path="settings" element={<SettingsPage data={data} onToast={toast} onRestoreBackup={restoreBackupData} />} />

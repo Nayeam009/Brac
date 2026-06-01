@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { AppShell, DateInput, DotGrid, PatientCard, StatusBadge, WorklistItem } from "./index";
@@ -39,6 +39,7 @@ describe("TB-FO UI components", () => {
     expect(screen.getAllByText("TB-FO Assistant")[0]).toBeInTheDocument();
     expect(screen.getAllByText("ড্যাশবোর্ড")[0]).toBeInTheDocument();
     expect(screen.getAllByText("রোগী")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Monthly Follow-up")[0]).toBeInTheDocument();
   });
 
   it("collapses and expands the desktop sidebar", () => {
@@ -60,6 +61,21 @@ describe("TB-FO UI components", () => {
 
     expect(sidebar).toHaveClass("collapsed");
     expect(screen.getByRole("button", { name: "Expand sidebar" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("shows Monthly Follow-up in the mobile more menu", () => {
+    render(
+      <MemoryRouter>
+        <AppShell onNewPatient={vi.fn()}>
+          <h1>ড্যাশবোর্ড</h1>
+        </AppShell>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "আরও মেনু" }));
+
+    const dialog = screen.getByRole("dialog", { name: "আরও নেভিগেশন" });
+    expect(within(dialog).getByText("Monthly Follow-up")).toBeInTheDocument();
   });
 
   it("renders patient, worklist and DOT status surfaces", () => {

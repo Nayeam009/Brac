@@ -97,6 +97,7 @@ export function AppShell({ children, onNewPatient, onSignOut, profile, syncMessa
     { to: "/patients", label: "রোগী", icon: <Users size={20} /> },
     { to: "/today", label: "আজকের কাজ", icon: <ClipboardList size={20} /> },
     { to: "/reports", label: "রিপোর্ট", icon: <BarChart3 size={20} /> },
+    { to: "/follow-up", label: "Monthly Follow-up", icon: <CalendarCheck size={20} /> },
     { to: "/providers", label: "SS/DOT", icon: <ShieldCheck size={20} /> },
     { to: "/quality", label: "Data Quality", icon: <Database size={20} /> },
     { to: "/settings", label: "Settings", icon: <Settings size={20} /> },

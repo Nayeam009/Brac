@@ -163,6 +163,7 @@ describe("App without FO diary", () => {
     renderApp("/patients/patient-1");
 
     await screen.findByText(/QA Patient/i, {}, { timeout: 5000 });
+    fireEvent.click(await screen.findByRole("button", { name: /drug start/i }, { timeout: 5000 }));
     fireEvent.click(await screen.findByLabelText(/treatment day 1, 4FDC, 3 tabs\/day: blank/i, {}, { timeout: 5000 }));
 
     await waitFor(() => expect(mocks.saveDotEntry).toHaveBeenCalled());

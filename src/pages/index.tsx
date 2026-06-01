@@ -4,6 +4,7 @@ export { PatientRegistryPage } from "./PatientRegistryPage";
 export { PatientFormPage } from "./PatientFormPage";
 export { WorklistPage } from "./WorklistPage";
 export { ReportsPage } from "./ReportsPage";
+export { MonthlyFollowUpPage } from "./MonthlyFollowUpPage";
 export { ProviderPage } from "./ProviderPage";
 export { DataQualityPage } from "./DataQualityPage";
 export { SettingsPage } from "./SettingsPage";
