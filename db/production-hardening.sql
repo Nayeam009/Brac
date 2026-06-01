@@ -252,6 +252,7 @@ create policy app_settings_active_field_officers on app_settings
 
 create index if not exists idx_profiles_user_status_role on profiles(user_id, status, role);
 create index if not exists idx_report_exports_generated_by on report_exports(generated_by);
+create index if not exists idx_record_attachments_record_id on record_attachments(record_id);
 create index if not exists idx_record_attachments_record on record_attachments(record_type, record_id);
 create index if not exists idx_record_attachments_uploaded_by on record_attachments(uploaded_by);
 

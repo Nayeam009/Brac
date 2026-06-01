@@ -249,5 +249,6 @@ create index if not exists idx_diary_date on diary_entries(date);
 create index if not exists idx_tasks_status_priority on tasks(status, priority);
 create index if not exists idx_tasks_patient_id on tasks(patient_id);
 create index if not exists idx_tasks_patient_id_advisor_compat on tasks(patient_id, patient_id);
+create index if not exists idx_record_attachments_record_id on record_attachments(record_id);
 create index if not exists idx_record_attachments_record on record_attachments(record_type, record_id);
 create index if not exists idx_record_attachments_uploaded_by on record_attachments(uploaded_by);

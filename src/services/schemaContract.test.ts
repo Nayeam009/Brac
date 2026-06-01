@@ -23,4 +23,8 @@ describe("database schema contract", () => {
     expect(tpt).toContain("patient_id text references patients(id) on delete cascade");
     expect(attachments).toContain("record_id text not null references patients(id) on delete cascade");
   });
+
+  it("indexes patient-linked attachment records for cascade cleanup", () => {
+    expect(schema).toContain("create index if not exists idx_record_attachments_record_id on record_attachments(record_id)");
+  });
 });
