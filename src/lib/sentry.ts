@@ -5,6 +5,11 @@ type SentryModule = typeof import("@sentry/react");
 const env = import.meta.env;
 let sentryModule: Promise<SentryModule | null> | null = null;
 let sentryStarted = false;
+let sentryStartupScheduled = false;
+
+type WindowWithIdleCallback = Window & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
+};
 
 const parseSampleRate = (value?: string) => {
   if (!value) return 0;
@@ -21,6 +26,30 @@ const loadSentry = () => {
   return sentryModule;
 };
 
+const scheduleAfterFirstPaint = (callback: () => void) => {
+  if (typeof window === "undefined") {
+    callback();
+    return;
+  }
+
+  const runWhenIdle = () => {
+    const browserWindow = window as WindowWithIdleCallback;
+    if (typeof browserWindow.requestIdleCallback === "function") {
+      browserWindow.requestIdleCallback(callback, { timeout: 3000 });
+      return;
+    }
+
+    window.setTimeout(callback, 0);
+  };
+
+  if (typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(() => window.setTimeout(runWhenIdle, 0));
+    return;
+  }
+
+  window.setTimeout(runWhenIdle, 0);
+};
+
 export function initSentry() {
   if (!isSentryEnabled || sentryStarted) return;
   sentryStarted = true;
@@ -32,6 +61,16 @@ export function initSentry() {
     tracesSampleRate: parseSampleRate(env.VITE_SENTRY_TRACES_SAMPLE_RATE),
     sendDefaultPii: false,
   }));
+}
+
+export function initSentryAfterFirstPaint() {
+  if (!isSentryEnabled || sentryStarted || sentryStartupScheduled) return;
+  sentryStartupScheduled = true;
+
+  scheduleAfterFirstPaint(() => {
+    sentryStartupScheduled = false;
+    initSentry();
+  });
 }
 
 export function captureAppError(error: unknown, context?: Record<string, unknown>) {
